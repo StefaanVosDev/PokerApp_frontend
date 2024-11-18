@@ -1,5 +1,0 @@
-FROM react:18.3.1
-WORKDIR /
-COPY . /
-EXPOSE 3000
-CMD ["react", "/src/app.tsx"]
