@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 type DataType = {
-    [key: string]: any;
+    message: string;
 };
 
 const fetchData = async (): Promise<DataType> => {
@@ -26,10 +26,15 @@ function HelloWorld() {
         return <p>Error: {(error as Error).message}</p>;
     }
 
+    // Add a check to ensure data is defined before accessing `data.message`
+    if (!data) {
+        return <p>No data available</p>;
+    }
+
     return (
         <div>
             <h2>Fetched Data</h2>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+            <div>{data.message}</div> {/* Safely access `data.message` */}
         </div>
     );
 }
