@@ -1,6 +1,6 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import './App.css';
-import HelloWorld from './HelloWorld';
+import HelloWorld from './components/HelloWorld.tsx';
 
 const queryClient = new QueryClient();
 
