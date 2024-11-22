@@ -4,6 +4,7 @@ import HelloWorld from './components/HelloWorld.tsx';
 import {cyan} from "@mui/material/colors";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import Game from "./components/Game.tsx";
 
 const theme = createTheme({
     palette: {
@@ -29,6 +30,7 @@ function App() {
                             <Routes>
                                 <Route path="/" element={<Navigate to="/home"/>}/>
                                 <Route path="/home" element={<HelloWorld/>}/>
+                                <Route path="/games/:id" element={<Game/>}/>
                             </Routes>
                         </div>
                     </BrowserRouter>
