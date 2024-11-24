@@ -1,0 +1,57 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+  padding: 0 1rem;
+
+  .brand {
+    font-size: 4.0rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+
+    .link {
+      font-size: 1.4rem;
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s;
+
+      &:hover {
+        color: #3b82f6;
+      }
+    }
+  }
+
+  .buttons {
+
+    display: flex;
+    gap: 1rem;
+
+
+    .button {
+      color: white;
+      border: 1px solid white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      background: none;
+      transition: all 0.3s;
+      font-size: 1.2rem;
+      font-family: 'Kalam', sans-serif;
+
+      &:hover {
+        background: #3b82f6;
+      }
+    }
+  }
+}
