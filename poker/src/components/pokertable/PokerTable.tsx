@@ -1,22 +1,46 @@
 import './PokerTable.scss';
 import Player from "../../model/Player.ts";
+import {useCommunityCards} from "../../hooks/useCommunityCards.ts";
+import {useParams} from "react-router-dom";
+import Loader from "../loader/Loader.tsx";
+import {Alert, Button} from "@mui/material";
+import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
+import {useState} from "react";
+import {useProcessMove} from "../../hooks/useProcessMove.ts";
 
 interface PokerTableProps {
     players: Player[];
-    communityCards: string[]; // Array of card image paths for the community cards
 }
 
 // Fixed player positions
 const playerPositions = [
-    { top: '20%', left: '23%' },    // Top-center (Player 1)
-    { top: '58%', left: '8%' },     // Top-left (Player 2)
-    { top: '80%', left: '28%' },    // Bottom-left (Player 3)
-    { top: '80%', left: '72%' },    // Bottom-center (Player 4)
-    { top: '58%', left: '92%' },    // Bottom-right (Player 5)
-    { top: '20%', left: '80%' },    // Top-right (Player 6)
+    { top: '26%', left: '23%' },    // Top-center (Player 1)
+    { top: '64%', left: '8%' },     // Top-left (Player 2)
+    { top: '86%', left: '28%' },    // Bottom-left (Player 3)
+    { top: '86%', left: '72%' },    // Bottom-center (Player 4)
+    { top: '64%', left: '92%' },    // Bottom-right (Player 5)
+    { top: '26%', left: '80%' },    // Top-right (Player 6)
 ];
 
-export default function PokerTable({ players, communityCards }: PokerTableProps) {
+export default function PokerTable({ players }: PokerTableProps) {
+    const { id: gameId } = useParams<{ id: string }>();
+    const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
+    const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId));
+    const [moveMade, setMoveMade] = useState<string | null>(null);
+    const {isProcessingMove, isErrorProcessingMove, processMove} = useProcessMove(turnId?.content, moveMade, String(gameId));
+
+    if (isLoading) return <Loader>loading cards</Loader>
+    if (isError || !communityCards || communityCards.length === 0) return <Alert severity="error">Error loading cards</Alert>
+    if (isLoadingTurn) return <Loader>Preparing turn</Loader>
+    if (isErrorLoadingTurn || !turnId) return <Alert severity="error">Error loading turn</Alert>
+    if (isProcessingMove) return <Loader>registering move</Loader>
+    if (isErrorProcessingMove || !processMove) return <Alert severity="error">Error registering move</Alert>
+
+    function handleCheck() {
+        setMoveMade("CHECK");
+        processMove()
+    }
+
     const renderPlayers = () => {
         return players.slice(0, 6).map((player, index) => (
             <div
@@ -53,22 +77,24 @@ export default function PokerTable({ players, communityCards }: PokerTableProps)
         return (
             <div className="community-cards">
                 {communityCards.map((card, index) => (
-                    <img key={index} src={card} alt="Community Card" className="community-card" />
+                    <img key={index} src={`/images/${card.suit.toString().toLowerCase()}_${card.rank}.png`} alt={`${card.rank} of ${card.suit.toString().toLowerCase()}`} className="community-card" />
                 ))}
             </div>
         );
     };
 
     return (
-        <div className="poker-table">
-            {/* Render the poker table */}
-            <img src="/src/assets/table.svg" alt="Poker Table" className="poker-table-image" />
+        <>
+            <div className="poker-table">
+                <img src="/src/assets/table.svg" alt="Poker Table" className="poker-table-image"/>
 
-            {/* Render players */}
-            {renderPlayers()}
+                {renderPlayers()}
 
-            {/* Render community cards */}
-            {renderCommunityCards()}
-        </div>
+                {renderCommunityCards()}
+            </div>
+            <div className="d-flex justify-content-center">
+                <Button variant="contained" color="secondary" onClick={handleCheck}>Check</Button>
+            </div>
+        </>
     );
 }

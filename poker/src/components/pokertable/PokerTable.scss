@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   max-width: 900px;
-  margin: 150px auto;
+  margin: 150px auto 50px;
 
   &-image {
     display: block;
@@ -66,8 +66,8 @@
       gap: 4px;
 
       .player-card {
-        width: 30px;
-        height: 45px;
+        width: 40px;
+        height: 60px;
         border-radius: 3px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
       }
