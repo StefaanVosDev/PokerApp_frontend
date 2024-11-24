@@ -1,5 +1,6 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.css'
 import HelloWorld from './components/helloworld/HelloWorld.tsx';
 import {cyan} from "@mui/material/colors";
 import {createTheme, ThemeProvider} from "@mui/material";
@@ -66,14 +67,6 @@ const players = [
     },
 ];
 
-const communityCards = [
-    '/src/assets/card1.png',
-    '/src/assets/card2.png',
-    '/src/assets/card3.png',
-    '/src/assets/card4.png',
-    '/src/assets/card5.png',
-];
-
 
 
 
@@ -88,7 +81,7 @@ function App() {
                                 <Route path="/" element={<Navigate to="/home"/>}/>
                                 <Route path="/hello" element={<HelloWorld/>}/>
                                 <Route path="/home" element={<Home/>}/>
-                                <Route path="/game" element={<PokerTable players={players} communityCards={communityCards}/>}/>
+                                <Route path="/game/:id" element={<PokerTable players={players}/>}/>
                             </Routes>
                     </BrowserRouter>
             </QueryClientProvider>

@@ -15,9 +15,9 @@ export default function Navbar() {
                 <a href="" className="link">
                     TOURNAMENT
                 </a>
-                <a href="/game" className="link">
+                {/*<a href="/game" className="link">
                     GAME
-                </a>
+                </a>*/}
                 <a href="" className="link">
                     POKER NEWS
                 </a>

@@ -1,5 +1,5 @@
 import "./Home.scss";
-import {Button} from "@mui/material";
+//import {Button} from "@mui/material";
 
 
 
@@ -41,7 +41,8 @@ export default function Home() {
                         Experience the thrill of professional poker from the comfort of your home. Join thousands of players in
                         high-stakes tournaments and casual games.
                     </p>
-                    <Button href="/game" className="primary-button">PLAY NOW</Button>
+                    {//<Button href="/game" className="primary-button">PLAY NOW</Button>
+                    }
                 </div>
             </div>
         </div>
