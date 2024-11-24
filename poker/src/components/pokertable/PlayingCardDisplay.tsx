@@ -1,5 +1,5 @@
 import {Card, CardMedia} from "@mui/material";
-import {PlayingCard} from "../model/PlayingCard.ts";
+import {PlayingCard} from "../../model/PlayingCard.ts";
 
 type PlayingCardProps = {
   card: PlayingCard;
