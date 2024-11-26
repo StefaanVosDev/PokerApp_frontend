@@ -1,4 +1,10 @@
 import {PlayingCard} from "../model/PlayingCard.ts";
+import axios from 'axios'
+import Game from "../model/Game.ts";
+import PlayersHand from "../model/PlayersHand.ts";
+
+
+axios.defaults.baseURL = "http://localhost:8081";
 
 export async function checkTurn(turnId: string | undefined) {
     if (turnId) {
@@ -43,3 +49,27 @@ export async function getCommunityCards(id: string) {
     }
     return null;
 }
+
+
+
+// Get a Game
+
+export async function getGame(id: string) {
+    const {data: game} = await axios.get<Game>(`/api/games/${id}`);
+    return game;
+}
+
+export async function getGames() {
+    const {data: games} = await axios.get<Game[]>('/api/games');
+    return games;
+}
+
+
+//get a player's hand
+export async function getPlayerHand(id: string) {
+
+    const {data: hand} = await axios.get<PlayersHand>(`/api/cards/player/${id}`);
+    return hand;
+
+}
+
