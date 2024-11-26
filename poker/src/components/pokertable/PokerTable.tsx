@@ -53,22 +53,22 @@ export default function PokerTable({ players }: PokerTableProps) {
             >
                 <div className="player-info-wrapper">
                     <div className="player-info">
-                        <img src={player.avatar} alt={`${player.name}'s Avatar`} className="player-avatar" />
+                        <img src="/src/assets/duckpfp.png" alt="Duck Avatar" className="player-avatar" />
                         <img src="/src/assets/chips.svg" alt="Chips" className="player-chips" />
                     </div>
                     <div className="player-details">
                         <p className="player-name">
-                            {player.name} <span className="player-money">${player.money}</span>
+                            Placeholder Name <span className="player-money">${player.money}</span>
                         </p>
                     </div>
                 </div>
 
                 {/* Render player cards */}
-                <div className="player-cards">
-                    {player.cards.map((card, cardIndex) => (
-                        <img key={cardIndex} src={card} alt="Card" className="player-card" />
-                    ))}
-                </div>
+                {/*<div className="player-cards">*/}
+                {/*    {player.cards.map((card, cardIndex) => (*/}
+                {/*        <img key={cardIndex} src={card} alt="Card" className="player-card"/>*/}
+                {/*    ))}*/}
+                {/*</div>*/}
             </div>
         ));
     };
