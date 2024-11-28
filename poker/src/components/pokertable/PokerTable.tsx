@@ -5,8 +5,10 @@ import {useParams} from "react-router-dom";
 import Loader from "../loader/Loader.tsx";
 import {Alert, Button} from "@mui/material";
 import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useProcessMove} from "../../hooks/useProcessMove.ts";
+import {Round} from "../../model/Round.ts";
+import {useCreateNewRound} from "../../hooks/useCreateNewRound.ts";
 
 interface PokerTableProps {
     players: Player[];
@@ -24,17 +26,31 @@ const playerPositions = [
 
 export default function PokerTable({ players }: PokerTableProps) {
     const { id: gameId } = useParams<{ id: string }>();
+    const [round, ] = useState<Round | null>(null);
+
     const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
     const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId));
     const [moveMade, setMoveMade] = useState<string | null>(null);
     const {isProcessingMove, isErrorProcessingMove, processMove} = useProcessMove(turnId?.content, moveMade, String(gameId));
+    const {isPending: isLoadingCreateNewRound, isError: isErrorCreateNewRound, triggerNewRound} = useCreateNewRound(String(gameId));
 
+
+    useEffect(() => {
+        if (round?.phase === 'FINISHED' && gameId) {
+            triggerNewRound()
+        }
+    }, [round?.phase, gameId]);
+
+    // if (!round) return <Loader>Initializing new round...</Loader>
     if (isLoading) return <Loader>loading cards</Loader>
-    if (isError || !communityCards || communityCards.length === 0) return <Alert severity="error">Error loading cards</Alert>
+    if (isError) return <Alert severity="error">Error loading cards</Alert>
     if (isLoadingTurn) return <Loader>Preparing turn</Loader>
     if (isErrorLoadingTurn || !turnId) return <Alert severity="error">Error loading turn</Alert>
     if (isProcessingMove) return <Loader>registering move</Loader>
     if (isErrorProcessingMove || !processMove) return <Alert severity="error">Error registering move</Alert>
+    if (isLoadingCreateNewRound) return <Loader>Initializing new round...</Loader>
+    if (isErrorCreateNewRound) return <Alert severity="error">Error initializing new round</Alert>
+
 
     function handleCheck() {
         setMoveMade("CHECK");
@@ -76,7 +92,7 @@ export default function PokerTable({ players }: PokerTableProps) {
     const renderCommunityCards = () => {
         return (
             <div className="community-cards">
-                {communityCards.map((card, index) => (
+                {communityCards && communityCards.map((card, index) => (
                     <img key={index} src={`/images/${card.suit.toString().toLowerCase()}_${card.rank}.png`} alt={`${card.rank} of ${card.suit.toString().toLowerCase()}`} className="community-card" />
                 ))}
             </div>

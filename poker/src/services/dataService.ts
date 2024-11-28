@@ -1,8 +1,8 @@
 import {PlayingCard} from "../model/PlayingCard.ts";
-import axios from 'axios'
 import Game from "../model/Game.ts";
+import axios from 'axios';
 import PlayersHand from "../model/PlayersHand.ts";
-
+import {Round} from "../model/Round.ts";
 
 axios.defaults.baseURL = "http://localhost:8081";
 
@@ -50,10 +50,39 @@ export async function getCommunityCards(id: string) {
     return null;
 }
 
+export async function createNewRound(gameId: string) {
+    if (gameId) {
+        const response = await fetch(`http://localhost:8081/api/rounds?gameId=${gameId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    return null;
+}
 
+export async function createNewTurn(gameId: string) {
+    if (gameId) {
+        const response = await fetch(`http://localhost:8081/api/turns?gameId=${gameId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return await response.json();
+    }
+    return null;
+}
 
 // Get a Game
-
 export async function getGame(id: string) {
     const {data: game} = await axios.get<Game>(`/api/games/${id}`);
     return game;
@@ -73,3 +102,11 @@ export async function getPlayerHand(id: string) {
 
 }
 
+
+export async function getCurrentRound(gameId: string) {
+    if (gameId) {
+        const {data: round} = await axios.get<Round>(`/api/rounds/current?gameId=${gameId}`);
+        return round;
+    }
+    return null;
+}
