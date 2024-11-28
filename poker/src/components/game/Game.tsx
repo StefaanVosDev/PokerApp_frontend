@@ -6,10 +6,12 @@ import {Alert, Button} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {useCommunityCards} from "../../hooks/useCommunityCards.ts";
 import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useProcessMove} from "../../hooks/useProcessMove.ts";
 import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
+import {useCurrentRound} from "../../hooks/useCurrentRound.ts";
+import {useCreateNewRound} from "../../hooks/useCreateNewRound.ts";
 
 // Helper function to map card suits and ranks to image paths
 function mapCardToImage(card: Card): string {
@@ -28,43 +30,43 @@ function mapCardToImage(card: Card): string {
 function Game() {
 
     const { id: gameId } = useParams<{ id: string }>();
-    // gameId = "7fabf988-a888-4dc6-8423-4cd9f620ff00";
+
     const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
     const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId));
     const [moveMade, setMoveMade] = useState<string | null>(null);
     const {isProcessingMove, isErrorProcessingMove, processMove} = useProcessMove(turnId?.content, moveMade, String(gameId));
-
-
-    // Fetch the game data
+    const {isLoadingRound, isErrorLoadingRound, round} = useCurrentRound(String(gameId));
+    const {isPending: isPendingCreateNewRound, isError: isErrorCreatingNewRound, triggerNewRound} = useCreateNewRound(String(gameId));
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
-
-
-    // Extract player IDs from the game
     const playerIds = game?.players.map((player) => player.id) || [];
-
-    // Fetch player hands based on their IDs
     const {isLoading: handsLoading, isError: handsError, playersHand} = usePlayersHand(playerIds);
 
+
+    useEffect(() => {
+        if (round?.phase === 'FINISHED' && gameId) {
+            triggerNewRound();
+        }
+    }, [round?.phase, gameId]);
+
     if (isLoading) return <Loader>loading cards</Loader>
-    if (isError || !communityCards || communityCards.length === 0) return <Alert severity="error">Error loading cards</Alert>
+    if (isError || !communityCards) return <Alert severity="error">Error loading cards</Alert>
     if (isLoadingTurn) return <Loader>Preparing turn</Loader>
     if (isErrorLoadingTurn || !turnId) return <Alert severity="error">Error loading turn</Alert>
     if (isProcessingMove) return <Loader>registering move</Loader>
     if (isErrorProcessingMove || !processMove) return <Alert severity="error">Error registering move</Alert>
+    if (isLoadingRound) return <Loader>Loading current round...</Loader>
+    if (isErrorLoadingRound) return <Alert severity="error">Error Loading current round</Alert>
+    if (isPendingCreateNewRound) return <Loader>Initializing new round...</Loader>
+    if (isErrorCreatingNewRound) return <Alert severity="error">Error initializing new round</Alert>
+    if (gameLoading) return <Loader>Loading game...</Loader>;
+    if (gameError || !game) return <Alert severity="error">Error loading game data</Alert>;
+    if (handsLoading) return <Loader>Loading hands...</Loader>;
+    if (handsError || !playersHand) return <Alert severity="error">Error loading hands</Alert>;
+
 
     function handleCheck() {
         setMoveMade("CHECK");
         processMove()
-    }
-
-
-
-    if (gameLoading || handsLoading) {
-        return <p>Loading...</p>;
-    }
-
-    if (gameError || handsError || !game || !playersHand) {
-        return <p>Error loading game data.</p>;
     }
 
     // Map each player's cards
