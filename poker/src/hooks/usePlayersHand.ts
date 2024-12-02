@@ -8,7 +8,7 @@ export default interface PlayersHand {
 }
 
 export function usePlayersHand(playerIds: string[]) {
-    const { isLoading, isError, data } = useQuery({
+    const { isLoading, isError, data, refetch } = useQuery({
         queryKey: ['playersHand', playerIds],
         queryFn: async () => {
             const hands = await Promise.all(playerIds.map((id) => getPlayerHand(id)));
@@ -24,5 +24,6 @@ export function usePlayersHand(playerIds: string[]) {
         isLoading,
         isError,
         playersHand: data || {}, // Default to an empty object
+        refetch
     };
 }

@@ -1,8 +1,9 @@
 import {PlayingCard} from "../model/PlayingCard.ts";
-import Game from "../model/Game.ts";
+import {Game} from "../model/Game.ts";
 import axios from 'axios';
 import PlayersHand from "../model/PlayersHand.ts";
 import {Round} from "../model/Round.ts";
+import {Turn} from "../model/Turn.ts";
 
 axios.defaults.baseURL = "http://localhost:8081";
 
@@ -23,14 +24,13 @@ export async function checkTurn(turnId: string | undefined) {
 }
 
 export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string, playerId: string | undefined) {
-        const response = await axios.put(`http://localhost:8081/api/turns/${turnId}/checkAndMove`, null, {
+        await axios.put(`http://localhost:8081/api/turns/${turnId}/checkAndMove`, null, {
             params: {
                 gameId: gameId,
                 roundId: roundId,
                 playerId: playerId
             }
         });
-        console.log('Response:', response.data);
 }
 
 
@@ -116,6 +116,14 @@ export async function getCurrentRound(gameId: string) {
     if (gameId) {
         const {data: round} = await axios.get<Round>(`/api/rounds/current?gameId=${gameId}`);
         return round;
+    }
+    return null;
+}
+
+export async function getTurns(roundId: string) {
+    if (roundId) {
+        const {data: turns} = await axios.get<Turn[]>(`/api/turns/round?roundId=${roundId}`);
+        return turns;
     }
     return null;
 }
