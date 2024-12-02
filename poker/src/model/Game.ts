@@ -1,6 +1,6 @@
 import Player from "./Player.ts";
 
-export default interface Game {
+export type Game = {
     id: string;
     status: string;
     maxPlayers: number;

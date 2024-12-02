@@ -1,15 +1,17 @@
+import {Turn} from "./Turn.ts";
+
 export type Round = {
     id: string;
     phase: Phase;
     dealerIndex: number;
-    // turns: Turn[];
+    turns: Turn[];
     // communityCards: Card[];
     // deck: Card[];
     // game: Game;
     createdAt: string;
 };
 
-enum Phase {
+export enum Phase {
     PREFLOP = "PREFLOP",
     FLOP = "FLOP",
     TURN = "TURN",
