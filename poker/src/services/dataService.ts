@@ -23,15 +23,24 @@ export async function checkTurn(turnId: string | undefined) {
     return null;
 }
 
-export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string, playerId: string | undefined) {
+export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string) {
         await axios.put(`http://localhost:8081/api/turns/${turnId}/checkAndMove`, null, {
             params: {
                 gameId: gameId,
                 roundId: roundId,
-                playerId: playerId
             }
         });
 }
+
+export async function foldAndMove (turnId: string | undefined, gameId: string, roundId: string) {
+    await axios.put(`http://localhost:8081/api/turns/${turnId}/foldAndMove`, null, {
+        params: {
+            gameId: gameId,
+            roundId: roundId,
+        }
+    });
+}
+
 
 
 type StringWrapper = {

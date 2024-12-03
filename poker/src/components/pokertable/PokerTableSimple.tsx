@@ -24,6 +24,7 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
     const renderPlayers = () => {
         return players.slice(0, 6).map((player, index) => {
             const playerMove = turns.find(turn => turn.player.id == player.id)?.moveMade || "Waiting...";
+            const hasFolded = playerMove === "FOLD";
             return (
                 <div
                     key={player.id}
@@ -49,7 +50,7 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
                         <span>{playerMove}</span>
                     </div>
 
-                    <div className="player-cards">
+                    <div className={`player-cards ${hasFolded ? "folded" : ""}`}>
                         {player.cards.map((card, cardIndex) => (
                             <img key={cardIndex} src={card} alt="Card" className="player-card"/>
                         ))}

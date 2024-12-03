@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { checkAndMove} from "../services/dataService.ts";
+import {checkAndMove, foldAndMove} from "../services/dataService.ts";
 
-export function useProcessMove(turnId: string | undefined, gameId: string, roundId: string, playerId: string | undefined) {
+export function useProcessMove(turnId: string | undefined, gameId: string, roundId: string) {
     const queryClient = useQueryClient();
 
     const methodCall = async (moveMade: string) => {
         if (moveMade === "CHECK") {
-            await checkAndMove(turnId, gameId, roundId, playerId);
+            await checkAndMove(turnId, gameId, roundId);
+        } else if (moveMade === "FOLD") {
+            await foldAndMove(turnId, gameId, roundId);
         }
     };
 

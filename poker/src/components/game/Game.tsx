@@ -35,9 +35,8 @@ function Game() {
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
     const playerIds = game?.players.map((player) => player.id) || [];
     const {isLoading: handsLoading, isError: handsError, playersHand, refetch: refetchHands} = usePlayersHand(playerIds);
-    const playerId = game?.players[0]?.id;
     const roundId = round?.id;
-    const {isProcessingMove, isErrorProcessingMove, processMove, isSuccessProcessingMove} = useProcessMove(turnId?.content, String(gameId), String(roundId), String(playerId));
+    const {isProcessingMove, isErrorProcessingMove, processMove, isSuccessProcessingMove} = useProcessMove(turnId?.content, String(gameId), String(roundId));
     const {isLoadingTurns, isErrorLoadingTurns, turns, refetchTurns} = useTurns(roundId);
 
     useEffect(() => {
@@ -45,6 +44,10 @@ function Game() {
             refetchTurns();
         }
     }, [isSuccessProcessingMove, refetchTurns]);
+
+    useEffect(() => {
+        refetch();
+    }, [refetch, turns]);
 
     if (isLoading) return <Loader>loading cards</Loader>
     if (isError || !communityCards) return <Alert severity="error">Error loading cards</Alert>
@@ -67,6 +70,12 @@ function Game() {
         processMove("CHECK")
     }
 
+    async function handleFold() {
+        await refetch();
+        await refetchHands();
+        processMove("FOLD")
+    }
+
     // Map each player's cards
     const playersWithCards = game.players.map((player) => ({
         ...player,
@@ -78,10 +87,13 @@ function Game() {
             <PokerTableSimple
                 players={playersWithCards}
                 communityCards={communityCards}
-                turns={turns.filter(turn => turn.madeInPhase == round!.phase)}
+                turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.type === "FOLD")}
             />
             <div className="check-button">
                 <Button variant="contained" color="secondary" onClick={async () => await handleCheck()}>Check</Button>
+            </div>
+            <div className="fold-button">
+                <Button variant="contained" color="secondary" onClick={async () => await handleFold()}>Fold</Button>
             </div>
         </>
     );
