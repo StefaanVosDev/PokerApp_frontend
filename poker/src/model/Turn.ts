@@ -1,16 +1,16 @@
 import Player from "./Player.ts";
-import {Phase} from "./Round.ts";
+import {Phase, Round} from "./Round.ts";
 
 export type Turn = {
     id: string;
     player: Player;
     moveMade: PlayerStatus;
     moneyGambled: number;
-    roundId: string;
+    round: Round;
     madeInPhase: Phase;
 }
 
-enum PlayerStatus {
+export enum PlayerStatus {
     ON_MOVE,
     RAISE,
     CALL,

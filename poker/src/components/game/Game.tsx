@@ -6,7 +6,7 @@ import {Alert, Button} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {useCommunityCards} from "../../hooks/useCommunityCards.ts";
 import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useProcessMove} from "../../hooks/useProcessMoveTest.ts";
 import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
@@ -31,12 +31,15 @@ function Game() {
     const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
     const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId));
     const {isLoadingRound, isErrorLoadingRound, round, refetch} = useCurrentRound(String(gameId));
-    const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
+    const {isLoading: gameLoading, isError: gameError, game, refetchGame} = useGame(String(gameId));
     const playerIds = game?.players.map((player) => player.id) || [];
     const {isLoading: handsLoading, isError: handsError, playersHand, refetch: refetchHands} = usePlayersHand(playerIds);
     const roundId = round?.id;
     const {isProcessingMove, isErrorProcessingMove, processMove, isSuccessProcessingMove} = useProcessMove(turnId?.content, String(gameId), String(roundId));
     const {isLoadingTurns, isErrorLoadingTurns, turns, refetchTurns} = useTurns(roundId);
+    const [shouldShowCheckButton, setShouldShowCheckButton] = useState(false);
+    const [amountToCall, setAmountToCall] = useState(0);
+    const [currentPlayerMoney, setCurrentPlayerMoney] = useState(1000);
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -46,7 +49,30 @@ function Game() {
 
     useEffect(() => {
         refetch();
-    }, [refetch, turns]);
+        if (turns) {
+            const currentPlayer = turns.find(turn => turn.moveMade === "ON_MOVE")?.player;
+            setCurrentPlayerMoney(currentPlayer?.money || 0);
+        }
+    }, [currentPlayerMoney, refetch, turns]);
+
+    useEffect(() => {
+        if (!turns || !round) return;
+
+        refetchGame()
+        const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round.phase);
+        const lastBet = currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
+
+        const currentTurn = turns.find(turn => turn.moveMade === "ON_MOVE");
+        if (currentTurn) {
+            const totalGambled = currentPhaseTurns
+                .filter(turn => turn.player.id === currentTurn.player.id)
+                .reduce((sum, turn) => sum + turn.moneyGambled, 0);
+
+            setShouldShowCheckButton(totalGambled === lastBet);
+            setAmountToCall(lastBet - totalGambled);
+        }
+    }, [turns, round]);
+
 
     if (isLoading) return <Loader>loading cards</Loader>
     if (isError || !communityCards) return <Alert severity="error">Error loading cards</Alert>
@@ -66,13 +92,19 @@ function Game() {
     async function handleCheck() {
         await refetch();
         await refetchHands();
-        processMove("CHECK")
+        processMove({moveMade: "CHECK"})
     }
 
     async function handleFold() {
         await refetch();
         await refetchHands();
-        processMove("FOLD")
+        processMove({moveMade: "FOLD"})
+    }
+
+    async function handleCall(amount: number) {
+        await refetch();
+        await refetchHands();
+        processMove({moveMade: "CALL", amount: amount})
     }
 
     // Map each player's cards
@@ -81,7 +113,6 @@ function Game() {
         cards: (playersHand[player.id] || []).map(mapCardToImage), // Map cards to images
     }));
 
-    const lastBet = turns.filter(turn => turn.madeInPhase === round!.phase).reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
     return (
         <>
             <PokerTableSimple
@@ -89,21 +120,21 @@ function Game() {
                 communityCards={communityCards}
                 turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade === "FOLD")}
             />
-            <div className="check-button">
-            {playersWithCards.some(player => {
-                const playerTurns = turns.filter(turn => turn.madeInPhase === round!.phase && turn.playerId === player.id);
-                const playerMoneyGambled = playerTurns.reduce((sum, turn) => sum + turn.moneyGambled, 0);
-                return playerMoneyGambled === lastBet;
-            }) && (
-                <Button variant="contained" color="secondary" onClick={async () => await handleCheck()}>Check</Button>
-            )
-            }
-            </div>
-            <div className="fold-button">
-                <Button variant="contained" color="secondary" onClick={async () => await handleFold()}>Fold</Button>
+            <div className="buttons-container">
+                <Button className="fold-button" variant="contained" color="secondary"
+                        onClick={async () => await handleFold()}>Fold</Button>
+                {shouldShowCheckButton ? (
+                    <Button variant="contained" color="secondary"
+                            onClick={async () => await handleCheck()}>Check</Button>
+                ) : (
+                    <Button variant="contained" color="secondary"
+                            onClick={async () => await handleCall(amountToCall)}>Call ${amountToCall}</Button>
+                )}
             </div>
         </>
+
     );
+
 }
 
 export default Game;

@@ -28,8 +28,8 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
 
             const turn = turnsFromPlayer[turnsFromPlayer.length - 1];
 
-            const playerMove = turn?.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase) || "Waiting...";
-            const hasFolded = playerMove === "FOLD";
+            const playerMove = turn ? (turn.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
+            const hasFolded = turn?.moveMade === "FOLD";
 
             return (
                 <div
@@ -42,7 +42,7 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
                 >
                     <div className="player-info-wrapper">
                         <div className="player-info">
-                            <img src="/src/assets/duckpfp.png" alt="Duck Avatar" className="player-avatar"/>
+                            <img src="/src/assets/duckpfp.png" alt="Duck Avatar" className={`player-avatar ${turn?.moveMade === "ON_MOVE" ? "active" : ""}`}/>
                             <img src="/src/assets/chips.svg" alt="Chips" className="player-chips"/>
                         </div>
                         <div className="player-details">
