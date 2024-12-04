@@ -16,5 +16,7 @@ enum PlayerStatus {
     CALL,
     FOLD,
     ALL_IN,
-    CHECK
+    CHECK,
+    SMALL_BLIND,
+    BIG_BLIND
 }

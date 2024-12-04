@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import {getTurns} from "../services/dataService.ts";
 
-export function useTurns(roundId: string) {
+export function useTurns(roundId: string | undefined) {
     const {isLoading: isLoadingTurns, isError: isErrorLoadingTurns, data: turns, refetch} = useQuery(
         {
             queryKey: ['turns', roundId],

@@ -12,7 +12,6 @@ import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
 import {useCurrentRound} from "../../hooks/useCurrentRound.ts";
 import {useTurns} from "../../hooks/useTurns.ts";
-import {Round} from "../../model/Round.ts";
 
 // Helper function to map card suits and ranks to image paths
 function mapCardToImage(card: Card): string {
@@ -31,7 +30,7 @@ function Game() {
 
     const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
     const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId));
-    const {isLoadingRound, isErrorLoadingRound, round, refetch} = useCurrentRound<Round | null>(String(gameId));
+    const {isLoadingRound, isErrorLoadingRound, round, refetch} = useCurrentRound(String(gameId));
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
     const playerIds = game?.players.map((player) => player.id) || [];
     const {isLoading: handsLoading, isError: handsError, playersHand, refetch: refetchHands} = usePlayersHand(playerIds);
@@ -82,15 +81,23 @@ function Game() {
         cards: (playersHand[player.id] || []).map(mapCardToImage), // Map cards to images
     }));
 
+    const lastBet = turns.filter(turn => turn.madeInPhase === round!.phase).reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
     return (
         <>
             <PokerTableSimple
                 players={playersWithCards}
                 communityCards={communityCards}
-                turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.type === "FOLD")}
+                turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade === "FOLD")}
             />
             <div className="check-button">
+            {playersWithCards.some(player => {
+                const playerTurns = turns.filter(turn => turn.madeInPhase === round!.phase && turn.playerId === player.id);
+                const playerMoneyGambled = playerTurns.reduce((sum, turn) => sum + turn.moneyGambled, 0);
+                return playerMoneyGambled === lastBet;
+            }) && (
                 <Button variant="contained" color="secondary" onClick={async () => await handleCheck()}>Check</Button>
+            )
+            }
             </div>
             <div className="fold-button">
                 <Button variant="contained" color="secondary" onClick={async () => await handleFold()}>Fold</Button>

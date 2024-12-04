@@ -129,7 +129,7 @@ export async function getCurrentRound(gameId: string) {
     return null;
 }
 
-export async function getTurns(roundId: string) {
+export async function getTurns(roundId: string | undefined) {
     if (roundId) {
         const {data: turns} = await axios.get<Turn[]>(`/api/turns/round?roundId=${roundId}`);
         return turns;
