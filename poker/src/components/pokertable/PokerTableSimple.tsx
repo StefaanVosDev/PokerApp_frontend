@@ -23,8 +23,14 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
 
     const renderPlayers = () => {
         return players.slice(0, 6).map((player, index) => {
-            const playerMove = turns.find(turn => turn.player.id == player.id)?.moveMade || "Waiting...";
+            const turnsFromPlayer =  turns.filter(turn => turn.player.id == player.id);
+            const moneyGambledThisPhase = turnsFromPlayer.map(turn => turn.moneyGambled).reduce((sum, money) => sum + money, 0);
+
+            const turn = turnsFromPlayer[turnsFromPlayer.length - 1];
+
+            const playerMove = turn?.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase) || "Waiting...";
             const hasFolded = playerMove === "FOLD";
+
             return (
                 <div
                     key={player.id}
