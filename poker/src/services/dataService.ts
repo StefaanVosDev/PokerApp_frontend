@@ -41,7 +41,15 @@ export async function foldAndMove (turnId: string | undefined, gameId: string, r
     });
 }
 
-
+export async function callAndMove (turnId: string | undefined, gameId: string, roundId: string, amount: number) {
+    await axios.put(`/api/turns/${turnId}/callAndMove`, null, {
+        params: {
+            gameId: gameId,
+            roundId: roundId,
+            amount: amount
+        }
+    });
+}
 
 type StringWrapper = {
     content: string;

@@ -1,6 +1,107 @@
-.check-button{
+.Game {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.buttons-container {
+  display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+
+  button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.2s;
+
+    &:hover {
+      background-color: #5c6bc0;
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  .fold-button {
+    background-color: #ef5350;
+    color: #fff;
+
+    &:hover {
+      background-color: #e57373;
+    }
+  }
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+
+  .raise-button {
+    background-color: #66bb6a;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: #81c784;
+    }
+  }
+
+  .raise-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    position: relative; // Position for the slider to appear correctly
+
+    .slider-container {
+      position: absolute; // Prevent the slider from shifting the layout
+      top: -160px; // Position the slider above the button
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 150px;
+
+      .MuiSlider-root {
+        color: #ffb74d;
+        height: 150px;
+      }
+
+      .MuiSlider-thumb {
+        width: 20px;
+        height: 20px;
+      }
+
+      .MuiSlider-valueLabel {
+        background-color: #ffb74d;
+        color: black;
+        font-weight: bold;
+      }
+    }
+
+    .confirm-button {
+      background-color: #8bc34a;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+
+      &:hover {
+        background-color: #9ccc65;
+      }
+    }
+  }
 }
