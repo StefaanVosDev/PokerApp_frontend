@@ -7,22 +7,6 @@ import {Turn} from "../model/Turn.ts";
 
 axios.defaults.baseURL = "http://localhost:8081";
 
-export async function checkTurn(turnId: string | undefined) {
-    if (turnId) {
-        const response = await fetch(`http://localhost:8081/api/turns/${turnId}/check`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        })
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json();
-    }
-    return null;
-}
-
 export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string) {
         await axios.put(`http://localhost:8081/api/turns/${turnId}/checkAndMove`, null, {
             params: {

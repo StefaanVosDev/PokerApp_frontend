@@ -1,18 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { checkTurn } from "../services/dataService.ts";
+import {callAndMove, checkAndMove, foldAndMove, raiseAndMove} from "../services/dataService.ts";
 
-export function useProcessMove(turnId: string | undefined, moveMade: string | null, gameId: string) {
+export function useProcessMove(turnId: string | undefined, gameId: string, roundId: string) {
     const queryClient = useQueryClient();
 
-    const methodCall = () => {
-        switch (moveMade) {
-            default:
-                return checkTurn(turnId);
+    const methodCall = async ({moveMade, amount}: {moveMade: string, amount?: number}) => {
+        if (moveMade === "CHECK") {
+            await checkAndMove(turnId, gameId, roundId);
+        } else if (moveMade === "FOLD") {
+            await foldAndMove(turnId, gameId, roundId);
+        } else if (moveMade === "CALL" && amount) {
+            await callAndMove(turnId, gameId, roundId, amount);
         }
     };
 
-    // UseMutation setup
-    const { mutate: processMove, isPending: isProcessingMove, isError: isErrorProcessingMove } = useMutation({
+
+    const { mutate: processMove, isPending: isProcessingMove, isError: isErrorProcessingMove, isSuccess } = useMutation({
         mutationFn: methodCall,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['turn', gameId] });
@@ -24,5 +27,6 @@ export function useProcessMove(turnId: string | undefined, moveMade: string | nu
         processMove,
         isProcessingMove,
         isErrorProcessingMove,
+        isSuccessProcessingMove: isSuccess
     };
 }
