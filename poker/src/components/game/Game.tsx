@@ -7,7 +7,7 @@ import {useParams} from "react-router-dom";
 import {useCommunityCards} from "../../hooks/useCommunityCards.ts";
 import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
 import {useEffect, useState} from "react";
-import {useProcessMove} from "../../hooks/useProcessMoveTest.ts";
+import {useProcessMove} from "../../hooks/useProcessMove.ts";
 import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
 import {useCurrentRound} from "../../hooks/useCurrentRound.ts";
@@ -32,9 +32,9 @@ function Game() {
     const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId));
     const {isLoadingRound, isErrorLoadingRound, round, refetch} = useCurrentRound(String(gameId));
     const {isLoading: gameLoading, isError: gameError, game, refetchGame} = useGame(String(gameId));
-    const playerIds = game?.players.map((player) => player.id) || [];
+    const playerIds = game ? game.players.map((player) => player.id) : [];
     const {isLoading: handsLoading, isError: handsError, playersHand, refetch: refetchHands} = usePlayersHand(playerIds);
-    const roundId = round?.id;
+    const roundId = round ? round.id : "";
     const {isProcessingMove, isErrorProcessingMove, processMove, isSuccessProcessingMove} = useProcessMove(turnId?.content, String(gameId), String(roundId));
     const {isLoadingTurns, isErrorLoadingTurns, turns, refetchTurns} = useTurns(roundId);
     const [shouldShowCheckButton, setShouldShowCheckButton] = useState(false);
@@ -50,7 +50,7 @@ function Game() {
     useEffect(() => {
         refetch();
         if (turns) {
-            const currentPlayer = turns.find(turn => turn.moveMade === "ON_MOVE")?.player;
+            const currentPlayer = turns.find(turn => turn.moveMade.toString() === "ON_MOVE")?.player;
             setCurrentPlayerMoney(currentPlayer?.money || 0);
         }
     }, [currentPlayerMoney, refetch, turns]);
@@ -62,7 +62,7 @@ function Game() {
         const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round.phase);
         const lastBet = currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
 
-        const currentTurn = turns.find(turn => turn.moveMade === "ON_MOVE");
+        const currentTurn = turns.find(turn => turn.moveMade.toString() === "ON_MOVE");
         if (currentTurn) {
             const totalGambled = currentPhaseTurns
                 .filter(turn => turn.player.id === currentTurn.player.id)
@@ -118,7 +118,8 @@ function Game() {
             <PokerTableSimple
                 players={playersWithCards}
                 communityCards={communityCards}
-                turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade === "FOLD")}
+                turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade.toString() === "FOLD")}
+                dealerIndex={round ? round.dealerIndex : 0}
             />
             <div className="buttons-container">
                 <Button className="fold-button" variant="contained" color="secondary"

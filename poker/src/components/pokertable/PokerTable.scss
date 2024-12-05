@@ -106,3 +106,51 @@
   50% { opacity: 0.5; }
   100% { opacity: 1; }
 }
+.dealer-disk {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 2;
+
+  &.player-0 {
+    top: 90%;
+    left: 20%;
+    transform: translateX(-50%);
+  }
+
+  &.player-1 {
+    top: 65%;
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-2 {
+    top: 55%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-3 {
+    top: 58%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-4 {
+    top: 60%;
+    left: 85%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-5 {
+    top: 50%;
+    left: 85%;
+    transform: translateX(-50%);
+  }
+}
+
+.dealer-disk img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

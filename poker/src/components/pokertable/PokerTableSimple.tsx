@@ -7,6 +7,7 @@ interface PokerTableProps {
     players: (Player & { cards: string[] })[]; // Players with cards as image paths
     communityCards: PlayingCard[]; // Array of card image paths for the community cards
     turns: Turn[];
+    dealerIndex: number
 }
 
 const playerPositions = [
@@ -19,7 +20,7 @@ const playerPositions = [
 
 ];
 
-export default function PokerTableSimple({ players, communityCards, turns }: PokerTableProps) {
+export default function PokerTableSimple({ players, communityCards, turns, dealerIndex }: PokerTableProps) {
 
     const renderPlayers = () => {
         return players.slice(0, 6).map((player, index) => {
@@ -29,7 +30,8 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
             const turn = turnsFromPlayer[turnsFromPlayer.length - 1];
 
             const playerMove = turn ? (turn.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
-            const hasFolded = turn?.moveMade === "FOLD";
+            const hasFolded = turn?.moveMade.toString() === "FOLD";
+            const isDealer = index === dealerIndex;
 
             return (
                 <div
@@ -40,9 +42,14 @@ export default function PokerTableSimple({ players, communityCards, turns }: Pok
                         left: playerPositions[index].left,
                     }}
                 >
+                    {isDealer && (
+                        <div className={`dealer-disk player-${index}`}>
+                            <img src="/src/assets/dealer-disk.svg" alt="Dealer disk"/>
+                        </div>
+                    )}
                     <div className="player-info-wrapper">
                         <div className="player-info">
-                            <img src="/src/assets/duckpfp.png" alt="Duck Avatar" className={`player-avatar ${turn?.moveMade === "ON_MOVE" ? "active" : ""}`}/>
+                            <img src="/src/assets/duckpfp.png" alt="Duck Avatar" className={`player-avatar ${turn?.moveMade.toString() === "ON_MOVE" ? "active" : ""}`}/>
                             <img src="/src/assets/chips.svg" alt="Chips" className="player-chips"/>
                         </div>
                         <div className="player-details">
