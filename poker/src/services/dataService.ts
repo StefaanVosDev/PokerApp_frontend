@@ -5,6 +5,7 @@ import PlayersHand from "../model/PlayersHand.ts";
 import {Round} from "../model/Round.ts";
 import {Turn} from "../model/Turn.ts";
 
+
 axios.defaults.baseURL = "http://localhost:8081";
 
 export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string) {
@@ -127,4 +128,11 @@ export async function getTurns(roundId: string | undefined) {
         return turns;
     }
     return null;
+}
+
+export async function dividePot(roundId: string | undefined) {
+    if (roundId) {
+        const {data: winnings} = await axios.put<Map<string, number>>(`/api/rounds/${roundId}/dividePot`)
+        return winnings; //the strings are the UUIDs of the players
+    }
 }

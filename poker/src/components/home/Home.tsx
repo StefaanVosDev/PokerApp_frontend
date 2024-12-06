@@ -16,7 +16,7 @@ export default function Home() {
     }, [isSuccess]);
 
     if (isLoading) return <Loader>Initializing new round...</Loader>
-    if (isError) return <Alert severity="error">Error initializing new round</Alert>
+    if (isError) return <Alert severity="error" variant="filled">Error initializing new round</Alert>
     
 
     function handlePlayNow() {

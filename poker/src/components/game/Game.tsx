@@ -12,6 +12,7 @@ import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
 import {useCurrentRound} from "../../hooks/useCurrentRound.ts";
 import {useTurns} from "../../hooks/useTurns.ts";
+import {useDividePot} from "../../hooks/useDividePot.ts";
 
 // Helper function to map card suits and ranks to image paths
 function mapCardToImage(card: Card): string {
@@ -40,6 +41,7 @@ function Game() {
     const [shouldShowCheckButton, setShouldShowCheckButton] = useState(false);
     const [amountToCall, setAmountToCall] = useState(0);
     const [currentPlayerMoney, setCurrentPlayerMoney] = useState(1000);
+    const {isDividingPot, isErrorDividingPot, triggerDividePot} = useDividePot(round?.id, String(gameId));
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -71,23 +73,31 @@ function Game() {
             setShouldShowCheckButton(totalGambled === lastBet);
             setAmountToCall(lastBet - totalGambled);
         }
-    }, [turns, round]);
+    }, [turns, round, refetchGame]);
+
+    useEffect(() => {
+        if (round && round.phase === "FINISHED") {
+            triggerDividePot()
+        }
+    }, [round, triggerDividePot]);
 
 
     if (isLoading) return <Loader>loading cards</Loader>
-    if (isError || !communityCards) return <Alert severity="error">Error loading cards</Alert>
+    if (isError || !communityCards) return <Alert severity="error" variant="filled">Error loading cards</Alert>
     if (isLoadingTurn) return <Loader>Preparing turn</Loader>
-    if (isErrorLoadingTurn || !turnId) return <Alert severity="error">Error loading turn</Alert>
+    if (isErrorLoadingTurn || !turnId) return <Alert severity="error" variant="filled">Error loading turn</Alert>
     if (isProcessingMove) return <Loader>registering move</Loader>
-    if (isErrorProcessingMove || !processMove) return <Alert severity="error">Error registering move</Alert>
+    if (isErrorProcessingMove || !processMove) return <Alert severity="error" variant="filled">Error registering move</Alert>
     if (isLoadingRound) return <Loader>Loading current round...</Loader>
-    if (isErrorLoadingRound) return <Alert severity="error">Error Loading current round</Alert>
+    if (isErrorLoadingRound) return <Alert severity="error" variant="filled">Error Loading current round</Alert>
     if (gameLoading) return <Loader>Loading game...</Loader>;
-    if (gameError || !game) return <Alert severity="error">Error loading game data</Alert>;
+    if (gameError || !game) return <Alert severity="error" variant="filled">Error loading game data</Alert>;
     if (handsLoading) return <Loader>Loading hands...</Loader>;
-    if (handsError || !playersHand) return <Alert severity="error">Error loading hands</Alert>;
+    if (handsError || !playersHand) return <Alert severity="error" variant="filled">Error loading hands</Alert>;
     if (isLoadingTurns) return <Loader>Loading turns...</Loader>;
-    if (isErrorLoadingTurns || !turns) return <Alert severity="error">Error loading turns</Alert>;
+    if (isErrorLoadingTurns || !turns) return <Alert severity="error" variant="filled">Error loading turns</Alert>;
+    if (isDividingPot) return <Loader>Splitting winnings...</Loader>
+    if (isErrorDividingPot) return <Alert severity="error" variant="filled">Error splitting winnings</Alert>
 
     async function handleCheck() {
         await refetch();
