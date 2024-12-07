@@ -4,9 +4,22 @@ import axios from 'axios';
 import PlayersHand from "../model/PlayersHand.ts";
 import {Round} from "../model/Round.ts";
 import {Turn} from "../model/Turn.ts";
-
+import Account from "../model/Account.ts";
 
 axios.defaults.baseURL = "http://localhost:8081";
+
+
+export async function createAccount(account: Account) {
+    const {data} = await axios.post<Account>('/api/accounts', {
+        username: account.username,
+        email: account.email,
+        name: account.name,
+        age: account.age,
+        city: account.city,
+        gender: account.gender.toUpperCase(),
+    });
+    return data;
+}
 
 export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string) {
         await axios.put(`http://localhost:8081/api/turns/${turnId}/checkAndMove`, null, {
@@ -42,55 +55,35 @@ type StringWrapper = {
 
 export async function getCurrentTurnId(gameId: string) {
     if (gameId) {
-        const response = await fetch(`http://localhost:8081/api/turns/current?gameId=${gameId}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json() as Promise<StringWrapper>
+        const { data } = await axios.get<StringWrapper>(`/api/turns/current?gameId=${gameId}`);
+        return data;
     }
     return null;
 }
 
 
+
+
 export async function getCommunityCards(id: string) {
     if (id) {
-        const response = await fetch(`http://localhost:8081/api/rounds/communityCards?gameId=${id}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json() as Promise<PlayingCard[]>;
+        const { data } = await axios.get<PlayingCard[]>(`/api/rounds/communityCards?gameId=${id}`);
+        return data;
     }
     return null;
 }
 
 export async function createNewRound(gameId: string) {
     if (gameId) {
-        const response = await fetch(`http://localhost:8081/api/rounds?gameId=${gameId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json();
+        const { data } = await axios.post(`/api/rounds?gameId=${gameId}`);
+        return data;
     }
     return null;
 }
 
 export async function createNewTurn(gameId: string) {
     if (gameId) {
-        const response = await fetch(`http://localhost:8081/api/turns?gameId=${gameId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json();
+        const { data } = await axios.post(`/api/turns?gameId=${gameId}`);
+        return data;
     }
     return null;
 }

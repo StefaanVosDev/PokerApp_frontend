@@ -3,10 +3,12 @@ import './App.css';
 import HelloWorld from './components/helloworld/HelloWorld.tsx';
 import {cyan} from "@mui/material/colors";
 import {createTheme, ThemeProvider} from "@mui/material";
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Navbar from "./components/navbar/Navbar.tsx";
 import Home from "./components/home/Home.tsx";
 import Game from "./components/game/Game.tsx";
+import SecurityContextProvider from "./context/SecurityContextProvider.tsx";
+import {RouteGuard} from "./components/routeguard/RouteGuard.tsx";
 
 const theme = createTheme({
     palette: {
@@ -23,24 +25,22 @@ const theme = createTheme({
 
 
 
-
-
-
-
 function App() {
     const queryClient = new QueryClient()
     return (
         <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
+                <SecurityContextProvider>
                     <BrowserRouter>
                         <Navbar/>
                             <Routes>
-                                <Route path="/" element={<Navigate to="/home"/>}/>
                                 <Route path="/hello" element={<HelloWorld/>}/>
                                 <Route path="/home" element={<Home/>}/>
-                                <Route path="/game/:id" element={<Game/>}/>
+                                <Route path="/" element={<Home/>}/>
+                                <Route path="/game/:id" element={<RouteGuard><Game/></RouteGuard>}/>
                             </Routes>
                     </BrowserRouter>
+                </SecurityContextProvider>
             </QueryClientProvider>
         </ThemeProvider>
     )

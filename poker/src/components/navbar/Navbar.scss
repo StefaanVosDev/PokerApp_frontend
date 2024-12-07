@@ -33,10 +33,25 @@
     }
   }
 
+
+  .logout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .welcomeUser {
+    font-size: 1.4rem;
+    padding-right: 30px;
+    color: #3b82f6;
+  }
+
+
+
   .buttons {
 
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
 
 
     .button {

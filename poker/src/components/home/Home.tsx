@@ -26,7 +26,6 @@ export default function Home() {
     return (
         <div className="home">
             <div className="content">
-                <h1 className="title">Stacks</h1>
                 <div className="card-display">
                     <div className="background-blur"></div>
                     <div className="cards">
