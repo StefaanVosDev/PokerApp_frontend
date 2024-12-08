@@ -125,7 +125,7 @@ export async function getTurns(roundId: string | undefined) {
 
 export async function dividePot(roundId: string | undefined) {
     if (roundId) {
-        const {data: winnings} = await axios.put<Map<string, number>>(`/api/rounds/${roundId}/dividePot`)
-        return winnings; //the strings are the UUIDs of the players
+        const {data: winners} = await axios.put<Map<string, number>>(`/api/rounds/${roundId}/dividePot`)
+        return winners; //the strings are the UUIDs of the players
     }
 }
