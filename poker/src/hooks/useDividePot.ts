@@ -8,7 +8,7 @@ export function useDividePot(roundId: string | undefined, gameId: string) {
         await dividePot(roundId);
     };
 
-    const { mutate: triggerDividePot, isPending: isDividingPot, isError: isErrorDividingPot, data: winners } = useMutation({
+    const { mutate: triggerDividePot, isPending: isDividingPot, isError: isErrorDividingPot, data: winnings } = useMutation({
         mutationFn: mutationFn,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['round', gameId] });
@@ -20,6 +20,6 @@ export function useDividePot(roundId: string | undefined, gameId: string) {
         triggerDividePot,
         isDividingPot,
         isErrorDividingPot,
-        winners
+        winnings
     };
 }
