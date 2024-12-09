@@ -41,7 +41,7 @@ function Game() {
     const [shouldShowCheckButton, setShouldShowCheckButton] = useState(false);
     const [amountToCall, setAmountToCall] = useState(0);
     const [currentPlayerMoney, setCurrentPlayerMoney] = useState(1000);
-    const {isDividingPot, isErrorDividingPot, triggerDividePot, winnings} = useDividePot(round?.id, String(gameId));
+    const {isDividingPot, isErrorDividingPot, triggerDividePot} = useDividePot(round?.id, String(gameId));
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -97,7 +97,7 @@ function Game() {
     if (isLoadingTurns) return <Loader>Loading turns...</Loader>;
     if (isErrorLoadingTurns || !turns) return <Alert severity="error" variant="filled">Error loading turns</Alert>;
     if (isDividingPot) return <Loader>Splitting winnings...</Loader>
-    if (isErrorDividingPot || !winnings) return <Alert severity="error" variant="filled">Error splitting winnings</Alert>
+    if (isErrorDividingPot) return <Alert severity="error" variant="filled">Error splitting winnings</Alert>
 
     async function handleCheck() {
         await refetch();
