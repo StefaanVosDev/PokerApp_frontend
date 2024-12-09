@@ -1,26 +1,13 @@
 import "./Home.scss";
-import {Alert, Button} from "@mui/material";
+import {Button} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import {useCreateNewRound} from "../../hooks/useCreateNewRound.ts";
-import Loader from "../loader/Loader.tsx";
-import {useEffect} from "react";
 
 
 export default function Home() {
     const navigate = useNavigate();
-    const gameId = "7fabf988-a888-4dc6-8423-4cd9f620ff00";
-    const {triggerNewRound, isPending: isLoading, isError, isSuccess} = useCreateNewRound(gameId);
-
-    useEffect(() => {
-        if (isSuccess) navigate(`/game/${gameId}`);
-    }, [isSuccess]);
-
-    if (isLoading) return <Loader>Initializing new round...</Loader>
-    if (isError) return <Alert severity="error" variant="filled">Error initializing new round</Alert>
-    
 
     function handlePlayNow() {
-        triggerNewRound();
+        navigate("/games");
     }
 
     return (

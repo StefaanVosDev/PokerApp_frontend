@@ -5,6 +5,8 @@ import PlayersHand from "../model/PlayersHand.ts";
 import {Round} from "../model/Round.ts";
 import {Turn} from "../model/Turn.ts";
 import Account from "../model/Account.ts";
+import {CreateGameFormInputs} from "../components/game/forminput/CreateGameFormInputs";
+
 
 axios.defaults.baseURL = "http://localhost:8081";
 
@@ -72,7 +74,7 @@ export async function getCommunityCards(id: string) {
     return null;
 }
 
-export async function createNewRound(gameId: string) {
+export async function createNewRound(gameId: string | null) {
     if (gameId) {
         const { data } = await axios.post(`/api/rounds?gameId=${gameId}`);
         return data;
@@ -119,6 +121,18 @@ export async function getTurns(roundId: string | undefined) {
     if (roundId) {
         const {data: turns} = await axios.get<Turn[]>(`/api/turns/round?roundId=${roundId}`);
         return turns;
+    }
+    return null;
+}
+
+export async function createGame(gameData: CreateGameFormInputs) {
+    if (gameData) {
+        const response = await axios.post('/api/games', gameData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
     }
     return null;
 }
