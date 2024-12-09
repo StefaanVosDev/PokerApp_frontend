@@ -1,7 +1,7 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createNewRound} from "../services/dataService.ts";
 
-export function useCreateNewRound(gameId: string) {
+export function useCreateNewRound(gameId: string | null) {
     const queryClient = useQueryClient();
 
     const { mutate, isPending, isError, isSuccess } = useMutation({

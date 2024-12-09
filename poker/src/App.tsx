@@ -7,6 +7,8 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Navbar from "./components/navbar/Navbar.tsx";
 import Home from "./components/home/Home.tsx";
 import Game from "./components/game/Game.tsx";
+import GameList from "./components/game/GameList";
+import CreateGame from "./components/game/CreateGame";
 import SecurityContextProvider from "./context/SecurityContextProvider.tsx";
 import {RouteGuard} from "./components/routeguard/RouteGuard.tsx";
 
@@ -38,6 +40,8 @@ function App() {
                                 <Route path="/home" element={<Home/>}/>
                                 <Route path="/" element={<Home/>}/>
                                 <Route path="/game/:id" element={<RouteGuard><Game/></RouteGuard>}/>
+                                <Route path="/games" element={<GameList/>}/>
+                                <Route path="/create-game" element={<CreateGame/>}/>
                             </Routes>
                     </BrowserRouter>
                 </SecurityContextProvider>

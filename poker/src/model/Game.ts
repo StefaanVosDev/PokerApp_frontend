@@ -5,4 +5,5 @@ export type Game = {
     status: string;
     maxPlayers: number;
     players: Player []; // Array of players
+    name : string;
 }
