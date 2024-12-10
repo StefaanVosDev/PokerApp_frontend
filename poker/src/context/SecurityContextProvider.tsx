@@ -22,7 +22,7 @@ export default function SecurityContextProvider({children}: IWithChildren) {
     const { triggerCreateAccount } = useCreateAccount()
 
     useEffect(() => {
-        keycloak.init()
+        keycloak.init({onLoad: 'check-sso'})
     }, [])
 
     keycloak.onAuthSuccess = () => {

@@ -1,18 +1,16 @@
 import "./Home.scss";
-import {Button} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import Features from "../features/Features.tsx";
+
 
 
 export default function Home() {
-    const navigate = useNavigate();
 
-    function handlePlayNow() {
-        navigate("/games");
-    }
 
     return (
+        <>
         <div className="home">
             <div className="content">
+                <h2 className="subtitle">ONLINE POKER</h2>
                 <div className="card-display">
                     <div className="background-blur"></div>
                     <div className="cards">
@@ -41,17 +39,13 @@ export default function Home() {
                     </div>
                 </div>
                 <div className="text-content">
-                    <h2 className="subtitle">ONLINE POKER</h2>
                     <p className="description">
-                        Experience the thrill of professional poker from the comfort of your home. Join thousands of
-                        players in
-                        high-stakes tournaments and casual games.
+                        Experience the best online poker platform with features designed for both beginners and pros
                     </p>
                 </div>
             </div>
-            <div>
-                <Button onClick={handlePlayNow} className="primary-button">PLAY NOW</Button>
-            </div>
         </div>
+            <Features/>
+        </>
     );
 }
