@@ -1,6 +1,8 @@
 import "./Navbar.scss";
 import {useContext} from "react";
 import SecurityContext from "../../context/SecurityContext.ts";
+import { CircleDollarSign} from 'lucide-react';
+
 
 export default function Navbar() {
     const {login, logout, isAuthenticated, loggedInUser} = useContext(SecurityContext)
@@ -9,14 +11,15 @@ export default function Navbar() {
     return (
         <nav className="navbar">
             <a href="/home" className="brand">
+                <CircleDollarSign className="icon" />
                 Stacks
             </a>
             <div className="nav-links">
                 <a href="/home" className="link">
                     HOME
                 </a>
-                <a href="" className="link">
-                    TOURNAMENT
+                <a href="/games" className="link">
+                    GAMES
                 </a>
                 <a href="" className="link">
                     POKER NEWS

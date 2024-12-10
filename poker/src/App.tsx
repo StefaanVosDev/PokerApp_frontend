@@ -40,8 +40,8 @@ function App() {
                                 <Route path="/home" element={<Home/>}/>
                                 <Route path="/" element={<Home/>}/>
                                 <Route path="/game/:id" element={<RouteGuard><Game/></RouteGuard>}/>
-                                <Route path="/games" element={<GameList/>}/>
-                                <Route path="/create-game" element={<CreateGame/>}/>
+                                <Route path="/games" element={<RouteGuard><GameList/></RouteGuard>}/>
+                                <Route path="/create-game" element={<RouteGuard><CreateGame/></RouteGuard>}/>
                             </Routes>
                     </BrowserRouter>
                 </SecurityContextProvider>
