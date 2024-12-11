@@ -5,12 +5,11 @@ export function useProcessMove(turnId: string | undefined, gameId: string, round
     const queryClient = useQueryClient();
 
     const methodCall = async ({moveMade, amount}: {moveMade: string, amount?: number}) => {
-        if (moveMade === "CHECK") {
-            await checkAndMove(turnId, gameId, roundId);
-        } else if (moveMade === "FOLD") {
-            await foldAndMove(turnId, gameId, roundId);
-        } else if (moveMade === "CALL" && amount) {
-            await callAndMove(turnId, gameId, roundId, amount);
+        switch (moveMade) {
+            case "CHECK": await checkAndMove(turnId, gameId, roundId); break;
+            case "FOLD": await foldAndMove(turnId, gameId, roundId); break;
+            case "CALL": if (amount) await callAndMove(turnId, gameId, roundId, amount); break;
+            case "RAISE": if (amount) await raiseAndMove(turnId, gameId, roundId, amount); break;
         }
     };
 
