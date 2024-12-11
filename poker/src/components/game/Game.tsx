@@ -14,6 +14,8 @@ import {useCurrentRound} from "../../hooks/useCurrentRound.ts";
 import {useTurns} from "../../hooks/useTurns.ts";
 import {useDividePot} from "../../hooks/useDividePot.ts";
 import {useCreateNewRoundIfFinished} from "../../hooks/useCreateNewRoundIfFinished.ts";
+import {Round} from "../../model/Round.ts";
+import {Turn} from "../../model/Turn.ts";
 
 // Helper function to map card suits and ranks to image paths
 function mapCardToImage(card: Card): string {
@@ -74,12 +76,12 @@ function Game() {
     }, [isSuccessProcessingMove, refetchTurns, turns, refetchCurrentRound]);
 
 
-    function calculateLastBet(turns, round) {
+    function calculateLastBet(turns : Turn[], round: Round) {
         const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round.phase);
         return currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
     }
 
-    function calculateCurrentTurnDetails(turns, round, lastBet) {
+    function calculateCurrentTurnDetails(turns : Turn[], round : Round, lastBet : number) {
         const currentTurn = turns.find(turn => turn.moveMade.toString() === "ON_MOVE");
         if (!currentTurn) return { shouldShowCheckButton: false, amountToCall: 0, raiseAmount: 0 };
 
