@@ -51,6 +51,16 @@ export async function callAndMove (turnId: string | undefined, gameId: string, r
     });
 }
 
+export async function raiseAndMove (turnId: string | undefined, gameId: string, roundId: string, amount: number) {
+    await axios.put(`/api/turns/${turnId}/raiseAndMove`, null, {
+        params: {
+            gameId: gameId,
+            roundId: roundId,
+            amount: amount
+        }
+    });
+}
+
 type StringWrapper = {
     content: string;
 }
@@ -141,5 +151,16 @@ export async function dividePot(roundId: string | undefined) {
     if (roundId) {
         const {data: winners} = await axios.put<Map<string, number>>(`/api/rounds/${roundId}/dividePot`)
         return winners; //the strings are the UUIDs of the players
+    }
+}
+
+export async function createNewRoundIfFinished(gameId: string | undefined, roundId: string | undefined) {
+    if (gameId && roundId) {
+        await axios.post(`/api/rounds/createNewRoundIfFinished`, null, {
+            params: {
+                gameId: gameId,
+                roundId: roundId
+            }
+        });
     }
 }

@@ -2,6 +2,7 @@ import './PokerTable.scss';
 import Player from "../../model/Player.ts";
 import {PlayingCard} from "../../model/PlayingCard.ts";
 import {Turn} from "../../model/Turn.ts";
+import {Avatar, Box, Card, Stack, Typography} from "@mui/material";
 
 interface PokerTableProps {
     players: (Player & { cards: string[] })[]; // Players with cards as image paths
@@ -11,20 +12,20 @@ interface PokerTableProps {
 }
 
 const playerPositions = [
-    { top: '20%', left: '80%' },
-    { top: '58%', left: '92%' },
-    { top: '80%', left: '72%' },
-    { top: '80%', left: '28%' },
-    { top: '58%', left: '8%' },
-    { top: '20%', left: '23%' },
+    {top: '20%', left: '80%'},
+    {top: '58%', left: '92%'},
+    {top: '80%', left: '72%'},
+    {top: '80%', left: '28%'},
+    {top: '58%', left: '8%'},
+    {top: '20%', left: '23%'},
 
 ];
 
-export default function PokerTableSimple({ players, communityCards, turns, dealerIndex }: PokerTableProps) {
-
+export default function PokerTableSimple({players, communityCards, turns, dealerIndex}: PokerTableProps) {
+    const sortedPlayers = players.sort((a, b) => a.position - b.position);
     const renderPlayers = () => {
-        return players.slice(0, 6).map((player, index) => {
-            const turnsFromPlayer =  turns.filter(turn => turn.player.id == player.id);
+        return sortedPlayers.slice(0, 6).map((player, index) => {
+            const turnsFromPlayer = turns.filter(turn => turn.player.id == player.id);
             const moneyGambledThisPhase = turnsFromPlayer.map(turn => turn.moneyGambled).reduce((sum, money) => sum + money, 0);
 
             const turn = turnsFromPlayer[turnsFromPlayer.length - 1];
@@ -32,6 +33,7 @@ export default function PokerTableSimple({ players, communityCards, turns, deale
             const playerMove = turn ? (turn.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
             const hasFolded = turn?.moveMade.toString() === "FOLD";
             const isDealer = index === dealerIndex;
+
 
             return (
                 <div
@@ -47,49 +49,116 @@ export default function PokerTableSimple({ players, communityCards, turns, deale
                             <img src="/src/assets/dealer-disk.svg" alt="Dealer disk"/>
                         </div>
                     )}
-                    <div className="player-info-wrapper">
-                        <div className="player-info">
-                            <img src="/src/assets/duckpfp.png" alt="Duck Avatar" className={`player-avatar ${turn?.moveMade.toString() === "ON_MOVE" ? "active" : ""}`}/>
-                            <img src="/src/assets/chips.svg" alt="Chips" className="player-chips"/>
-                        </div>
-                        <div className="player-details">
-                            <p className="player-name">
-                                Placeholder Name <span className="player-money">${player.money}</span>
-                            </p>
-                        </div>
-                    </div>
+                    <Avatar
+                        className={`player-avatar ${turn?.moveMade?.toString()==="ON_MOVE" ? "active" : ""}`}
+                        alt="Profile pic"
+                        src="/src/assets/duckpfp.png"
+                        sx={{
+                            width: 32,
+                            height: 32,
+                            border: '2px solid #ffd700',
+                            left: -60
+                        }}
+                    />
+                    <Card sx={{
+                        padding: 2,
+                        backgroundColor: '#2e3b55',
+                        color: '#fff',
+                        height: 30,
+                        width: 150,
+                        position: 'relative',
+                        zIndex: 2,
+                        borderRadius: 10,
+                    }}>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Box>
+                                <Typography variant="body2"
+                                            sx={{fontWeight: 'bold', whiteSpace: 'nowrap', color: '#fff'}}>
+                                    {"Placeholder name"}
+                                </Typography>
+                                <Typography variant="body2" sx={{fontSize: '0.8em', color: '#ffd700'}}>
+                                    Chips: {player.money}
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </Card>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            position: 'absolute',
+                            bottom: -20,
+                            left: 10,
+                            fontStyle: 'italic',
+                            fontSize: '0.8em',
+                            color: '#aaa',
+                        }}
+                    >
+                        {playerMove}
+                    </Typography>
 
-                    <div className="player-move">
-                        <span>{playerMove}</span>
-                    </div>
-
-                    <div className={`player-cards ${hasFolded ? "folded" : ""}`}>
+                    <Box
+                        className={`player-cards ${hasFolded ? " folded" : ""}`}
+                        sx={{
+                            position: 'absolute',
+                            bottom: 45,
+                            left: '30%',
+                            display: 'flex',
+                            gap: 1,
+                            zIndex: 1,
+                        }}
+                    >
                         {player.cards.map((card, cardIndex) => (
-                            <img key={cardIndex} src={card} alt="Card" className="player-card"/>
+                            <Box
+                                key={cardIndex}
+                                component="img"
+                                src={card}
+                                alt="Card image"
+                                sx={{
+                                    width: 36,
+                                    border: '1px solid #fff',
+                                    backgroundColor: '#fff',
+                                    overflow: 'hidden',
+                                }}
+                            />
                         ))}
-                    </div>
+                    </Box>
                 </div>
             );
-        });
-    };
+        })
+    }
 
     const renderCommunityCards = () => {
         return (
             <div className="community-cards">
                 {communityCards.map((card, index) => (
-                    <img key={index} src={`/images/${card.suit.toString().toLowerCase()}_${card.rank}.png`} alt={`${card.suit.toString().toLowerCase()}_${card.rank}`} className="community-card" />
-                ))}
+                        <img key={index} src={`/images/${card.suit.toString().toLowerCase()}_${card.rank}.png`}
+                             alt={`${card.suit.toString().toLowerCase()}_${card.rank}`} className="community-card"/>
+                    )
+                )}
             </div>
-        );
+        )
     };
 
     return (
-            <div className="poker-table">
-                <img src="/src/assets/table.svg" alt="Poker Table" className="poker-table-image"/>
+        <div className="poker-table">
+            <img src="/src/assets/table.svg" alt="Poker Table" className="poker-table-image"/>
 
-                {renderPlayers()}
-
-                {renderCommunityCards()}
+            <div className="dealer">
+                <Avatar
+                    alt="Dealer"
+                    src="/src/assets/dealer-avatar.jpg"
+                    sx={{
+                        width: 100,
+                        height: 100,
+                        bottom: 550,
+                        left: "45%",
+                        border: "2px solid #fff",
+                    }}
+                />
             </div>
+            {renderPlayers()}
+
+            {renderCommunityCards()}
+        </div>
     );
 }
