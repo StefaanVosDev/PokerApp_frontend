@@ -3,7 +3,7 @@ import {useGame} from "../../hooks/useGame.ts";
 import {usePlayersHand} from "../../hooks/usePlayersHand.ts";
 import Card from "../../model/Card.ts";
 import {Alert, Button, Slider} from "@mui/material";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useCommunityCards} from "../../hooks/useCommunityCards.ts";
 import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
 import {useEffect, useState} from "react";
@@ -32,6 +32,7 @@ function mapCardToImage(card: Card): string {
 function Game() {
     const {id: gameId} = useParams<{ id: string }>();
 
+    const navigate = useNavigate();
     const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
     const {isLoadingTurn, isErrorLoadingTurn, turnId, refetch: refetchCurrentTurn} = useCurrentTurn(String(gameId));
     const {isLoadingRound, isErrorLoadingRound, round, refetch: refetchCurrentRound} = useCurrentRound(String(gameId));
@@ -58,7 +59,7 @@ function Game() {
     const [raiseAmount, setRaiseAmount] = useState(0);
     const [showRaiseOptions, setShowRaiseOptions] = useState(false);
     const {isPending: isLoadingCreateNewRoundIfFinished, isError: isErrorCreateNewRoundIfFinished, triggerNewRound, isSuccessCreatingNewRound} = useCreateNewRoundIfFinished(String(gameId), roundId);
-    const {isDividingPot, isErrorDividingPot, triggerDividePot, isSuccessDividingPot} = useDividePot(round?.id, String(gameId));
+    const {isDividingPot, isErrorDividingPot, triggerDividePot, isSuccessDividingPot} = useDividePot(roundId, String(gameId));
     const [totalMoneyInPot, setTotalMoneyInPot] = useState(0);
 
     useEffect(() => {
@@ -73,17 +74,17 @@ function Game() {
             setCurrentPlayerMoney(currentPlayer ? currentPlayer.money : 0);
             setTotalMoneyInPot(turns.reduce((sum, turn) => sum + turn.moneyGambled, 0));
         }
-    }, [isSuccessProcessingMove, refetchTurns, turns, refetchCurrentRound]);
+    }, [isSuccessProcessingMove, turns]);
 
 
-    function calculateLastBet(turns : Turn[], round: Round) {
+    function calculateLastBet(turns: Turn[], round: Round) {
         const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round.phase);
         return currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
     }
 
-    function calculateCurrentTurnDetails(turns : Turn[], round : Round, lastBet : number) {
+    function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet: number) {
         const currentTurn = turns.find(turn => turn.moveMade.toString() === "ON_MOVE");
-        if (!currentTurn) return { shouldShowCheckButton: false, amountToCall: 0, raiseAmount: 0 };
+        if (!currentTurn) return {shouldShowCheckButton: false, amountToCall: 0, raiseAmount: 0};
 
         const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round.phase);
         const totalGambled = currentPhaseTurns
@@ -104,12 +105,12 @@ function Game() {
         const lastBet = calculateLastBet(turns, round);
         setLastBet(lastBet);
 
-        const { shouldShowCheckButton, amountToCall, raiseAmount } =
+        const {shouldShowCheckButton, amountToCall, raiseAmount} =
             calculateCurrentTurnDetails(turns, round, lastBet);
         setShouldShowCheckButton(shouldShowCheckButton);
         setAmountToCall(amountToCall);
         setRaiseAmount(raiseAmount);
-    }, [turns, round, refetchGame]);
+    }, [turns, round]);
 
 
     useEffect(() => {
@@ -120,9 +121,22 @@ function Game() {
 
     useEffect(() => {
         if (isSuccessDividingPot) {
-            triggerNewRound()
+            setTimeout(() => {
+                refetchGame();
+            }, 10000)
         }
-    }, [isSuccessDividingPot, triggerNewRound]);
+    }, [isSuccessDividingPot]);
+
+    useEffect(() => {
+        if (game && isSuccessDividingPot) {
+            if (game && game.players.length === 1) {
+                const winner = game.players[0]
+                navigate(`/end-game/${winner.id}`)
+            } else if (!isSuccessCreatingNewRound) {
+                triggerNewRound()
+            }
+        }
+    }, [game, isSuccessDividingPot]);
 
     useEffect(() => {
         if (isSuccessCreatingNewRound) {
@@ -131,8 +145,7 @@ function Game() {
             refetchTurns()
             refetchCurrentTurn()
         }
-    }, [isSuccessCreatingNewRound, refetchGame, refetchCurrentRound, refetchCurrentTurn, refetchTurns]);
-
+    }, [isSuccessCreatingNewRound]);
 
 
     if (isLoading) return <Loader>loading cards</Loader>
@@ -170,13 +183,19 @@ function Game() {
     async function handleCall(amount: number) {
         await refetchCurrentRound();
         await refetchHands();
-        processMove({moveMade: "CALL", amount: amount})
+        if (amount >= currentPlayerMoney)
+            processMove({moveMade: "ALL_IN"})
+        else
+            processMove({moveMade: "CALL", amount: amount})
     }
 
     async function handleRaise(amount: number) {
         await refetchCurrentRound();
         await refetchHands();
-        processMove({moveMade: "RAISE", amount: amount})
+        if (amount >= currentPlayerMoney)
+            processMove({moveMade: "ALL_IN"})
+        else
+            processMove({moveMade: "RAISE", amount: amount})
     }
 
     // Map each player's cards
@@ -214,6 +233,7 @@ function Game() {
                             min={getMinimumRaise()}
                             max={currentPlayerMoney}
                             valueLabelDisplay="on"
+                            valueLabelFormat={(value) => value === currentPlayerMoney ? "ALL IN" : value}
                         />
                     </div>
                 </div>
@@ -228,27 +248,41 @@ function Game() {
                     </Button>
                 ) : (
                     <Button variant="contained" color="secondary"
-                            onClick={async () => await handleCall(amountToCall)}>Call ${amountToCall}
+                            onClick={async () => await handleCall(amountToCall > currentPlayerMoney ? currentPlayerMoney : amountToCall)}>
+                        {amountToCall > currentPlayerMoney ? "Call all-in $"+currentPlayerMoney : "Call $" +amountToCall}
                     </Button>
                 )}
 
-                {showRaiseOptions ? (
-                    <Button
-                        className="confirm-button"
-                        variant="contained"
-                        onClick={() => handleRaise(raiseAmount)}
-                    >
-                        Confirm
-                    </Button>
-                ) : (
-                    <Button
-                        className="raise-button"
-                        variant="contained"
-                        onClick={() => setShowRaiseOptions(true)}
-                    >
-                        Raise
-                    </Button>
-                )
+                {amountToCall < currentPlayerMoney &&
+                    (showRaiseOptions ? (
+                            <Button
+                                className="confirm-button"
+                                variant="contained"
+                                onClick={() => handleRaise(raiseAmount)}
+                            >
+                                Confirm
+                            </Button>
+                        ) : (
+                            amountToCall * 2 < currentPlayerMoney ?
+                                (
+                                    <Button
+                                        className="raise-button"
+                                        variant="contained"
+                                        onClick={() => setShowRaiseOptions(true)}
+                                    >
+                                        Raise
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        className="raise-button"
+                                        variant="contained"
+                                        onClick={() => handleRaise(currentPlayerMoney)}
+                                    >
+                                        All In
+                                    </Button>
+                                )
+                        )
+                    )
                 }
 
             </div>

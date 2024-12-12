@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {callAndMove, checkAndMove, foldAndMove, raiseAndMove} from "../services/dataService.ts";
+import {allinAndMove, callAndMove, checkAndMove, foldAndMove, raiseAndMove} from "../services/dataService.ts";
 
 export function useProcessMove(turnId: string | undefined, gameId: string, roundId: string) {
     const queryClient = useQueryClient();
@@ -10,6 +10,7 @@ export function useProcessMove(turnId: string | undefined, gameId: string, round
             case "FOLD": await foldAndMove(turnId, gameId, roundId); break;
             case "CALL": if (amount) await callAndMove(turnId, gameId, roundId, amount); break;
             case "RAISE": if (amount) await raiseAndMove(turnId, gameId, roundId, amount); break;
+            case "ALL_IN": await allinAndMove(turnId, gameId, roundId); break;
         }
     };
 
