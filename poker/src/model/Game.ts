@@ -6,4 +6,5 @@ export type Game = {
     maxPlayers: number;
     players: Player []; // Array of players
     name : string;
+    winner : Player;
 }
