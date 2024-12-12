@@ -6,7 +6,6 @@ import {Round} from "../model/Round.ts";
 import {Turn} from "../model/Turn.ts";
 import Account from "../model/Account.ts";
 import {CreateGameFormInputs} from "../components/game/forminput/CreateGameFormInputs";
-import Player from "../model/Player.ts";
 import {Winner} from "../model/Winner.ts";
 
 
@@ -79,18 +78,16 @@ type StringWrapper = {
 
 export async function getCurrentTurnId(gameId: string) {
     if (gameId) {
-        const { data } = await axios.get<StringWrapper>(`/api/turns/current?gameId=${gameId}`);
+        const {data} = await axios.get<StringWrapper>(`/api/turns/current?gameId=${gameId}`);
         return data;
     }
     return null;
 }
 
 
-
-
 export async function getCommunityCards(id: string) {
     if (id) {
-        const { data } = await axios.get<PlayingCard[]>(`/api/rounds/communityCards?gameId=${id}`);
+        const {data} = await axios.get<PlayingCard[]>(`/api/rounds/communityCards?gameId=${id}`);
         return data;
     }
     return null;
@@ -98,7 +95,7 @@ export async function getCommunityCards(id: string) {
 
 export async function createNewRound(gameId: string | null) {
     if (gameId) {
-        const { data } = await axios.post(`/api/rounds?gameId=${gameId}`);
+        const {data} = await axios.post(`/api/rounds?gameId=${gameId}`);
         return data;
     }
     return null;
@@ -106,7 +103,7 @@ export async function createNewRound(gameId: string | null) {
 
 export async function createNewTurn(gameId: string) {
     if (gameId) {
-        const { data } = await axios.post(`/api/turns?gameId=${gameId}`);
+        const {data} = await axios.post(`/api/turns?gameId=${gameId}`);
         return data;
     }
     return null;
@@ -131,6 +128,7 @@ export async function getPlayerHand(id: string) {
     return hand;
 
 }
+
 export async function getCurrentRound(gameId: string) {
     if (gameId) {
         const {data: round} = await axios.get<Round>(`/api/rounds/current?gameId=${gameId}`);
@@ -175,6 +173,15 @@ export async function createNewRoundIfFinished(gameId: string | undefined, round
             }
         });
     }
+}
+
+export async function joinGame(gameId: string) {
+    await axios.post(`/api/games/${gameId}/join`);
+}
+
+export async function fetchIsOnMove(gameId: string | undefined) {
+    const response = await axios.get(`/api/games/${gameId}/isOnMove`);
+    return response.data;
 }
 
 export async function getWinner(winnerId: string | undefined) {

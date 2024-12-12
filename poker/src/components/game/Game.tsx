@@ -61,6 +61,7 @@ function Game() {
     const {isPending: isLoadingCreateNewRoundIfFinished, isError: isErrorCreateNewRoundIfFinished, triggerNewRound, isSuccessCreatingNewRound} = useCreateNewRoundIfFinished(String(gameId), roundId);
     const {isDividingPot, isErrorDividingPot, triggerDividePot, isSuccessDividingPot} = useDividePot(roundId, String(gameId));
     const [totalMoneyInPot, setTotalMoneyInPot] = useState(0);
+    //const {isLoading: isLoadingOnMove, isError: isErrorOnMove, isOnMove} = useIsOnMove(gameId);
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -217,6 +218,9 @@ function Game() {
                 communityCards={communityCards}
                 turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade.toString() === "FOLD")}
                 dealerIndex={round ? round.dealerIndex : 0}
+                maxPlayers={game.maxPlayers}
+                gameId={gameId ? gameId : ""}
+                refetchGame={refetchGame}
             />
             <div className="pot-money">
                 Pot ${totalMoneyInPot}
@@ -240,14 +244,17 @@ function Game() {
             }
             <div className="buttons-container">
                 <Button className="fold-button" variant="contained" color="secondary"
+                       // disabled={isLoadingOnMove || isErrorOnMove || isOnMove}
                         onClick={async () => await handleFold()}>Fold
                 </Button>
                 {shouldShowCheckButton ? (
                     <Button variant="contained" color="secondary"
+                            //disabled={isLoadingOnMove || isErrorOnMove || isOnMove}
                             onClick={async () => await handleCheck()}>Check
                     </Button>
                 ) : (
                     <Button variant="contained" color="secondary"
+                            //disabled={isLoadingOnMove || isErrorOnMove || isOnMove}
                             onClick={async () => await handleCall(amountToCall > currentPlayerMoney ? currentPlayerMoney : amountToCall)}>
                         {amountToCall > currentPlayerMoney ? "Call all-in $"+currentPlayerMoney : "Call $" +amountToCall}
                     </Button>
@@ -257,6 +264,7 @@ function Game() {
                     (showRaiseOptions ? (
                             <Button
                                 className="confirm-button"
+                                //disabled={isLoadingOnMove || isErrorOnMove || isOnMove}
                                 variant="contained"
                                 onClick={() => handleRaise(raiseAmount)}
                             >
@@ -267,6 +275,7 @@ function Game() {
                                 (
                                     <Button
                                         className="raise-button"
+                                       // disabled={isLoadingOnMove || isErrorOnMove || isOnMove}
                                         variant="contained"
                                         onClick={() => setShowRaiseOptions(true)}
                                     >

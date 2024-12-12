@@ -22,6 +22,10 @@ export default function GameList() {
         }
     }, [isSuccess, selectedGameId, navigate]);
 
+    useEffect(() => {
+        console.log("games:", games);
+    }, [games]);
+
     if (isLoading) return <Loader>Loading games...</Loader>;
     if (isError) return <Alert severity="error">Error loading games</Alert>;
 
@@ -30,7 +34,7 @@ export default function GameList() {
         triggerNewRound();
     };
 
-    const totalPages = Math.ceil((games?.length || 0) / gamesPerPage);
+    const totalPages = Math.ceil((Array.isArray(games) ? games.length : 0) / gamesPerPage);
 
     const handleNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
@@ -40,10 +44,9 @@ export default function GameList() {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
     };
 
-    const displayedGames = games?.slice(
-        currentPage * gamesPerPage,
-        (currentPage + 1) * gamesPerPage
-    );
+    const displayedGames = Array.isArray(games)
+        ? games.slice(currentPage * gamesPerPage, (currentPage + 1) * gamesPerPage)
+        : [];
 
     const handleCreateGame = () => {
         navigate('/create-game');
@@ -74,35 +77,41 @@ export default function GameList() {
             {isRoundError && <Alert severity="error">Error initializing new round</Alert>}
 
             <div className="game-list">
-                {displayedGames?.map((game) => {
-                    const currentPlayers = game.players.length;
-                    const statusColor = getStatusColor(game.status);  // Get color for the game status
+                {displayedGames.length === 0 ? (
+                    <Alert severity="info">No games available</Alert>
+                ) : (
+                    displayedGames.map((game) => {
+                        const currentPlayers = game.players.length;
+                        const statusColor = getStatusColor(game.status);
 
-                    return (
-                        <Card
-                            className="game-card"
-                            key={game.id}
-                            onClick={() => handleGameClick(game.id)}
-                            style={{ borderLeft: `5px solid ${statusColor}` }} // Add color to the card's left border
-                        >
-                            <CardContent>
-                                <Typography variant="h6" className="game-title">
-                                    {game.name}
-                                </Typography>
-                                <Typography variant="body2" className="game-players">
-                                    Players: {currentPlayers}/{game.maxPlayers}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    className="game-status"
-                                    style={{ color: statusColor }}
-                                >
-                                    Status: {game.status}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                        return (
+                            <Card
+                                className="game-card"
+                                key={game.id}
+                                onClick={() => handleGameClick(game.id)}
+                                style={{ borderLeft: `5px solid ${statusColor}` }} // Add color to the card's left border
+                            >
+                                <CardContent>
+                                    <Typography variant="h6" className="game-title">
+                                        {game.name}
+                                    </Typography>
+                                    <Typography variant="body2" className="game-players">
+                                        Players: {currentPlayers}/{game.maxPlayers}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        className="game-status"
+                                        style={{ color: statusColor }}
+                                    >
+                                        {game.status === 'FINISHED' && game.players.some(player => player.isWinner)
+                                            ? `Status: ${game.status}, Winner: ${game.players.find(player => player.isWinner)?.username}`
+                                            : `Status: ${game.status}`}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        );
+                    })
+                )}
             </div>
 
             <div className="pagination-controls">

@@ -2,13 +2,17 @@ import './PokerTable.scss';
 import Player from "../../model/Player.ts";
 import {PlayingCard} from "../../model/PlayingCard.ts";
 import {Turn} from "../../model/Turn.ts";
-import {Avatar, Box, Card, Stack, Typography} from "@mui/material";
+import {Avatar, Box, Card, Stack, Typography, Button} from "@mui/material";
+import {joinGame} from "../../services/dataService.ts";
 
 interface PokerTableProps {
     players: (Player & { cards: string[] })[]; // Players with cards as image paths
     communityCards: PlayingCard[]; // Array of card image paths for the community cards
     turns: Turn[];
-    dealerIndex: number
+    dealerIndex: number;
+    maxPlayers: number;
+    gameId: string;
+    refetchGame: () => void;
 }
 
 const playerPositions = [
@@ -18,11 +22,21 @@ const playerPositions = [
     {top: '80%', left: '28%'},
     {top: '58%', left: '8%'},
     {top: '20%', left: '23%'},
-
 ];
 
-export default function PokerTableSimple({players, communityCards, turns, dealerIndex}: PokerTableProps) {
+export default function PokerTableSimple({players, communityCards, turns, dealerIndex, maxPlayers, gameId,refetchGame}: PokerTableProps) {
     const sortedPlayers = players.sort((a, b) => a.position - b.position);
+    const openSpots = maxPlayers - players.length;
+
+    const handleJoin = async () => {
+        try {
+            await joinGame(gameId);
+            refetchGame();
+        } catch (error) {
+            console.error("Error joining game:", error);
+        }
+    };
+
     const renderPlayers = () => {
         return sortedPlayers.slice(0, 6).map((player, index) => {
             const turnsFromPlayer = turns.filter(turn => turn.player.id == player.id);
@@ -33,7 +47,6 @@ export default function PokerTableSimple({players, communityCards, turns, dealer
             const playerMove = turn ? (turn.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
             const hasFolded = turn?.moveMade.toString() === "FOLD";
             const isDealer = index === dealerIndex;
-
 
             return (
                 <div
@@ -74,7 +87,7 @@ export default function PokerTableSimple({players, communityCards, turns, dealer
                             <Box>
                                 <Typography variant="body2"
                                             sx={{fontWeight: 'bold', whiteSpace: 'nowrap', color: '#fff'}}>
-                                    {"Placeholder name"}
+                                    {player.username || "Placeholder name"}
                                 </Typography>
                                 <Typography variant="body2" sx={{fontSize: '0.8em', color: '#ffd700'}}>
                                     Chips: {player.money}
@@ -124,8 +137,25 @@ export default function PokerTableSimple({players, communityCards, turns, dealer
                     </Box>
                 </div>
             );
-        })
-    }
+        });
+    };
+    const renderJoinButtons = () => {
+        return Array.from({ length: openSpots }).map((_, index) => (
+            <Button
+                key={index}
+                variant="contained"
+                color="primary"
+                onClick={handleJoin}
+                style={{
+                    position: 'absolute',
+                    top: playerPositions[players.length + index].top,
+                    left: playerPositions[players.length + index].left,
+                }}
+            >
+                Join
+            </Button>
+        ));
+    };
 
     const renderCommunityCards = () => {
         return (
@@ -157,7 +187,7 @@ export default function PokerTableSimple({players, communityCards, turns, dealer
                 />
             </div>
             {renderPlayers()}
-
+            {renderJoinButtons()}
             {renderCommunityCards()}
         </div>
     );
