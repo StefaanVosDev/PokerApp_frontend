@@ -6,6 +6,8 @@ import {Round} from "../model/Round.ts";
 import {Turn} from "../model/Turn.ts";
 import Account from "../model/Account.ts";
 import {CreateGameFormInputs} from "../components/game/forminput/CreateGameFormInputs";
+import Player from "../model/Player.ts";
+import {Winner} from "../model/Winner.ts";
 
 
 axios.defaults.baseURL = "http://localhost:8081";
@@ -59,6 +61,16 @@ export async function raiseAndMove (turnId: string | undefined, gameId: string, 
             amount: amount
         }
     });
+}
+
+export async function allinAndMove (turnId: string | undefined, gameId: string, roundId: string) {
+    await axios.put(`/api/turns/${turnId}/allinAndMove`, null, {
+        params: {
+            gameId: gameId,
+            roundId: roundId,
+        }
+    });
+
 }
 
 type StringWrapper = {
@@ -162,5 +174,12 @@ export async function createNewRoundIfFinished(gameId: string | undefined, round
                 roundId: roundId
             }
         });
+    }
+}
+
+export async function getWinner(winnerId: string | undefined) {
+    if (winnerId) {
+        const {data: winner} = await axios.get<Winner>(`/api/players/winner?winnerId=${winnerId}`);
+        return winner;
     }
 }
