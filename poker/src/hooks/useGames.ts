@@ -1,16 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { getGames } from "../services/dataService.ts";
-import {useEffect} from "react";
+import {useQuery} from '@tanstack/react-query';
+import {getGames} from "../services/dataService.ts";
 
 export function useGames() {
-    const { isLoading, isError, data: games } = useQuery({
+    const {isLoading, isError, data: games} = useQuery({
         queryKey: ['games'],
         queryFn: getGames,
+        refetchInterval: 1000
     });
-
-    useEffect(() => {
-        console.log("Fetched games in useGames hook:", games);
-    }, [games]);
 
     return {
         isLoading,

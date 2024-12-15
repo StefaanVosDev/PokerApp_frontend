@@ -8,6 +8,7 @@ export type Turn = {
     moneyGambled: number;
     round: Round;
     madeInPhase: Phase;
+    createdAt: Date;
 }
 
 export enum PlayerStatus {

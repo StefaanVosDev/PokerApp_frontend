@@ -25,7 +25,7 @@ export async function createAccount(account: Account) {
 }
 
 export async function checkAndMove (turnId: string | undefined, gameId: string, roundId: string) {
-        await axios.put(`http://localhost:8081/api/turns/${turnId}/checkAndMove`, null, {
+        await axios.put(`/api/turns/${turnId}/checkAndMove`, null, {
             params: {
                 gameId: gameId,
                 roundId: roundId,
@@ -34,7 +34,7 @@ export async function checkAndMove (turnId: string | undefined, gameId: string, 
 }
 
 export async function foldAndMove (turnId: string | undefined, gameId: string, roundId: string) {
-    await axios.put(`http://localhost:8081/api/turns/${turnId}/foldAndMove`, null, {
+    await axios.put(`/api/turns/${turnId}/foldAndMove`, null, {
         params: {
             gameId: gameId,
             roundId: roundId,
@@ -101,15 +101,6 @@ export async function createNewRound(gameId: string | null) {
     return null;
 }
 
-export async function createNewTurn(gameId: string) {
-    if (gameId) {
-        const {data} = await axios.post(`/api/turns?gameId=${gameId}`);
-        return data;
-    }
-    return null;
-}
-
-// Get a Game
 export async function getGame(id: string) {
     const {data: game} = await axios.get<Game>(`/api/games/${id}`);
     return game;
@@ -121,11 +112,12 @@ export async function getGames() {
 }
 
 
-//get a player's hand
-export async function getPlayerHand(id: string) {
-
-    const {data: hand} = await axios.get<PlayersHand>(`/api/cards/player/${id}`);
-    return hand;
+export async function getPlayerHand(id: string | undefined) {
+    if (id) {
+        const {data: hand} = await axios.get<PlayersHand>(`/api/cards/player/${id}`);
+        return hand;
+    }
+    return null;
 
 }
 

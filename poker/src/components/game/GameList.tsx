@@ -22,10 +22,6 @@ export default function GameList() {
         }
     }, [isSuccess, selectedGameId, navigate]);
 
-    useEffect(() => {
-        console.log("games:", games);
-    }, [games]);
-
     if (isLoading) return <Loader>Loading games...</Loader>;
     if (isError) return <Alert severity="error">Error loading games</Alert>;
 
