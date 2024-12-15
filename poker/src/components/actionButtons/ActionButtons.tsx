@@ -9,10 +9,11 @@ interface ActionButtonsProps {
     raiseAmount: number;
     setShowRaiseOptions: (value: boolean) => void;
     setRaiseAmount: (value: number) => void;
-    getMinimumRaise: (lastBet: number, currentPlayerMoney: number) => number;
+    getMinimumRaise: (lastBet: number, currentPlayerMoney: number, bigBlind: number) => number;
     lastBet: number;
     processMove: (move: { moveMade: string, amount?: number }) => void;
     setHandlingProcessMove: (value: boolean) => void;
+    bigBlind: number;
 }
 
 function ActionButtons({
@@ -26,7 +27,8 @@ function ActionButtons({
                            getMinimumRaise,
                            lastBet,
                            processMove,
-                           setHandlingProcessMove
+                           setHandlingProcessMove,
+                           bigBlind
                        }: ActionButtonsProps) {
 
     async function handleCheck() {
@@ -66,7 +68,7 @@ function ActionButtons({
                             onChange={(_event, newValue) => setRaiseAmount(newValue as number)}
                             //todo: getting configuration to set steps as big blind
                             step={10}
-                            min={getMinimumRaise(lastBet, currentPlayerMoney)}
+                            min={getMinimumRaise(lastBet, currentPlayerMoney, bigBlind)}
                             max={currentPlayerMoney}
                             valueLabelDisplay="on"
                             valueLabelFormat={(value) => value === currentPlayerMoney ? "ALL IN" : value}

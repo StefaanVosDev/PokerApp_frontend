@@ -6,6 +6,7 @@ import { useCreateNewRound } from "../../hooks/useCreateNewRound.ts";
 import { useState, useEffect } from "react";
 import { getStatusColor } from "./gameStatusUtils";
 import './GameList.scss';
+import {Cancel, CheckCircle} from "@mui/icons-material";
 
 export default function GameList() {
     const navigate = useNavigate();
@@ -66,7 +67,7 @@ export default function GameList() {
                 Back
             </Button>
 
-            <Typography variant="h4" component="h1" className="title">
+            <Typography variant="h4" component="h1" className="title mt-5">
                 Available Games
             </Typography>
             {isPending && <Loader>Initializing new round...</Loader>}
@@ -88,7 +89,7 @@ export default function GameList() {
                                 style={{ borderLeft: `5px solid ${statusColor}` }} // Add color to the card's left border
                             >
                                 <CardContent>
-                                    <Typography variant="h6" className="game-title">
+                                    <Typography variant="h6">
                                         {game.name}
                                     </Typography>
                                     <Typography variant="body2" className="game-players">
@@ -103,6 +104,24 @@ export default function GameList() {
                                             ? `Status: ${game.status}, Winner: ${game.players.find(player => player.isWinner)?.username}`
                                             : `Status: ${game.status}`}
                                     </Typography>
+                                    <Typography variant="h6" className="mt-3">
+                                        Settings
+                                    </Typography>
+
+                                    <div className="game-settings-container">
+                                        <Typography variant="body2" className="game-setting">
+                                            small blind: ${game.settings.smallBlind}
+                                        </Typography>
+                                        <Typography variant="body2" className="game-setting">
+                                            big blind: ${game.settings.bigBlind}
+                                        </Typography>
+                                        <Typography variant="body2" className="game-setting">
+                                            starting chips: ${game.settings.startingChips}
+                                        </Typography>
+                                        <Typography variant="body2" className="game-setting">
+                                            timer: {game.settings.timer ? <CheckCircle color="success" /> : <Cancel color="error" />}
+                                        </Typography>
+                                    </div>
                                 </CardContent>
                             </Card>
                         );

@@ -9,7 +9,7 @@ export default function Navbar() {
 
 
     return (
-        <nav className="navbar">
+        <nav className="custom-navbar">
             <a href="/home" className="brand">
                 <CircleDollarSign className="icon" />
                 Stacks
