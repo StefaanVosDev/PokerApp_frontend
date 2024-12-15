@@ -1,14 +1,17 @@
-import { useForm } from 'react-hook-form';
-import { Button, TextField, Typography, Alert } from '@mui/material';
-import { useCreateGame } from '../../hooks/useCreateGame';
+import {useForm} from 'react-hook-form';
+import {Button, TextField, Typography, Alert, FormControlLabel, Switch} from '@mui/material';
+import {useCreateGame} from '../../hooks/useCreateGame';
 import './CreateGame.scss';
-import { CreateGameFormInputs } from './forminput/CreateGameFormInputs';
+import {CreateGameFormInputs} from './forminput/CreateGameFormInputs';
 import {useNavigate} from "react-router-dom";
 
 export default function CreateGame() {
     const navigate = useNavigate();
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateGameFormInputs>();
-    const { mutate, error } = useCreateGame();
+    const {register, handleSubmit, formState: {errors}, reset, watch} = useForm<CreateGameFormInputs>();
+    const {mutate, error} = useCreateGame();
+
+    const smallBlind = watch('settings.smallBlind');
+    const startingChips = watch('settings.startingChips');
 
     const onSubmit = (data: CreateGameFormInputs) => {
         mutate(data, {
@@ -34,7 +37,7 @@ export default function CreateGame() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="create-game-form">
                 <TextField
-                    {...register('name', { required: 'Game name is required' })}
+                    {...register('name', {required: 'Game name is required'})}
                     label="Game Name"
                     variant="outlined"
                     fullWidth
@@ -47,8 +50,8 @@ export default function CreateGame() {
                     {...register('maxPlayers', {
                         required: 'Max players is required',
                         valueAsNumber: true,
-                        min: { value: 2, message: 'Minimum players should be 2' },
-                        max: { value: 6, message: 'Maximum players should be 6 or lower' },
+                        min: {value: 2, message: 'Minimum players should be 2'},
+                        max: {value: 6, message: 'Maximum players should be 6 or lower'},
                     })}
                     label="Max Players"
                     type="number"
@@ -56,6 +59,81 @@ export default function CreateGame() {
                     fullWidth
                     error={!!errors.maxPlayers}
                     helperText={errors.maxPlayers?.message}
+                    className="create-game-input"
+                />
+
+                <TextField
+                    {...register('settings.smallBlind', {
+                        required: 'Small blind is required',
+                        valueAsNumber: true,
+                        min: {value: 1, message: 'Minimum small blind should be $1'},
+                        validate: (value) =>
+                            startingChips
+                                ? value <= startingChips / 8 || 'Small blind cannot exceed 1/8 of starting chips'
+                                : true
+                    })}
+                    label="Small Blind"
+                    type="number"
+                    variant="outlined"
+                    fullWidth
+                    defaultValue={5}
+                    error={!!errors.settings?.smallBlind}
+                    helperText={errors.settings?.smallBlind?.message}
+                    className="create-game-input"
+                />
+
+                <TextField
+                    {...register('settings.bigBlind', {
+                        required: 'Big blind is required',
+                        valueAsNumber: true,
+                        min: {value: 2, message: 'Minimum big blind should be $2'},
+                        validate: (value) => {
+                            if (smallBlind && value <= smallBlind) {
+                                return 'Big blind must be larger than small blind';
+                            }
+                            if (startingChips && value > startingChips / 4) {
+                                return 'Big blind cannot exceed 1/4 of starting chips';
+                            }
+                            return true;
+                        },
+                    })}
+                    label="Big Blind"
+                    type="number"
+                    variant="outlined"
+                    fullWidth
+                    defaultValue={10}
+                    error={!!errors.settings?.bigBlind}
+                    helperText={errors.settings?.bigBlind?.message}
+                    className="create-game-input"
+                />
+
+
+                <div className="create-game-input switch-container">
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                {...register('settings.timer')}
+                                defaultChecked={false}
+                            />
+                        }
+                        label="Timer"
+                        className="switch-label"
+                    />
+                </div>
+
+                <TextField
+                    {...register('settings.startingChips', {
+                        required: 'Starting chips are required',
+                        valueAsNumber: true,
+                        min: {value: 8, message: 'Minimum starting chips should be $8'},
+                    })}
+                    label="Starting Chips"
+                    type="number"
+                    variant="outlined"
+                    fullWidth
+                    defaultValue={1000}
+                    error={!!errors.settings?.startingChips}
+                    helperText={errors.settings?.startingChips?.message}
                     className="create-game-input"
                 />
 

@@ -73,12 +73,12 @@ function Game() {
     }, [isSuccessProcessingMove, turns]);
 
     useEffect(() => {
-        if (!turns || !round) return;
+        if (!turns || !round || !game) return;
 
         const lastBet = calculateLastBet(turns, round);
         setLastBet(lastBet);
 
-        const {shouldShowCheckButton, amountToCall, raiseAmount} = calculateCurrentTurnDetails(turns, round, lastBet);
+        const {shouldShowCheckButton, amountToCall, raiseAmount} = calculateCurrentTurnDetails(turns, round, lastBet, game.settings.bigBlind);
         setShouldShowCheckButton(shouldShowCheckButton);
         setAmountToCall(amountToCall);
         setRaiseAmount(raiseAmount);
@@ -169,6 +169,7 @@ function Game() {
                     getMinimumRaise={getMinimumRaise}
                     lastBet={lastBet}
                     setHandlingProcessMove={setIsHandlingProcessMove}
+                    bigBlind={game!.settings.bigBlind}
                 />
             }
         </>

@@ -6,7 +6,7 @@ export function calculateLastBet(turns: Turn[], round: Round) {
     return currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
 }
 
-export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet: number) {
+export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet: number, bigBlind: number) {
     const currentTurn = turns.find(turn => turn.moveMade.toString() === "ON_MOVE");
     if (!currentTurn) return {shouldShowCheckButton: false, amountToCall: 0, raiseAmount: 0};
 
@@ -18,12 +18,12 @@ export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet
     return {
         shouldShowCheckButton: totalGambled === lastBet,
         amountToCall: lastBet - totalGambled,
-        raiseAmount: getMinimumRaise(lastBet, currentTurn.player.money),
+        raiseAmount: getMinimumRaise(lastBet, currentTurn.player.money, bigBlind),
     };
 }
 
-export function getMinimumRaise(lastBet: number, currentPlayerMoney: number): number {
+export function getMinimumRaise(lastBet: number, currentPlayerMoney: number, bigBlind: number): number {
     if (lastBet * 2 > currentPlayerMoney) return currentPlayerMoney;
-    if (lastBet > 10) return lastBet * 2
-    return 10;
+    if (lastBet > bigBlind) return lastBet * 2
+    return bigBlind;
 }
