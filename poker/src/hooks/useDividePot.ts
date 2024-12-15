@@ -1,19 +1,20 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import {dividePot} from "../services/dataService.ts";
 
-export function useDividePot(roundId: string | undefined, gameId: string) {
-    const queryClient = useQueryClient();
+export function useDividePot(roundId: string | undefined) {
 
     const mutationFn = async () => {
         await dividePot(roundId);
     };
 
-    const { mutate: triggerDividePot, isPending: isDividingPot, isError: isErrorDividingPot, data: winnings, isSuccess } = useMutation({
-        mutationFn: mutationFn,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['round', gameId] });
-            queryClient.invalidateQueries({ queryKey: ['turn', gameId] });
-        }
+    const {
+        mutate: triggerDividePot,
+        isPending: isDividingPot,
+        isError: isErrorDividingPot,
+        data: winnings,
+        isSuccess
+    } = useMutation({
+        mutationFn: mutationFn
     });
 
     return {

@@ -15,10 +15,7 @@ export default function CreateGame() {
             onSuccess: () => {
                 reset();
                 alert('Game created successfully!');
-            },
-            onError: (err: Error) => {
-                console.error('Failed to create game:', err.message);
-            },
+            }
         });
     };
 

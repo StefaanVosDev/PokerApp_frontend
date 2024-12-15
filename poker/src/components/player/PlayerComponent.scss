@@ -1,0 +1,136 @@
+.player {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  text-align: center;
+
+  .player-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .player-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .player-chips {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    .player-details {
+      .player-name {
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+
+        .player-money {
+          font-size: 16px;
+          color: gold;
+          margin-left: 5px;
+          text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+        }
+      }
+    }
+  }
+
+  .player-cards {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+
+    .player-card {
+      width: 40px;
+      height: 55px;
+      border-radius: 3px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.folded {
+  opacity: 0.5;
+}
+
+.dealer-disk {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 2;
+
+  &.player-0 {
+    top: 90%;
+    left: 20%;
+    transform: translateX(-50%);
+  }
+
+  &.player-1 {
+    top: 65%;
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-2 {
+    top: 55%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-3 {
+    top: 58%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-4 {
+    top: 60%;
+    left: 85%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.player-5 {
+    top: 50%;
+    left: 85%;
+    transform: translateX(-50%);
+  }
+}
+
+.dealer-disk img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-avatar.active {
+  box-shadow: 0 0 20px 5px rgb(59, 130, 246);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 20px 5px rgb(59, 130, 246);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 5px rgb(59, 130, 246);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px 5px rgb(59, 130, 246);
+  }
+}
