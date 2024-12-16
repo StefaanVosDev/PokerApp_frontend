@@ -10,8 +10,8 @@ function Features() {
         },
         {
             icon: <Trophy className="icon" />,
-            title: "Daily Tournaments",
-            description: "Compete in daily tournaments with massive prize pools",
+            title: "Win Prizes",
+            description: "Compete in daily games to win loyalty points and prizes",
         },
         {
             icon: <Zap className="icon" />,

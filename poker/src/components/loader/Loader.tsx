@@ -6,7 +6,7 @@ interface LoaderProps {
 
 export default function Loader({ children }: LoaderProps) {
     return (
-        <Stack alignItems="center" spacing={4} marginTop={4}>
+        <Stack alignItems="center" spacing={4} marginTop={50}>
             <Typography variant="h4">{children}</Typography>
             <CircularProgress/>
         </Stack>

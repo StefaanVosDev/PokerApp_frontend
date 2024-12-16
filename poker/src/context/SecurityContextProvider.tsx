@@ -1,74 +1,98 @@
-import {ReactNode, useEffect, useState} from 'react'
-import SecurityContext from './SecurityContext'
-import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../services/auth'
-import {isExpired} from 'react-jwt'
-import Keycloak from 'keycloak-js'
-import Account from "../model/Account.ts";
-import {useCreateAccount} from "../hooks/useCreateAccount.ts";
+import { ReactNode, useEffect, useState } from 'react';
+import SecurityContext from './SecurityContext';
+import { addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader } from '../services/auth';
+import { isExpired } from 'react-jwt';
+import Cookies from 'js-cookie';
+import Keycloak from 'keycloak-js';
+import Account from '../model/Account.ts';
+import { useCreateAccount } from '../hooks/useCreateAccount.ts';
 
 interface IWithChildren {
-    children: ReactNode
+    children: ReactNode;
 }
 
 const keycloakConfig = {
     url: import.meta.env.VITE_KC_URL,
     realm: import.meta.env.VITE_KC_REALM,
     clientId: import.meta.env.VITE_KC_CLIENT_ID,
-}
-const keycloak: Keycloak = new Keycloak(keycloakConfig)
+};
+const keycloak: Keycloak = new Keycloak(keycloakConfig);
 
-export default function SecurityContextProvider({children}: IWithChildren) {
-    const [loggedInUser, setLoggedInUser] = useState<string | undefined>(undefined)
-    const { triggerCreateAccount } = useCreateAccount()
+export default function SecurityContextProvider({ children }: IWithChildren) {
+    const [loggedInUser, setLoggedInUser] = useState<string | undefined>(undefined);
+    const [isKeycloakInitialized, setIsKeycloakInitialized] = useState(false);
+    const { triggerCreateAccount } = useCreateAccount();
 
     useEffect(() => {
-        keycloak.init({onLoad: 'check-sso'})
-    }, [])
+        keycloak
+            .init({ onLoad: 'check-sso' })
+            .then((authenticated) => {
+                if (authenticated) {
+                    const newToken = keycloak.token;
+                    if (newToken) {
+                        Cookies.set('authToken', newToken, { secure: true, sameSite: 'Strict', expires: 1 });
+                        Cookies.set('loggedInUser', keycloak.idTokenParsed?.given_name || '', { secure: true, sameSite: 'Strict', expires: 1 });
+                        addAccessTokenToAuthHeader(newToken);
+                        setLoggedInUser(keycloak.idTokenParsed?.given_name);
+                        triggerCreateAccountFromKeycloak();
+                    }
+                }
+                setIsKeycloakInitialized(true);
+            })
+            .catch((error) => {
+                console.error("Keycloak initialization failed:", error);
+            });
+    }, []);
 
-    keycloak.onAuthSuccess = () => {
-        addAccessTokenToAuthHeader(keycloak.token)
-        setLoggedInUser(keycloak.idTokenParsed?.given_name)
 
+    function triggerCreateAccountFromKeycloak() {
         const account: Account = {
             username: keycloak.idTokenParsed?.preferred_username,
             email: keycloak.idTokenParsed?.email,
             name: keycloak.idTokenParsed?.name,
             age: keycloak.idTokenParsed?.age,
             city: keycloak.idTokenParsed?.city,
-            gender: keycloak.idTokenParsed?.gender
-        }
-
-        triggerCreateAccount(account)
-
-    }
-
-    keycloak.onAuthLogout = () => {
-        removeAccessTokenFromAuthHeader()
-    }
-
-    keycloak.onAuthError = () => {
-        removeAccessTokenFromAuthHeader()
-    }
-
-    keycloak.onTokenExpired = () => {
-        keycloak.updateToken(-1).then(function () {
-            addAccessTokenToAuthHeader(keycloak.token)
-            setLoggedInUser(keycloak.idTokenParsed?.given_name)
-        })
+            gender: keycloak.idTokenParsed?.gender,
+        };
+        triggerCreateAccount(account);
     }
 
     function login() {
-        keycloak.login()
+        keycloak.login();
     }
 
     function logout() {
-        const logoutOptions = {redirectUri: import.meta.env.VITE_REACT_APP_URL}
-        keycloak.logout(logoutOptions)
+        // Check if Keycloak is ready
+        if (!keycloak || !keycloak.authenticated) {
+            console.warn("Keycloak is not initialized or user is already logged out.");
+            return;
+        }
+
+        // Clean up cookies and headers
+        Cookies.remove('authToken');
+        Cookies.remove('loggedInUser');
+        removeAccessTokenFromAuthHeader();
+
+        setLoggedInUser(undefined);
+
+        // Force Keycloak logout
+        const logoutOptions = { redirectUri: import.meta.env.VITE_REACT_APP_URL };
+        keycloak.logout(logoutOptions).catch((error) => {
+            console.error("Keycloak logout failed:", error);
+        });
     }
 
-    function isAuthenticated() {
-        if (keycloak.token) return !isExpired(keycloak.token)
-        else return false
+
+
+
+    function isAuthenticated(): boolean {
+        const token = Cookies.get('authToken');
+        return token ? !isExpired(token) : false;
+    }
+
+
+    if (!isKeycloakInitialized) {
+        return <div>Loading...</div>;
     }
 
     return (
@@ -82,5 +106,5 @@ export default function SecurityContextProvider({children}: IWithChildren) {
         >
             {children}
         </SecurityContext.Provider>
-    )
+    );
 }
