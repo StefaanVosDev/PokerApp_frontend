@@ -67,7 +67,7 @@ export default function GameList() {
                 Back
             </Button>
 
-            <Typography variant="h4" component="h1" className="title mt-5">
+            <Typography variant="h4" component="h1" className="title">
                 Available Games
             </Typography>
             {isPending && <Loader>Initializing new round...</Loader>}
@@ -104,7 +104,7 @@ export default function GameList() {
                                             ? `Status: ${game.status}, Winner: ${game.players.find(player => player.isWinner)?.username}`
                                             : `Status: ${game.status}`}
                                     </Typography>
-                                    <Typography variant="h6" className="mt-3">
+                                    <Typography variant="h6" className="settings-display">
                                         Settings
                                     </Typography>
 

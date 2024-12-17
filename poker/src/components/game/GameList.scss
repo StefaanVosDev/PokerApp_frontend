@@ -79,6 +79,10 @@
       margin: 0; /* Remove vertical margins */
       white-space: nowrap; /* Prevent wrapping */
     }
+
+    .settings-display {
+      margin-top: 1rem;
+    }
   }
 
   .pagination-controls {
@@ -132,5 +136,9 @@
     &:hover {
       background-color: #45a049;
     }
+  }
+
+  .title {
+    margin-top: 3rem;
   }
 }
