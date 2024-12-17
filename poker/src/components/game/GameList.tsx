@@ -1,18 +1,17 @@
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography, Alert, Button } from "@mui/material";
-import { useGames } from "../../hooks/useGames.ts";
+import {useNavigate} from "react-router-dom";
+import {Alert, Button, Typography} from "@mui/material";
 import Loader from "../loader/Loader.tsx";
-import { useCreateNewRound } from "../../hooks/useCreateNewRound.ts";
-import { useState, useEffect } from "react";
-import { getStatusColor } from "./gameStatusUtils";
+import {useEffect, useState} from "react";
 import './GameList.scss';
-import {Cancel, CheckCircle} from "@mui/icons-material";
+import {useCreateNewRound} from "../../hooks/useRound.ts";
+import {useGames} from "../../hooks/useGame.ts";
+import {GameCard} from "./GameCard.tsx";
 
 export default function GameList() {
     const navigate = useNavigate();
-    const { isLoading, isError, games } = useGames();
-    const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
-    const { triggerNewRound, isPending, isError: isRoundError, isSuccess } = useCreateNewRound(selectedGameId);
+    const {isLoading, isError, games} = useGames();
+    const [selectedGameId, setSelectedGameId] = useState<string | undefined>(undefined);
+    const {triggerNewRound, isPending, isError: isRoundError, isSuccess} = useCreateNewRound(selectedGameId);
 
     const [currentPage, setCurrentPage] = useState(0);
     const gamesPerPage = 3;
@@ -78,52 +77,8 @@ export default function GameList() {
                     <Alert severity="info">No games available</Alert>
                 ) : (
                     displayedGames.map((game) => {
-                        const currentPlayers = game.players.length;
-                        const statusColor = getStatusColor(game.status);
-
                         return (
-                            <Card
-                                className="game-card"
-                                key={game.id}
-                                onClick={() => handleGameClick(game.id)}
-                                style={{ borderLeft: `5px solid ${statusColor}` }} // Add color to the card's left border
-                            >
-                                <CardContent>
-                                    <Typography variant="h6">
-                                        {game.name}
-                                    </Typography>
-                                    <Typography variant="body2" className="game-players">
-                                        Players: {currentPlayers}/{game.maxPlayers}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        className="game-status"
-                                        style={{ color: statusColor }}
-                                    >
-                                        {game.status === 'FINISHED' && game.players.some(player => player.isWinner)
-                                            ? `Status: ${game.status}, Winner: ${game.players.find(player => player.isWinner)?.username}`
-                                            : `Status: ${game.status}`}
-                                    </Typography>
-                                    <Typography variant="h6" className="settings-display">
-                                        Settings
-                                    </Typography>
-
-                                    <div className="game-settings-container">
-                                        <Typography variant="body2" className="game-setting">
-                                            small blind: ${game.settings.smallBlind}
-                                        </Typography>
-                                        <Typography variant="body2" className="game-setting">
-                                            big blind: ${game.settings.bigBlind}
-                                        </Typography>
-                                        <Typography variant="body2" className="game-setting">
-                                            starting chips: ${game.settings.startingChips}
-                                        </Typography>
-                                        <Typography variant="body2" className="game-setting">
-                                            timer: {game.settings.timer ? <CheckCircle color="success" /> : <Cancel color="error" />}
-                                        </Typography>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <GameCard key={game.id} onClick={() => handleGameClick(game.id)} game={game}/>
                         );
                     })
                 )}

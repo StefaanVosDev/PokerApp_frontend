@@ -1,21 +1,16 @@
 import PokerTable from "../pokertable/PokerTable.tsx";
-import {useGame} from "../../hooks/useGame.ts";
-import {usePlayersHand} from "../../hooks/usePlayersHand.ts";
 import {Alert} from "@mui/material";
 import {useNavigate, useParams} from "react-router-dom";
-import {useCommunityCards} from "../../hooks/useCommunityCards.ts";
 import {useEffect, useState} from "react";
-import {useProcessMove} from "../../hooks/useProcessMove.ts";
 import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
-import {useCurrentRound} from "../../hooks/useCurrentRound.ts";
-import {useTurns} from "../../hooks/useTurns.ts";
-import {useDividePot} from "../../hooks/useDividePot.ts";
-import {useCreateNewRoundIfFinished} from "../../hooks/useCreateNewRoundIfFinished.ts";
-import {useCurrentTurn} from "../../hooks/useCurrentTurn.ts";
 import {calculateCurrentTurnDetails, calculateLastBet, getMinimumRaise} from "../../services/turnService.ts";
 import {mapCardToImage} from "../../services/mapToCardService.ts";
 import ActionButtons from "../actionButtons/ActionButtons.tsx";
+import {useCurrentTurn, useProcessMove, useTurns} from "../../hooks/useTurn.ts";
+import {useCreateNewRoundIfFinished, useCurrentRound, useDividePot} from "../../hooks/useRound.ts";
+import {usePlayersHand} from "../../hooks/usePlayer.ts";
+import {useGame} from "../../hooks/useGame.ts";
 
 function Game() {
     const {id: gameId} = useParams<{ id: string }>();
@@ -24,7 +19,6 @@ function Game() {
     const [isEndOfRound, setIsEndOfRound] = useState(false);
     const [isHandlingProcessMove, setIsHandlingProcessMove] = useState(false);
 
-    const {isLoading, isError, communityCards} = useCommunityCards(String(gameId));
     const {isLoadingTurn, isErrorLoadingTurn, turnId} = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove);
     const {isLoadingRound, isErrorLoadingRound, round} = useCurrentRound(String(gameId), isEndOfRound);
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
@@ -58,7 +52,6 @@ function Game() {
     } = useDividePot(roundId);
     const [totalMoneyInPot, setTotalMoneyInPot] = useState(0);
     //const {isLoading: isLoadingOnMove, isError: isErrorOnMove, isOnMove} = useIsOnMove(gameId);
-    const [isRoundBeingCreated, setIsRoundBeingCreated] = useState(false);
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -88,33 +81,31 @@ function Game() {
     useEffect(() => {
         if (round && round.phase === "FINISHED") {
             setIsEndOfRound(true);
-            triggerDividePot()
+            setTimeout(() => {
+                triggerDividePot();
+            }, 1000);
         }
     }, [round?.phase]);
 
     useEffect(() => {
-        if (isSuccessDividingPot && !isRoundBeingCreated) {
-            if (game && game.players.length === 1) {
-                const winner = game.players[0]
-                navigate(`/end-game/${winner.id}`)
-            } else {
-                triggerNewRound()
-                setIsRoundBeingCreated(true)
-            }
+        if (game && game.players.length === 1) {
+            const winner = game.players[0]
+            navigate(`/end-game/${winner.id}`)
+        }
+    }, [game]);
+
+    useEffect(() => {
+        if (isSuccessDividingPot) {
+            triggerNewRound()
         }
     }, [isSuccessDividingPot]);
 
     useEffect(() => {
         if (isSuccessCreatingNewRound) {
             setIsEndOfRound(false);
-            setIsRoundBeingCreated(false);
-        } else if (isErrorCreateNewRoundIfFinished) {
-            setIsRoundBeingCreated(false);
         }
     }, [isSuccessCreatingNewRound, isErrorCreateNewRoundIfFinished]);
 
-    if (isLoading) return <Loader>loading cards</Loader>
-    if (isError || !communityCards) return <Alert severity="error" variant="filled">Error loading cards</Alert>
     if (isLoadingTurn) return <Loader>Preparing turn</Loader>
     if (isErrorLoadingTurn || (!turnId && round?.phase !== "FINISHED"))
         return <Alert severity="error" variant="filled">Error loading turn</Alert>
@@ -147,11 +138,10 @@ function Game() {
         <>
             <PokerTable
                 players={playersWithCards}
-                communityCards={communityCards}
                 turns={turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade.toString() === "FOLD")}
                 dealerIndex={round ? round.dealerIndex : 0}
                 maxPlayers={game.maxPlayers}
-                gameId={gameId ? gameId : ""}
+                gameId={String(gameId)}
             />
             <div className="pot-money">
                 Pot ${totalMoneyInPot}
@@ -169,7 +159,7 @@ function Game() {
                     getMinimumRaise={getMinimumRaise}
                     lastBet={lastBet}
                     setHandlingProcessMove={setIsHandlingProcessMove}
-                    bigBlind={game!.settings.bigBlind}
+                    bigBlind={game.settings.bigBlind}
                 />
             }
         </>

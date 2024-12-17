@@ -1,4 +1,4 @@
-import { CircularProgress, Stack, Typography } from '@mui/material'
+import {CircularProgress, Stack, Typography} from '@mui/material'
 
 interface LoaderProps {
     children: string

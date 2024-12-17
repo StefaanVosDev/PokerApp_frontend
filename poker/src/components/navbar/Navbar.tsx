@@ -1,7 +1,7 @@
 import "./Navbar.scss";
 import {useContext} from "react";
 import SecurityContext from "../../context/SecurityContext.ts";
-import { CircleDollarSign} from 'lucide-react';
+import {CircleDollarSign} from 'lucide-react';
 
 
 export default function Navbar() {

@@ -1,9 +1,9 @@
 import {useForm} from 'react-hook-form';
-import {Button, TextField, Typography, Alert, FormControlLabel, Switch} from '@mui/material';
-import {useCreateGame} from '../../hooks/useCreateGame';
+import {Alert, Button, FormControlLabel, Switch, TextField, Typography} from '@mui/material';
 import './CreateGame.scss';
 import {CreateGameFormInputs} from './forminput/CreateGameFormInputs';
 import {useNavigate} from "react-router-dom";
+import {useCreateGame} from "../../hooks/useGame.ts";
 
 export default function CreateGame() {
     const navigate = useNavigate();
