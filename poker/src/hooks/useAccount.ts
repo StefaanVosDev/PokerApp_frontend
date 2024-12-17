@@ -1,16 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createAccount } from "../services/dataService.ts";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
-
+import {createAccount} from "../services/accountService.ts";
 
 export function useCreateAccount() {
     const queryClient = useQueryClient();
 
-    const { mutate, isPending, isError, isSuccess, error } = useMutation({
+    const {mutate, isPending, isError, isSuccess, error} = useMutation({
         mutationFn: async (account: Account) => await createAccount(account),
         onSuccess: () => {
             // Invalidate or refetch relevant queries to ensure updated data
-            queryClient.invalidateQueries({ queryKey: ['accounts'] });
+            queryClient.invalidateQueries({queryKey: ['accounts']});
         }
     });
 

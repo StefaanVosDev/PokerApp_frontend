@@ -1,15 +1,13 @@
 import './PokerTable.scss';
 import Player from "../../model/Player.ts";
-import {PlayingCard} from "../../model/PlayingCard.ts";
 import {Turn} from "../../model/Turn.ts";
 import {Avatar, Button} from "@mui/material";
-import {joinGame} from "../../services/dataService.ts";
 import PlayerComponent from "../player/PlayerComponent.tsx";
-
+import {useJoinGame} from "../../hooks/useGame.ts";
+import {useCommunityCards} from "../../hooks/useRound.ts";
 
 interface PokerTableProps {
     players: (Player & { cards: string[] })[]; // Players with cards as image paths
-    communityCards: PlayingCard[]; // Array of card image paths for the community cards
     turns: Turn[];
     dealerIndex: number;
     maxPlayers: number;
@@ -25,12 +23,24 @@ const playerPositions = [
     {top: '20%', left: '23%'},
 ];
 
-export default function PokerTable({players, communityCards, turns, dealerIndex, maxPlayers, gameId}: PokerTableProps) {
+export default function PokerTable({players, turns, dealerIndex, maxPlayers, gameId}: PokerTableProps) {
     const sortedPlayers = players.sort((a, b) => a.position - b.position);
     const openSpots = maxPlayers - players.length;
 
+    const {isLoading: isLoadingCommunityCards, isError: isErrorCommunityCards, communityCards} = useCommunityCards(gameId);
+    const {isJoining, isErrorJoining, join} = useJoinGame(gameId);
+
+    if (isLoadingCommunityCards)
+        return <div>Loading community cards...</div>;
+    if (isErrorCommunityCards)
+        return <div>Error loading community cards</div>;
+    if (isJoining)
+        return <div>Joining game...</div>;
+    if (isErrorJoining)
+        return <div>Error joining game</div>;
+
     const handleJoin = async () => {
-        await joinGame(gameId);
+        await join();
     };
 
     return (
@@ -77,7 +87,7 @@ export default function PokerTable({players, communityCards, turns, dealerIndex,
                 </Button>
             ))}
             <div className="community-cards">
-                {communityCards.map((card, index) => (
+                {communityCards && communityCards.map((card, index) => (
                         <img key={index} src={`/images/${card.suit.toString().toLowerCase()}_${card.rank}.png`}
                              alt={`${card.suit.toString().toLowerCase()}_${card.rank}`} className="community-card"/>
                     )

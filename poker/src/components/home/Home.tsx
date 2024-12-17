@@ -2,7 +2,6 @@ import "./Home.scss";
 import Features from "../features/Features.tsx";
 
 
-
 export default function Home() {
 
 

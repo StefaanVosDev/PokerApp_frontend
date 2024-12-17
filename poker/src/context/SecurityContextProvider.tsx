@@ -5,7 +5,7 @@ import { isExpired } from 'react-jwt';
 import Cookies from 'js-cookie';
 import Keycloak from 'keycloak-js';
 import Account from '../model/Account.ts';
-import { useCreateAccount } from '../hooks/useCreateAccount.ts';
+import {useCreateAccount} from "../hooks/useAccount.ts";
 
 interface IWithChildren {
     children: ReactNode;

@@ -1,4 +1,4 @@
-import { Trophy, Users, Zap, Shield } from 'lucide-react';
+import {Shield, Trophy, Users, Zap} from 'lucide-react';
 import './Features.scss';
 
 function Features() {

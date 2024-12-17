@@ -1,6 +1,6 @@
-export type Winner = {
-  playerId: string;
-  username: string;
-  money: number;
-  avatar: string;
+export interface Winner {
+    playerId: string;
+    username: string;
+    money: number;
+    avatar: string;
 }

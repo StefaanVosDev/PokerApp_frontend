@@ -1,5 +1,5 @@
-import {useQuery} from '@tanstack/react-query';
-import {getPlayerHand} from "../services/dataService.ts";
+import {useQuery} from "@tanstack/react-query";
+import {getPlayerHand, getWinner} from "../services/playerService.ts";
 import Card from "../model/Card.ts";
 
 export function usePlayersHand(playerIds: string[], isEndOfRound: boolean) {
@@ -22,4 +22,19 @@ export function usePlayersHand(playerIds: string[], isEndOfRound: boolean) {
         isError,
         playersHand: data || {}, // Default to an empty object
     };
+}
+
+export function useWinner(winnerId: string | undefined) {
+    const {isLoading, isError, data: winner} = useQuery(
+        {
+            queryKey: ['winner', winnerId],
+            queryFn: () => getWinner(winnerId),
+            refetchInterval: 1000
+        })
+
+    return {
+        isLoading,
+        isError,
+        winner
+    }
 }
