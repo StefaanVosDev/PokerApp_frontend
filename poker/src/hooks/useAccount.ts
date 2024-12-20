@@ -1,6 +1,6 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
-import {createAccount} from "../services/accountService.ts";
+import {createAccount, getFriends} from "../services/accountService.ts";
 
 export function useCreateAccount() {
     const queryClient = useQueryClient();
@@ -19,5 +19,21 @@ export function useCreateAccount() {
         isError,
         isSuccess,
         error, // To provide error details if needed
+    };
+}
+
+
+
+export function useFriends(username: string | undefined | null) {
+    const { isLoading, isError, data: friends } = useQuery({
+        queryKey: ['friends', username],
+        queryFn: () => getFriends(username),
+        enabled: !!username, // Ensure the query only runs when username is truthy
+    });
+
+    return {
+        isLoading,
+        isError,
+        friends,
     };
 }
