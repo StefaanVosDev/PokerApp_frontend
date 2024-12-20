@@ -1,7 +1,7 @@
-import { ReactNode, useEffect, useState } from 'react';
+import {ReactNode, useEffect, useState} from 'react';
 import SecurityContext from './SecurityContext';
-import { addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader } from '../services/auth';
-import { isExpired } from 'react-jwt';
+import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../services/auth';
+import {isExpired} from 'react-jwt';
 import Cookies from 'js-cookie';
 import Keycloak from 'keycloak-js';
 import Account from '../model/Account.ts';
@@ -22,6 +22,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
     const [loggedInUser, setLoggedInUser] = useState<string | undefined>(undefined);
     const [isKeycloakInitialized, setIsKeycloakInitialized] = useState(false);
     const { triggerCreateAccount } = useCreateAccount();
+    const [username, setUsername] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         keycloak
@@ -34,6 +35,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
                         Cookies.set('loggedInUser', keycloak.idTokenParsed?.given_name || '', { secure: true, sameSite: 'Strict', expires: 1 });
                         addAccessTokenToAuthHeader(newToken);
                         setLoggedInUser(keycloak.idTokenParsed?.given_name);
+                        setUsername(keycloak.idTokenParsed?.preferred_username);
                         triggerCreateAccountFromKeycloak();
                     }
                 }
@@ -100,6 +102,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
             value={{
                 isAuthenticated,
                 loggedInUser,
+                username,
                 login,
                 logout,
             }}
