@@ -1,14 +1,13 @@
-FROM node:18 AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+FROM node:20.11.0
 
-FROM nginx:1.24
-WORKDIR /usr/share/nginx/html
-RUN rm /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist .
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN npm i -g serve
+
+COPY dist dist
+
+EXPOSE 3000
+
+CMD [ "serve", "-s", "dist" ]
