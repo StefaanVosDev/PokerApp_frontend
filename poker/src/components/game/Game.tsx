@@ -48,7 +48,8 @@ function Game() {
         isDividingPot,
         isErrorDividingPot,
         triggerDividePot,
-        isSuccessDividingPot
+        isSuccessDividingPot,
+        winnings
     } = useDividePot(roundId);
     const [totalMoneyInPot, setTotalMoneyInPot] = useState(0);
     //const {isLoading: isLoadingOnMove, isError: isErrorOnMove, isOnMove} = useIsOnMove(gameId);
@@ -96,7 +97,9 @@ function Game() {
 
     useEffect(() => {
         if (isSuccessDividingPot) {
-            triggerNewRound()
+            setTimeout(() => {
+                triggerNewRound()
+            }, 5000)
         }
     }, [isSuccessDividingPot]);
 
@@ -127,12 +130,13 @@ function Game() {
         return <Alert severity="error" variant="filled">Error starting new round</Alert>
     if (isErrorDividingPot) return <Alert severity="error" variant="filled">Error splitting winnings</Alert>
 
-
     // Map each player's cards
     const playersWithCards = game.players.map((player) => ({
         ...player,
         cards: (playersHand[player.id] || []).map(mapCardToImage), // Map cards to images
     }));
+
+    console.log(turns.length)
 
     return (
         <>
@@ -142,6 +146,8 @@ function Game() {
                 dealerIndex={round ? round.dealerIndex : 0}
                 maxPlayers={game.maxPlayers}
                 gameId={String(gameId)}
+                winnings={winnings}
+                animationAllowed={isEndOfRound}
             />
             <div className="pot-money">
                 Pot ${totalMoneyInPot}

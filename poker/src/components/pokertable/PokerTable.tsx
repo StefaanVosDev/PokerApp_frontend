@@ -12,22 +12,28 @@ interface PokerTableProps {
     dealerIndex: number;
     maxPlayers: number;
     gameId: string;
+    winnings: string[] | null | undefined;
+    animationAllowed: boolean;
 }
 
 const playerPositions = [
     {top: '20%', left: '80%'},
-    {top: '58%', left: '92%'},
+    {top: '49%', left: '95%'},
     {top: '80%', left: '72%'},
     {top: '80%', left: '28%'},
     {top: '58%', left: '8%'},
     {top: '20%', left: '23%'},
 ];
 
-export default function PokerTable({players, turns, dealerIndex, maxPlayers, gameId}: PokerTableProps) {
+export default function PokerTable({players, turns, dealerIndex, maxPlayers, gameId, winnings, animationAllowed}: PokerTableProps) {
     const sortedPlayers = players.sort((a, b) => a.position - b.position);
     const openSpots = maxPlayers - players.length;
 
-    const {isLoading: isLoadingCommunityCards, isError: isErrorCommunityCards, communityCards} = useCommunityCards(gameId);
+    const {
+        isLoading: isLoadingCommunityCards,
+        isError: isErrorCommunityCards,
+        communityCards
+    } = useCommunityCards(gameId);
     const {isJoining, isErrorJoining, join} = useJoinGame(gameId);
 
     if (isLoadingCommunityCards)
@@ -60,16 +66,18 @@ export default function PokerTable({players, turns, dealerIndex, maxPlayers, gam
                     }}
                 />
             </div>
-            {sortedPlayers.slice(0, 6).map((player, index) => (
-                <PlayerComponent
+            {sortedPlayers.slice(0, 6).map((player, index) => {
+                return <PlayerComponent
                     key={player.id}
                     player={player}
                     index={index}
                     dealerIndex={dealerIndex}
                     turns={turns}
                     playerPositions={playerPositions}
+                    winRound={winnings ? winnings.includes(player.id) : false}
+                    animationAllowed={animationAllowed}
                 />
-            ))}
+            })}
 
             {Array.from({length: openSpots}).map((_, index) => (
                 <Button

@@ -31,9 +31,10 @@ export async function getCurrentRound(gameId: string) {
 
 export async function dividePot(roundId: string | undefined) {
     if (roundId) {
-        const {data: winners} = await axios.put<Map<string, number>>(`/api/rounds/${roundId}/dividePot`)
-        return winners; //the strings are the UUIDs of the players
+        const {data: winners} = await axios.put<string[]>(`/api/rounds/${roundId}/dividePot`)
+        return winners;
     }
+    return null
 }
 
 export async function createNewRoundIfFinished(gameId: string, roundId: string | undefined) {
