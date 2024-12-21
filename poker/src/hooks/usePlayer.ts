@@ -9,7 +9,7 @@ export function usePlayersHand(playerIds: string[], isEndOfRound: boolean) {
             const hands = await Promise.all(playerIds.map((id) => getPlayerHand(id)));
 
             return playerIds.reduce((acc, playerId, index) => {
-                acc[playerId] = hands[index].hand; // Store hand by playerId
+                acc[playerId] = hands[index]!.hand; // Store hand by playerId
                 return acc;
             }, {} as Record<string, Card[]>);
         },

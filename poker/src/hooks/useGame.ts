@@ -51,7 +51,7 @@ export function useIsOnMove(gameId: string | undefined) {
 }
 
 export function useJoinGame(gameId: string) {
-    const {mutate: join, isLoading: isJoining, isError: isErrorJoining} = useMutation({
+    const {mutate: join, isPending: isJoining, isError: isErrorJoining} = useMutation({
         mutationFn: async () => {
             await joinGame(gameId);
         },

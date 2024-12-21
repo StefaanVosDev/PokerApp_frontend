@@ -70,7 +70,7 @@ export function useCurrentRound(gameId: string, isEndOfRound: boolean) {
 export function useDividePot(roundId: string | undefined) {
 
     const mutationFn = async () => {
-        await dividePot(roundId);
+        return await dividePot(roundId);
     };
 
     const {
