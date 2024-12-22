@@ -1,13 +1,24 @@
-FROM node:20.11.0
+# Use the official Nginx image from the Docker Hub
+FROM nginx:latest
 
-WORKDIR /app
+# Build arguments to pass environment variables
+ARG VITE_KC_URL
+ARG VITE_KC_REALM
+ARG VITE_KC_CLIENT_ID
 
-ENV NODE_ENV=production
+# Set environment variables
+ENV VITE_KC_URL=$VITE_KC_URL
+ENV VITE_KC_REALM=$VITE_KC_REALM
+ENV VITE_KC_CLIENT_ID=$VITE_KC_CLIENT_ID
 
-RUN npm i -g serve
+# Copy the build output to replace the default Nginx contents
+COPY dist /usr/share/nginx/html
 
-COPY dist dist
+# Copy custom Nginx configuration file
+COPY default.conf /etc/nginx/conf.d/default.conf
 
+# Expose port 3000
 EXPOSE 3000
 
-CMD [ "serve", "-s", "dist" ]
+# Start Nginx when the container has started
+CMD ["nginx", "-g", "daemon off;"]
