@@ -1,15 +1,9 @@
-import { useContext, useState } from "react";
-import {
-    Box,
-    Drawer,
-    IconButton,
-    List,
-    Typography,
-} from "@mui/material";
+import {useContext, useState} from "react";
+import {Box, Drawer, IconButton, List, Typography,} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import GroupIcon from "@mui/icons-material/Group";
 import SecurityContext from "../../context/SecurityContext.ts";
-import { useFriends } from "../../hooks/useAccount.ts";
+import {useFriends} from "../../hooks/useAccount.ts";
 import FriendCard from "./FriendCard";
 
 export default function FriendsList() {

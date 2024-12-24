@@ -1,19 +1,19 @@
 import {
     Avatar,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
-    IconButton,
+    Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
-    Button,
+    IconButton,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useState, useContext } from "react";
-import { useDeleteFriend } from "../../hooks/useAccount.ts";
+import {useContext, useState} from "react";
+import {useDeleteFriend} from "../../hooks/useAccount.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
 
 interface FriendCardProps {

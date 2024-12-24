@@ -12,6 +12,7 @@ import CreateGame from "./components/game/CreateGame";
 import SecurityContextProvider from "./context/SecurityContextProvider.tsx";
 import {RouteGuard} from "./components/routeguard/RouteGuard.tsx";
 import EndGame from "./components/game/EndGame.tsx";
+import Shop from "./components/shop/Shop.tsx";
 
 const theme = createTheme({
     palette: {
@@ -44,6 +45,7 @@ function App() {
                                 <Route path="/games" element={<RouteGuard><GameList/></RouteGuard>}/>
                                 <Route path="/create-game" element={<RouteGuard><CreateGame/></RouteGuard>}/>
                                 <Route path="/end-game/:winnerId" element={<RouteGuard><EndGame/></RouteGuard>}/>
+                                <Route path="/shop" element={<RouteGuard><Shop/></RouteGuard>}/>
                             </Routes>
                     </BrowserRouter>
                 </SecurityContextProvider>

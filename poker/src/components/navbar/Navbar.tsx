@@ -25,8 +25,8 @@ export default function Navbar() {
                 <a href="/games" className="link">
                     GAMES
                 </a>
-                <a href="" className="link">
-                    POKER NEWS
+                <a href="/shop" className="link">
+                    SHOP
                 </a>
             </div>
             <div className="buttons">
