@@ -30,7 +30,6 @@ export function useCreateAccount() {
     const {mutate, isPending, isError, isSuccess, error} = useMutation({
         mutationFn: async (account: Account) => await createAccount(account),
         onSuccess: () => {
-            // Invalidate or refetch relevant queries to ensure updated data
             queryClient.invalidateQueries({queryKey: ['accounts']});
         }
     });

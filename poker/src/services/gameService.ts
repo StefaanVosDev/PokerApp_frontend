@@ -30,9 +30,10 @@ export async function joinGame(gameId: string) {
     await axios.post(`/api/games/${gameId}/join`);
 }
 
-export async function fetchIsOnMove(gameId: string | undefined) {
-    const response = await axios.get(`/api/games/${gameId}/isOnMove`);
-    return response.data;
+export async function getIsOnMove(gameId: string | undefined) {
+        const response = await axios.get(`/api/games/${gameId}/isOnMove`);
+        console.log('isOnMove response:', response.data);
+        return response.data;
 }
 
 export const getStatusColor = (status: string): string => {
@@ -47,3 +48,8 @@ export const getStatusColor = (status: string): string => {
             return "white";  // Default color in case the status doesn't match any of the above
     }
 };
+
+export async function updateGameStatus(gameId : string | undefined) {
+    const response = await axios.put(`/api/games/${gameId}/status`);
+    return response.data;
+}

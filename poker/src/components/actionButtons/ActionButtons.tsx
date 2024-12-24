@@ -1,5 +1,6 @@
 import {Button, Slider} from "@mui/material";
 import "./ActionButtons.scss";
+import {useIsOnMove} from "../../hooks/useGame";
 
 interface ActionButtonsProps {
     shouldShowCheckButton: boolean;
@@ -14,6 +15,8 @@ interface ActionButtonsProps {
     processMove: (move: { moveMade: string, amount?: number }) => void;
     setHandlingProcessMove: (value: boolean) => void;
     bigBlind: number;
+    gameId: string;
+    isGameInProgress: boolean;
 }
 
 function ActionButtons({
@@ -28,34 +31,48 @@ function ActionButtons({
                            lastBet,
                            processMove,
                            setHandlingProcessMove,
-                           bigBlind
+                           bigBlind,
+                           gameId,
+                           isGameInProgress
                        }: ActionButtonsProps) {
+
+
+    const {isOnMove, refetch: refetchIsOnMove} = useIsOnMove(String(gameId), isGameInProgress);
 
     async function handleCheck() {
         setHandlingProcessMove(true);
-        processMove({moveMade: "CHECK"})
+        await processMove({moveMade: "CHECK"});
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        await refetchIsOnMove();
     }
 
     async function handleFold() {
         setHandlingProcessMove(true);
-        processMove({moveMade: "FOLD"})
+        await processMove({moveMade: "FOLD"});
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        await refetchIsOnMove();
     }
 
     async function handleCall(amount: number) {
         setHandlingProcessMove(true);
         if (amount >= currentPlayerMoney)
-            processMove({moveMade: "ALL_IN"})
+            await processMove({moveMade: "ALL_IN"});
         else
-            processMove({moveMade: "CALL", amount: amount})
+            await processMove({moveMade: "CALL", amount: amount});
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        await refetchIsOnMove();
     }
 
     async function handleRaise(amount: number) {
         setHandlingProcessMove(true);
         if (amount >= currentPlayerMoney)
-            processMove({moveMade: "ALL_IN"})
+            await processMove({moveMade: "ALL_IN"});
         else
-            processMove({moveMade: "RAISE", amount: amount})
+            await processMove({moveMade: "RAISE", amount: amount});
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        await refetchIsOnMove();
     }
+
 
     return (
         <>
@@ -66,7 +83,6 @@ function ActionButtons({
                             orientation="horizontal"
                             value={raiseAmount}
                             onChange={(_event, newValue) => setRaiseAmount(newValue as number)}
-                            //todo: getting configuration to set steps as big blind
                             step={10}
                             min={getMinimumRaise(lastBet, currentPlayerMoney, bigBlind)}
                             max={currentPlayerMoney}
@@ -77,51 +93,67 @@ function ActionButtons({
                 </div>
             }
             <div className="buttons-container">
-                <Button className="fold-button" variant="contained" color="secondary"
-                        onClick={async () => await handleFold()}>Fold
-                </Button>
-                {shouldShowCheckButton ? (
-                    <Button variant="contained" color="secondary"
-                            onClick={async () => await handleCheck()}>Check
-                    </Button>
-                ) : (
-                    <Button variant="contained" color="secondary"
-                            onClick={async () => await handleCall(amountToCall > currentPlayerMoney ? currentPlayerMoney : amountToCall)}>
-                        {amountToCall > currentPlayerMoney ? "Call all-in $" + currentPlayerMoney : "Call $" + amountToCall}
-                    </Button>
-                )}
-
-                {amountToCall < currentPlayerMoney &&
-                    (showRaiseOptions ? (
+                {isOnMove ? (
+                    <>
+                        <Button
+                            className="fold-button"
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleFold}
+                        >
+                            Fold
+                        </Button>
+                        {shouldShowCheckButton ? (
                             <Button
-                                className="confirm-button"
                                 variant="contained"
-                                onClick={() => handleRaise(raiseAmount)}
+                                color="secondary"
+                                onClick={handleCheck}
                             >
-                                Confirm
+                                Check
                             </Button>
                         ) : (
-                            amountToCall * 2 < currentPlayerMoney ?
-                                (
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => handleCall(amountToCall > currentPlayerMoney ? currentPlayerMoney : amountToCall)}
+                            >
+                                {amountToCall > currentPlayerMoney ? "Call all-in $" + currentPlayerMoney : "Call $" + amountToCall}
+                            </Button>
+                        )}
+
+                        {amountToCall < currentPlayerMoney &&
+                            (showRaiseOptions ? (
                                     <Button
-                                        className="raise-button"
+                                        className="confirm-button"
                                         variant="contained"
-                                        onClick={() => setShowRaiseOptions(true)}
+                                        onClick={() => handleRaise(raiseAmount)}
                                     >
-                                        Raise
+                                        Confirm
                                     </Button>
                                 ) : (
-                                    <Button
-                                        className="raise-button"
-                                        variant="contained"
-                                        onClick={() => handleRaise(currentPlayerMoney)}
-                                    >
-                                        All In
-                                    </Button>
+                                    amountToCall * 2 < currentPlayerMoney ? (
+                                        <Button
+                                            className="raise-button"
+                                            variant="contained"
+                                            onClick={() => setShowRaiseOptions(true)}
+                                        >
+                                            Raise
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            className="raise-button"
+                                            variant="contained"
+                                            onClick={() => handleRaise(currentPlayerMoney)}
+                                        >
+                                            All In
+                                        </Button>
+                                    )
                                 )
-                        )
-                    )
-                }
+                            )}
+                    </>
+                ) : (
+                    <div>Waiting for other players...</div>
+                )}
             </div>
         </>
     );

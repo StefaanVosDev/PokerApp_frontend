@@ -3,7 +3,6 @@ import {Alert, Button, Typography} from "@mui/material";
 import Loader from "../loader/Loader.tsx";
 import {useEffect, useState} from "react";
 import './GameList.scss';
-import {useCreateNewRound} from "../../hooks/useRound.ts";
 import {useGames} from "../../hooks/useGame.ts";
 import {GameCard} from "./GameCard.tsx";
 
@@ -11,23 +10,21 @@ export default function GameList() {
     const navigate = useNavigate();
     const {isLoading, isError, games} = useGames();
     const [selectedGameId, setSelectedGameId] = useState<string | undefined>(undefined);
-    const {triggerNewRound, isPending, isError: isRoundError, isSuccess} = useCreateNewRound(selectedGameId);
-
     const [currentPage, setCurrentPage] = useState(0);
     const gamesPerPage = 3;
 
     useEffect(() => {
-        if (isSuccess && selectedGameId) {
+        if (selectedGameId) {
             navigate(`/game/${selectedGameId}`);
         }
-    }, [isSuccess, selectedGameId, navigate]);
+    }, [selectedGameId, navigate]);
 
     if (isLoading) return <Loader>Loading games...</Loader>;
     if (isError) return <Alert severity="error">Error loading games</Alert>;
 
+
     const handleGameClick = (gameId: string) => {
         setSelectedGameId(gameId);
-        triggerNewRound();
     };
 
     const totalPages = Math.ceil((Array.isArray(games) ? games.length : 0) / gamesPerPage);
@@ -47,6 +44,7 @@ export default function GameList() {
     const handleCreateGame = () => {
         navigate('/create-game');
     };
+
 
     return (
         <div className="game-list-container">
@@ -69,8 +67,6 @@ export default function GameList() {
             <Typography variant="h4" component="h1" className="title">
                 Available Games
             </Typography>
-            {isPending && <Loader>Initializing new round...</Loader>}
-            {isRoundError && <Alert severity="error">Error initializing new round</Alert>}
 
             <div className="game-list">
                 {displayedGames.length === 0 ? (

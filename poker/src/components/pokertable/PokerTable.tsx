@@ -3,7 +3,7 @@ import Player from "../../model/Player.ts";
 import {Turn} from "../../model/Turn.ts";
 import {Avatar, Button} from "@mui/material";
 import PlayerComponent from "../player/PlayerComponent.tsx";
-import {useJoinGame} from "../../hooks/useGame.ts";
+import {useGame, useJoinGame} from "../../hooks/useGame.ts";
 import {useCommunityCards} from "../../hooks/useRound.ts";
 
 interface PokerTableProps {
@@ -14,6 +14,8 @@ interface PokerTableProps {
     gameId: string;
     winnings: string[] | null | undefined;
     animationAllowed: boolean;
+    loggedInUser: string | undefined;
+    isGameInProgress: boolean;
 }
 
 const playerPositions = [
@@ -25,15 +27,17 @@ const playerPositions = [
     {top: '20%', left: '23%'},
 ];
 
-export default function PokerTable({players, turns, dealerIndex, maxPlayers, gameId, winnings, animationAllowed}: PokerTableProps) {
+export default function PokerTable({players, turns, dealerIndex, maxPlayers, gameId, winnings, animationAllowed, loggedInUser,isGameInProgress}: PokerTableProps) {
     const sortedPlayers = players.sort((a, b) => a.position - b.position);
     const openSpots = maxPlayers - players.length;
+    const {game} = useGame(String(gameId));
+    const roundStarted = turns.length > 0;
 
     const {
         isLoading: isLoadingCommunityCards,
         isError: isErrorCommunityCards,
         communityCards
-    } = useCommunityCards(gameId);
+    } = useCommunityCards(gameId, roundStarted);
     const {isJoining, isErrorJoining, join} = useJoinGame(gameId);
 
     if (isLoadingCommunityCards)
@@ -46,13 +50,14 @@ export default function PokerTable({players, turns, dealerIndex, maxPlayers, gam
         return <div>Error joining game</div>;
 
     const handleJoin = async () => {
-        await join();
+            await join();
     };
+
+    const isUserInGame = players.some((player) => player.username === loggedInUser?.toString());
 
     return (
         <div className="poker-table">
             <img src="/src/assets/table.svg" alt="Poker Table" className="poker-table-image"/>
-
             <div className="dealer">
                 <Avatar
                     alt="Dealer"
@@ -67,9 +72,10 @@ export default function PokerTable({players, turns, dealerIndex, maxPlayers, gam
                 />
             </div>
             {sortedPlayers.slice(0, 6).map((player, index) => {
+                const showCards = isGameInProgress && player.username === loggedInUser?.toString();
                 return <PlayerComponent
                     key={player.id}
-                    player={player}
+                    player={{...player, cards: showCards ? player.cards : (isGameInProgress ? ["/images/back_of_card.png", "/images/back_of_card.png"] : [])}}
                     index={index}
                     dealerIndex={dealerIndex}
                     turns={turns}
@@ -85,6 +91,7 @@ export default function PokerTable({players, turns, dealerIndex, maxPlayers, gam
                     variant="contained"
                     color="primary"
                     onClick={handleJoin}
+                    disabled={game?.status === "IN_PROGRESS" || game?.status === "FINISHED" || isUserInGame}
                     style={{
                         position: 'absolute',
                         top: playerPositions[players.length + index].top,

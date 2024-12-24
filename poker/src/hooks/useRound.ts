@@ -7,11 +7,12 @@ import {
     getCurrentRound
 } from "../services/roundService.ts";
 
-export function useCommunityCards(gameId: string) {
+export function useCommunityCards(gameId: string, roundStarted: boolean) {
     const {isLoading, isError, data: communityCards} = useQuery({
         queryKey: ['communityCards', gameId],
         queryFn: () => getCommunityCards(gameId),
-        refetchInterval: 1000
+        refetchInterval: 1000,
+        enabled: roundStarted
     })
 
     return {
@@ -48,7 +49,7 @@ export function useCreateNewRoundIfFinished(gameId: string, roundId: string) {
     };
 }
 
-export function useCurrentRound(gameId: string, isEndOfRound: boolean) {
+export function useCurrentRound(gameId: string, isEndOfRound: boolean,isInProgress: boolean) {
     const {
         isLoading: isLoadingRound,
         isError: isErrorLoadingRound,
@@ -56,7 +57,7 @@ export function useCurrentRound(gameId: string, isEndOfRound: boolean) {
     } = useQuery({
         queryKey: ['round', gameId],
         queryFn: () => getCurrentRound(gameId),
-        enabled: !isEndOfRound,
+        enabled: !isEndOfRound && isInProgress,
         refetchInterval: 1000
     })
 
