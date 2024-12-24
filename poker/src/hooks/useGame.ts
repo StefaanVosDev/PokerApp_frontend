@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {createGame, fetchIsOnMove, getGame, getGames, joinGame} from "../services/gameService.ts";
+import {createGame, getGame, getGames, getIsOnMove, joinGame} from "../services/gameService.ts";
 import {CreateGameFormInputs} from "../components/game/forminput/CreateGameFormInputs.ts";
 
 export function useGame(gameId: string) {
@@ -13,7 +13,8 @@ export function useGame(gameId: string) {
     return {
         isLoading,
         isError,
-        game
+        game,
+        isInProgress: game?.status === 'in_progress',
     };
 }
 
@@ -37,21 +38,24 @@ export function useGames() {
     };
 }
 
-export function useIsOnMove(gameId: string | undefined) {
-    const {isLoading, isError, data: isOnMove} = useQuery({
+export function useIsOnMove(gameId: string, isInProgress: boolean) {
+    const {isLoading, isError, data: isOnMove, refetch} = useQuery({
         queryKey: ['isOnMove', gameId],
-        queryFn: () => fetchIsOnMove(gameId),
+        queryFn: () => getIsOnMove(gameId),
+        enabled: !!gameId && isInProgress,
+        refetchInterval: 1000
     });
 
     return {
         isLoading,
         isError,
         isOnMove,
+        refetch,
     };
 }
 
 export function useJoinGame(gameId: string) {
-    const {mutate: join, isPending: isJoining, isError: isErrorJoining} = useMutation({
+    const {mutate: join, isPending: isJoining, isError: isErrorJoining,error} = useMutation({
         mutationFn: async () => {
             await joinGame(gameId);
         },
@@ -61,5 +65,6 @@ export function useJoinGame(gameId: string) {
         join,
         isJoining,
         isErrorJoining,
+        error
     };
 }

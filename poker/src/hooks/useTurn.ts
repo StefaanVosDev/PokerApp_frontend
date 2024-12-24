@@ -9,11 +9,11 @@ import {
     raiseAndMove
 } from "../services/turnService.ts";
 
-export function useCurrentTurn(gameId: string, isEndOfRound: boolean, isProcessingMove: boolean) {
+export function useCurrentTurn(gameId: string, isEndOfRound: boolean, isProcessingMove: boolean, isInProgress: boolean) {
     const {isLoading: isLoadingTurn, isError: isErrorLoadingTurn, data: turnId} = useQuery({
         queryKey: ['turn', gameId],
         queryFn: () => getCurrentTurnId(gameId),
-        enabled: !isEndOfRound && !isProcessingMove,
+        enabled: !isEndOfRound && !isProcessingMove && isInProgress,
         refetchInterval: 1000
     })
 
@@ -46,7 +46,6 @@ export function useProcessMove(turnId: string | undefined, gameId: string, round
         }
     };
 
-
     const {mutate: processMove, isPending: isProcessingMove, isError: isErrorProcessingMove, isSuccess} = useMutation({
         mutationFn: methodCall,
     });
@@ -59,11 +58,13 @@ export function useProcessMove(turnId: string | undefined, gameId: string, round
     };
 }
 
-export function useTurns(roundId: string | undefined) {
+
+export function useTurns(roundId: string | undefined,isInProgress: boolean) {
     const {isLoading: isLoadingTurns, isError: isErrorLoadingTurns, data: turns} = useQuery(
         {
             queryKey: ['turns', roundId],
             queryFn: () => getTurns(roundId),
+            enabled: isInProgress,
             refetchInterval: 1000
         })
 

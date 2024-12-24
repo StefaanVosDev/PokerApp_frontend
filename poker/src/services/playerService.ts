@@ -1,6 +1,7 @@
 import axios from "axios";
 import PlayersHand from "../model/PlayersHand.ts";
 import {Winner} from "../model/Winner.ts";
+import Player from "../model/Player";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -18,4 +19,9 @@ export async function getWinner(winnerId: string | undefined) {
         const {data: winner} = await axios.get<Winner>(`/api/players/winner?winnerId=${winnerId}`);
         return winner;
     }
+}
+
+export async function getPlayerOnMove(gameId: string | undefined) {
+    const {data: player} = await axios.get<Player>(`/api/players/${gameId}/playerOnMove`);
+    return player;
 }

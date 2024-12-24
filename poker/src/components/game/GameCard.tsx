@@ -2,6 +2,7 @@ import {Card, CardContent, Typography} from "@mui/material";
 import {Game} from "../../model/Game.ts";
 import {Cancel, CheckCircle} from "@mui/icons-material";
 import {getStatusColor} from "../../services/gameService.ts";
+import {usePlayerOnMove} from "../../hooks/usePlayer";
 
 interface GameCardProps {
     onClick: () => void;
@@ -12,6 +13,8 @@ export function GameCard({onClick, game}: GameCardProps) {
 
     const currentPlayers = game.players.length;
     const statusColor = getStatusColor(game.status);
+    const {player} = usePlayerOnMove(game.id);
+
 
     return <Card
         className="game-card"
@@ -35,6 +38,9 @@ export function GameCard({onClick, game}: GameCardProps) {
                     ? `Status: ${game.status}, Winner: ${game.players.find(player => player.isWinner)?.username}`
                     : `Status: ${game.status}`}
             </Typography>
+            <Typography variant="body2" className="game-status">
+                {game.status === 'IN_PROGRESS' && player?.username ? `Make a move!  ${player.username}` : ''}
+            </Typography>
             <Typography variant="h6" className="settings-display">
                 Settings
             </Typography>
@@ -50,7 +56,10 @@ export function GameCard({onClick, game}: GameCardProps) {
                     starting chips: ${game.settings.startingChips}
                 </Typography>
                 <Typography variant="body2" className="game-setting">
-                    timer: {game.settings.timer ? <CheckCircle color="success"/> : <Cancel color="error"/>}
+                    timer:
+                </Typography>
+                <Typography variant="body2" className="game-setting">
+                    {game.settings.timer ? <CheckCircle color="success"/> : <Cancel color="error"/>}
                 </Typography>
             </div>
         </CardContent>

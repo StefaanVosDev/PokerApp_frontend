@@ -9,4 +9,5 @@ export type Game = {
     name : string;
     winner : Player;
     settings: Configuration;
+    currentPlayerOnMove: string
 }
