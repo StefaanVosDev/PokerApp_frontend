@@ -20,3 +20,7 @@ export async function getFriends(username: string | undefined | null) {
     const {data} = await axios.get<FriendsListDto[]>(`/api/accounts/friends/${username}`);
     return data;
 }
+
+export async function deleteFriend(username: string, friendUsername: string) {
+    await axios.delete(`/api/accounts/friends/${username}/${friendUsername}`);
+}
