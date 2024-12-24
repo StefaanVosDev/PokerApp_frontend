@@ -1,7 +1,14 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
-import {createAccount, deleteFriend, getFriends} from "../services/accountService.ts";
-
+import {
+    buyAvatar,
+    createAccount,
+    deleteFriend,
+    getAvatars,
+    getFriends,
+    getPokerPoints
+} from "../services/accountService.ts";
+import {Avatar} from "../model/Avatar.ts";
 
 
 export function useDeleteFriend() {
@@ -43,6 +50,55 @@ export function useCreateAccount() {
     };
 }
 
+export function useAvatars() {
+    const {isLoading, isError, data: avatars, refetch} = useQuery({
+        queryKey: ['avatars'],
+        queryFn: getAvatars,
+        refetchInterval: 10000
+    });
+
+    return {
+        isLoadingAvatars: isLoading,
+        isErrorAvatars: isError,
+        avatars,
+        refetchAvatars: refetch,
+    };
+}
+
+export function useBuyAvatar() {
+    const queryClient = useQueryClient();
+
+    const {mutate, isPending, isError, isSuccess, error} = useMutation({
+        mutationFn: async (avatar: Avatar) => await buyAvatar(avatar),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['avatars']});
+        }
+    });
+
+    return {
+        triggerBuyAvatar: mutate,
+        isPendingBuyAvatar: isPending,
+        isErrorBuyAvatar: isError,
+        isSuccessBuyAvatar: isSuccess,
+        errorBuyAvatar: error,
+    };
+}
+
+export function usePokerPoints() {
+    const {isLoading, isError, data: pokerPoints, refetch} = useQuery({
+        queryKey: ['pokerPoints'],
+        queryFn: getPokerPoints,
+        refetchInterval: 10000
+    });
+
+    return {
+        isLoadingPokerPoints: isLoading,
+        isErrorPokerPoints: isError,
+        pokerPoints,
+        refetchPokerPoints: refetch
+    }
+
+}
 
 
 export function useFriends(username: string | undefined | null) {

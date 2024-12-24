@@ -1,5 +1,6 @@
 import axios from "axios";
 import Account from "../model/Account.ts";
+import {Avatar} from "../model/Avatar.ts";
 import FriendsListDto from "../model/FriendsListDto.ts";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -21,6 +22,20 @@ export async function getFriends(username: string | undefined | null) {
     return data;
 }
 
+export async function getAvatars() {
+    const {data} = await axios.get<Avatar[]>('/api/avatars');
+    return data;
+}
+
+export async function buyAvatar(avatar: Avatar) {
+    const {data} = await axios.post<Avatar>('/api/avatars/buy?name=' + avatar.name);
+    return data;
+}
+
+export async function getPokerPoints() {
+    const {data} = await axios.get<number>('/api/accounts/poker-points');
+    return data;
+}
 export async function deleteFriend(username: string, friendUsername: string) {
     await axios.delete(`/api/accounts/friends/${username}/${friendUsername}`);
 }

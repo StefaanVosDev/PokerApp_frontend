@@ -1,5 +1,5 @@
-import { updateGameStatus } from "../services/gameService";
-import { useMutation } from "@tanstack/react-query";
+import {updateGameStatus} from "../services/gameService";
+import {useMutation} from "@tanstack/react-query";
 
 export function useUpdateGameStatus() {
     const { mutate: updateStatus,isPending, isError, isSuccess, error } = useMutation({
