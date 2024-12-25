@@ -1,10 +1,11 @@
 import './PokerTable.scss';
 import Player from "../../model/Player.ts";
 import {Turn} from "../../model/Turn.ts";
-import {Avatar, Button} from "@mui/material";
+import {Alert, Avatar, Button} from "@mui/material";
 import PlayerComponent from "../player/PlayerComponent.tsx";
 import {useGame, useJoinGame} from "../../hooks/useGame.ts";
 import {useCommunityCards} from "../../hooks/useRound.ts";
+import Loader from "../loader/Loader.tsx";
 
 interface PokerTableProps {
     players: (Player & { cards: string[] })[]; // Players with cards as image paths
@@ -27,7 +28,17 @@ const playerPositions = [
     {top: '20%', left: '23%'},
 ];
 
-export default function PokerTable({players, turns, dealerIndex, maxPlayers, gameId, winnings, animationAllowed, loggedInUser,isGameInProgress}: PokerTableProps) {
+export default function PokerTable({
+                                       players,
+                                       turns,
+                                       dealerIndex,
+                                       maxPlayers,
+                                       gameId,
+                                       winnings,
+                                       animationAllowed,
+                                       loggedInUser,
+                                       isGameInProgress
+                                   }: PokerTableProps) {
     const sortedPlayers = players.sort((a, b) => a.position - b.position);
     const openSpots = maxPlayers - players.length;
     const {game} = useGame(String(gameId));
@@ -41,17 +52,17 @@ export default function PokerTable({players, turns, dealerIndex, maxPlayers, gam
     const {isJoining, isErrorJoining, join} = useJoinGame(gameId);
 
     if (isLoadingCommunityCards)
-        return <div>Loading community cards...</div>;
+        return <Loader>Loading community cards...</Loader>;
     if (isErrorCommunityCards)
-        return <div>Error loading community cards</div>;
+        return <Alert severity="error" variant="filled">Error loading community cards</Alert>;
     if (isJoining)
-        return <div>Joining game...</div>;
+        return <Loader>Joining game...</Loader>;
     if (isErrorJoining)
-        return <div>Error joining game</div>;
+        return <Alert severity="error" variant="filled">Error joining game</Alert>;
 
-    const handleJoin = async () => {
-            await join();
-    };
+    function handleJoin() {
+        join();
+    }
 
     const isUserInGame = players.some((player) => player.username === loggedInUser?.toString());
 
@@ -75,7 +86,10 @@ export default function PokerTable({players, turns, dealerIndex, maxPlayers, gam
                 const showCards = isGameInProgress && player.username === loggedInUser?.toString();
                 return <PlayerComponent
                     key={player.id}
-                    player={{...player, cards: showCards ? player.cards : (isGameInProgress ? ["/images/back_of_card.png", "/images/back_of_card.png"] : [])}}
+                    player={{
+                        ...player,
+                        cards: showCards ? player.cards : (isGameInProgress ? ["/images/back_of_card.png", "/images/back_of_card.png"] : [])
+                    }}
                     index={index}
                     dealerIndex={dealerIndex}
                     turns={turns}

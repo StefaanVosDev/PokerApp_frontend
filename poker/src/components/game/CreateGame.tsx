@@ -7,7 +7,7 @@ import {useCreateGame} from "../../hooks/useGame.ts";
 
 export default function CreateGame() {
     const navigate = useNavigate();
-    const {register, handleSubmit, formState: {errors}, reset, watch} = useForm<CreateGameFormInputs>();
+    const {register, handleSubmit, formState: {errors}, watch} = useForm<CreateGameFormInputs>();
     const {mutate, error} = useCreateGame();
 
     const smallBlind = watch('settings.smallBlind');
@@ -16,8 +16,8 @@ export default function CreateGame() {
     const onSubmit = (data: CreateGameFormInputs) => {
         mutate(data, {
             onSuccess: () => {
-                reset();
                 alert('Game created successfully!');
+                navigate(-1);
             }
         });
     };

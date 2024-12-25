@@ -2,6 +2,7 @@ import {useAvatars, useBuyAvatar, usePokerPoints} from "../../hooks/useAccount.t
 import {Avatar} from "../../model/Avatar.ts";
 import "./Shop.scss";
 import {
+    Alert,
     Box,
     Button,
     Card,
@@ -15,6 +16,7 @@ import {
     Typography
 } from "@mui/material";
 import {useEffect, useState} from "react";
+import Loader from "../loader/Loader.tsx";
 
 function Shop() {
     const {isLoadingAvatars, isErrorAvatars, avatars, refetchAvatars} = useAvatars();
@@ -29,12 +31,12 @@ function Shop() {
         }
     }, [isSuccessBuyAvatar]);
 
-    if (isLoadingAvatars) return <div>Loading...</div>;
-    if (isErrorAvatars) return <div>Error...</div>;
-    if (isPendingBuyAvatar) return <div>Buying...</div>;
-    if (isErrorBuyAvatar) return <div>Error buying...</div>;
-    if (isLoadingPokerPoints) return <div>Loading poker points...</div>;
-    if (isErrorPokerPoints) return <div>Error loading poker points...</div>;
+    if (isLoadingAvatars) return <Loader>Loading...</Loader>;
+    if (isErrorAvatars) return <Alert severity="error" variant="filled">Error...</Alert>;
+    if (isPendingBuyAvatar) return <Loader>Buying...</Loader>;
+    if (isErrorBuyAvatar) return <Alert severity="error" variant="filled">Error buying...</Alert>;
+    if (isLoadingPokerPoints) return <Loader>Loading poker points...</Loader>;
+    if (isErrorPokerPoints) return <Alert severity="error" variant="filled">Error loading poker points...</Alert>;
 
     function handleBuyAvatar(avatar: Avatar) {
         if (pokerPoints !== undefined && pokerPoints < avatar.price) {

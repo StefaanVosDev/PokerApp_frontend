@@ -1,14 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
-import {
-    addFriend,
-    buyAvatar,
-    createAccount,
-    deleteFriend,
-    getAvatars,
-    getFriends,
-    getPokerPoints
-} from "../services/accountService.ts";
+import {addFriend, buyAvatar, createAccount, deleteFriend, getAvatars, getFriends, getPokerPoints, getLoggedInAvatar, getAccount} from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
 
 export function useAddFriend() {
@@ -135,4 +127,40 @@ export function useFriends(username: string | undefined | null) {
         isError,
         friends,
     };
+}
+
+export function useLoggedInAvatar(isAuthenticated: () => boolean) {
+    const {
+        isLoading: isLoadingAvatar,
+        isError: isErrorLoadingAvatar,
+        data: avatar,
+    } = useQuery({
+        queryKey: ['avatar'],
+        queryFn: () => getLoggedInAvatar(isAuthenticated),
+        refetchInterval: 3000
+    })
+
+    return {
+        isLoadingAvatar,
+        isErrorLoadingAvatar,
+        avatar
+    }
+}
+
+export function useAccount(id: string) {
+    const {
+        isLoading,
+        isError,
+        data: account,
+    } = useQuery({
+        queryKey: ['account', id],
+        queryFn: () => getAccount(id),
+        refetchInterval: 1000
+    })
+
+    return {
+        isLoading,
+        isError,
+        account
+    }
 }

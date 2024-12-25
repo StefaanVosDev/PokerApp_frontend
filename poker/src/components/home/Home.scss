@@ -21,17 +21,6 @@
     .card-display {
       position: relative;
 
-      .background-blur {
-        position: absolute;
-        inset: -1rem;
-        background: #3b82f6;
-        opacity: 0.3; /* Starting opacity for better visibility */
-        border-radius: 50%;
-        filter: blur(3rem); /* Increased blur */
-        animation: pulse 1s infinite; /* Slower animation */
-      }
-
-
       .cards {
         position: relative;
         height: 300px;
@@ -120,20 +109,5 @@
     }
 
 
-  }
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0.1; /* Lower start opacity */
-    transform: scale(1); /* Starting size */
-  }
-  50% {
-    opacity: 0.8; /* Higher opacity for better glow */
-    transform: scale(1.4); /* Slightly enlarged to emphasize pulse */
-  }
-  100% {
-    opacity: 0.1; /* Returning to start opacity */
-    transform: scale(1); /* Returning to original size */
   }
 }

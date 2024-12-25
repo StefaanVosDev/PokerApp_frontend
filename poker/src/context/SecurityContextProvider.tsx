@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import Keycloak from 'keycloak-js';
 import Account from '../model/Account.ts';
 import {useCreateAccount} from "../hooks/useAccount.ts";
+import Loader from "../components/loader/Loader.tsx";
 
 interface IWithChildren {
     children: ReactNode;
@@ -55,6 +56,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
             age: keycloak.idTokenParsed?.age,
             city: keycloak.idTokenParsed?.city,
             gender: keycloak.idTokenParsed?.gender,
+            ownedAvatars: []
         };
         triggerCreateAccount(account);
     }
@@ -94,7 +96,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
 
 
     if (!isKeycloakInitialized) {
-        return <div>Loading...</div>;
+        return <Loader>Loading...</Loader>
     }
 
     return (
