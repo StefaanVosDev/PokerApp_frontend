@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import './App.css';
+import './App.scss';
 import HelloWorld from './components/helloworld/HelloWorld.tsx';
 import {cyan} from "@mui/material/colors";
 import {createTheme, ThemeProvider} from "@mui/material";
@@ -12,6 +12,7 @@ import CreateGame from "./components/game/CreateGame";
 import SecurityContextProvider from "./context/SecurityContextProvider.tsx";
 import {RouteGuard} from "./components/routeguard/RouteGuard.tsx";
 import EndGame from "./components/game/EndGame.tsx";
+import AccountPage from "./components/account/AccountPage.tsx";
 import Shop from "./components/shop/Shop.tsx";
 
 const theme = createTheme({
@@ -46,6 +47,7 @@ function App() {
                                 <Route path="/create-game" element={<RouteGuard><CreateGame/></RouteGuard>}/>
                                 <Route path="/end-game/:winnerId" element={<RouteGuard><EndGame/></RouteGuard>}/>
                                 <Route path="/shop" element={<RouteGuard><Shop/></RouteGuard>}/>
+                                <Route path="/account/:username" element={<RouteGuard><AccountPage/></RouteGuard>}/>
                             </Routes>
                     </BrowserRouter>
                 </SecurityContextProvider>

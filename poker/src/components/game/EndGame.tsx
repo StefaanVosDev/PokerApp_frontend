@@ -1,6 +1,7 @@
 import {Alert, Box, Button, Container, Typography} from '@mui/material';
 import {useNavigate, useParams} from "react-router-dom";
 import {useWinner} from "../../hooks/usePlayer.ts";
+import Loader from "../loader/Loader.tsx";
 
 function EndGame() {
     const {winnerId} = useParams<{ winnerId: string }>();
@@ -9,7 +10,7 @@ function EndGame() {
     const {isLoading, isError, winner} = useWinner(winnerId);
 
     if (isLoading)
-        return <div>Loading winner data...</div>;
+        return <Loader>Loading winner data...</Loader>;
     if (isError)
         return <Alert severity="error">Error loading winner data...</Alert>
 

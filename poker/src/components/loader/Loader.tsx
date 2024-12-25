@@ -1,14 +1,36 @@
-import {CircularProgress, Stack, Typography} from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress';
+import { Stack, Typography } from '@mui/material';
+import {ReactNode} from "react";
+import {motion} from "framer-motion";
+import "./Loader.scss"
 
-interface LoaderProps {
-    children: string
-}
+type LoaderProps = {
+    children: ReactNode
+};
 
-export default function Loader({ children }: LoaderProps) {
+function Loader({ children } : LoaderProps) {
+    const chipImageSrc = '/src/assets/stacks_chip.png';
+
     return (
-        <Stack alignItems="center" spacing={4} marginTop={50}>
+        <Stack alignItems="center" spacing={4} marginTop={20}>
+            <CircularProgress
+                variant="determinate"
+                value={100}
+                style={{
+                    color: 'transparent',
+                    position: 'relative',
+                }}
+            />
+            <motion.img
+                className="spinning-chip"
+                src={chipImageSrc}
+                alt="Spinning Chip"
+                animate={{rotate: 360}}
+                transition={{duration: 1, repeat: Infinity}}
+            />
             <Typography variant="h4">{children}</Typography>
-            <CircularProgress/>
         </Stack>
-    )
-}
+    );
+};
+
+export default Loader

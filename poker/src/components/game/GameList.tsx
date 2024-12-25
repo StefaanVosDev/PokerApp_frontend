@@ -59,7 +59,7 @@ export default function GameList() {
             <Button
                 className="back-button"
                 variant="contained"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/")}
             >
                 Back
             </Button>

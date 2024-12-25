@@ -1,7 +1,8 @@
 import axios from "axios";
 import Account from "../model/Account.ts";
-import {Avatar} from "../model/Avatar.ts";
 import FriendsListDto from "../model/FriendsListDto.ts";
+import {Avatar} from "../model/Avatar.ts";
+
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -38,6 +39,19 @@ export async function getPokerPoints() {
 }
 export async function deleteFriend(username: string, friendUsername: string) {
     await axios.delete(`/api/accounts/friends/${username}/${friendUsername}`);
+}
+
+export async function getLoggedInAvatar(isAuthenticated: () => boolean) {
+    if (isAuthenticated()) {
+        const {data} = await axios.get<Avatar>("/api/avatars/loggedIn")
+        return data;
+    }
+    return null;
+}
+
+export async function getAccount(id : string) {
+    const {data} = await axios.get<Account>('/api/accounts/' + id);
+    return data;
 }
 
 export async function addFriend(username: string, friendUsername: string): Promise<void> {
