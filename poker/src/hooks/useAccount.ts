@@ -1,6 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
 import {
+    addFriend,
     buyAvatar,
     createAccount,
     deleteFriend,
@@ -9,6 +10,27 @@ import {
     getPokerPoints
 } from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
+
+export function useAddFriend() {
+    const queryClient = useQueryClient();
+
+    const { mutate, isPending, isError, isSuccess, error } = useMutation({
+        mutationFn: async ({ username, friendUsername }: { username: string, friendUsername: string }) => {
+            await addFriend(username, friendUsername);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["friends"] });
+        },
+    });
+
+    return {
+        triggerAddFriend: mutate,
+        isPending,
+        isError,
+        isSuccess,
+        error,
+    };
+}
 
 
 export function useDeleteFriend() {
@@ -27,7 +49,7 @@ export function useDeleteFriend() {
         isPending,
         isError,
         isSuccess,
-        error, // To provide error details if needed
+        error,
     };
 }
 

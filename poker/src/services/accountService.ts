@@ -39,3 +39,18 @@ export async function getPokerPoints() {
 export async function deleteFriend(username: string, friendUsername: string) {
     await axios.delete(`/api/accounts/friends/${username}/${friendUsername}`);
 }
+
+export async function addFriend(username: string, friendUsername: string): Promise<void> {
+    try {
+        await axios.post(`/api/accounts/friends/${username}/${friendUsername}`);
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response) {
+
+            const { data } = error.response;
+            throw new Error(typeof data === "string" ? data : "An error occurred");
+        }
+
+        throw new Error("Network error occurred. Please try again later.");
+    }
+}
+

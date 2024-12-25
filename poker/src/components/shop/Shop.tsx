@@ -37,7 +37,7 @@ function Shop() {
     if (isErrorPokerPoints) return <div>Error loading poker points...</div>;
 
     function handleBuyAvatar(avatar: Avatar) {
-        if (pokerPoints && pokerPoints < avatar.price) {
+        if (pokerPoints !== undefined && pokerPoints < avatar.price) {
             setIsOpen(true);
             return;
         }
