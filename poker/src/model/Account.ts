@@ -8,4 +8,5 @@ export default interface Account {
     city: string,
     gender: string,
     ownedAvatars: Avatar[],
+    activeAvatar: Avatar | null,
 }

@@ -49,8 +49,8 @@ export async function getLoggedInAvatar(isAuthenticated: () => boolean) {
     return null;
 }
 
-export async function getAccount(id : string) {
-    const {data} = await axios.get<Account>('/api/accounts/' + id);
+export async function getAccount(username : string) {
+    const {data} = await axios.get<Account>('/api/accounts/' + username);
     return data;
 }
 
@@ -67,4 +67,11 @@ export async function addFriend(username: string, friendUsername: string): Promi
         throw new Error("Network error occurred. Please try again later.");
     }
 }
+
+export async function selectAvatar(username: string, avatarId: string | null) {
+    if (!avatarId) return null;
+    const {data} = await axios.put<string>(`/api/accounts/${username}/active-avatar?avatarId=${avatarId}`);
+    return data;
+}
+
 

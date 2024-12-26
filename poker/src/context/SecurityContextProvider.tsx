@@ -22,7 +22,7 @@ const keycloak: Keycloak = new Keycloak(keycloakConfig);
 export default function SecurityContextProvider({ children }: IWithChildren) {
     const [loggedInUser, setLoggedInUser] = useState<string | undefined>(undefined);
     const [isKeycloakInitialized, setIsKeycloakInitialized] = useState(false);
-    const { triggerCreateAccount } = useCreateAccount();
+    const { isSuccess, isPending: isCreatingAccount, triggerCreateAccount } = useCreateAccount();
     const [username, setUsername] = useState<string | undefined>(undefined);
 
     useEffect(() => {
@@ -56,7 +56,8 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
             age: keycloak.idTokenParsed?.age,
             city: keycloak.idTokenParsed?.city,
             gender: keycloak.idTokenParsed?.gender,
-            ownedAvatars: []
+            ownedAvatars: [],
+            activeAvatar: null,
         };
         triggerCreateAccount(account);
     }
@@ -91,11 +92,11 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
 
     function isAuthenticated(): boolean {
         const token = Cookies.get('authToken');
-        return token ? !isExpired(token) : false;
+        return token ? !isExpired(token) && isSuccess : false;
     }
 
 
-    if (!isKeycloakInitialized) {
+    if (!isKeycloakInitialized || isCreatingAccount) {
         return <Loader>Loading...</Loader>
     }
 

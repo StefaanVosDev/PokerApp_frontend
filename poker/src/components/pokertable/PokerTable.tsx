@@ -72,7 +72,7 @@ export default function PokerTable({
             <div className="dealer">
                 <Avatar
                     alt="Dealer"
-                    src="/src/assets/dealer-avatar.jpg"
+                    src="/src/assets/dealer.svg"
                     sx={{
                         width: 100,
                         height: 100,

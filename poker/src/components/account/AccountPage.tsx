@@ -4,57 +4,50 @@ import {
     Paper,
     Box,
     Stack,
-    Alert,
+    Alert, Button,
 } from "@mui/material";
-import {useAccount, useLoggedInAvatar} from "../../hooks/useAccount.ts";
+import {useAccount, useLoggedInAvatar, useSelectAvatar} from "../../hooks/useAccount.ts";
 import {useParams} from "react-router-dom";
 import Loader from "../loader/Loader.tsx";
 import "./AccountPage.scss";
+import {useContext, useEffect, useState} from "react";
+import SecurityContext from "../../context/SecurityContext.ts";
 
 function AccountPage() {
     const {username} = useParams();
     const {isLoading, isError, account} = useAccount(String(username));
-    const {isLoadingAvatar, isErrorLoadingAvatar, avatar} = useLoggedInAvatar(() => true);
+    const {isAuthenticated} = useContext(SecurityContext)
+    const {isLoadingAvatar, isErrorLoadingAvatar, avatar} = useLoggedInAvatar(isAuthenticated);
+    const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
+    const {
+        isSelectingAvatar,
+        isErrorSelectingAvatar,
+        isSuccessSelectingAvatar,
+        triggerSelectAvatar
+    } = useSelectAvatar(String(username), selectedAvatarId);
+    const isMyAccount = String(username) === avatar?.username;
 
-    const glowStyle = {
-        position: "absolute" as const,
-        inset: "-1rem",
-        background: "#3b82f6",
-        opacity: 0.3,
-        borderRadius: "50%",
-        filter: "blur(3rem)",
-        animation: "pulse 1s infinite",
-    };
-
-    const paperStyle = {
-        backgroundColor: "rgba(26, 32, 44, 0.6)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-        color: "white",
-        fontFamily: "'Kalam', sans-serif",
-        padding: "20px",
-        borderRadius: "15px",
-    };
+    useEffect(() => {
+        if (isSuccessSelectingAvatar) setSelectedAvatarId(null)
+    }, []);
 
     if (isLoading) return <Loader>loading account...</Loader>
     if (isLoadingAvatar) return <Loader>loading avatar...</Loader>
+    if (isSelectingAvatar) return <Loader>selecting avatar...</Loader>
     if (isError || !account) return <Alert severity="error" variant="filled">Error loading account!</Alert>
     if (isErrorLoadingAvatar || !avatar) return <Alert severity="error" variant="filled">Error loading data!</Alert>
+    if (isErrorSelectingAvatar || !triggerSelectAvatar) return <Alert severity="error" variant="filled">Error selecting
+        avatar!</Alert>
+
+    function handleSelect(selectedAvatarId: string) {
+        setSelectedAvatarId(selectedAvatarId)
+        triggerSelectAvatar()
+    }
 
     return (
-        <div
-            style={{
-                backgroundColor: "#000000",
-                minHeight: "100vh",
-                paddingTop: "80px",
-                fontFamily: "'Kalam', sans-serif",
-                color: "#FFFFFF",
-                position: "relative",
-            }}
-        >
+        <div className="account-container">
             <Stack spacing={4} alignItems="center">
-
+                {/* Merged Account Details and Owned Avatars */}
                 <Box
                     sx={{
                         position: "relative",
@@ -65,11 +58,18 @@ function AccountPage() {
                         maxWidth: "900px",
                     }}
                 >
-                    <div style={glowStyle} className="background-blur"></div>
+                    <div className="background-blur glow"></div>
                     <Paper
                         elevation={3}
-                        style={{
-                            ...paperStyle,
+                        sx={{
+                            backgroundColor: "rgba(26, 32, 44, 0.6)",
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)",
+                            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                            color: "white",
+                            fontFamily: "'Kalam', sans-serif",
+                            padding: "20px",
+                            borderRadius: "15px",
                             position: "relative",
                             zIndex: 2,
                         }}
@@ -78,12 +78,12 @@ function AccountPage() {
                             <Stack direction="row" spacing={2} alignItems="center" mb={3}>
                                 <Avatar
                                     alt="User Avatar"
-                                    src={avatar?.image}
+                                    src={account.activeAvatar!.image}
                                     sx={{width: 80, height: 80}}
                                 />
                                 <Box>
                                     <Typography variant="h5">{account?.username}</Typography>
-                                    <Typography variant="body1" style={{opacity: 0.8}}>
+                                    <Typography variant="body1" sx={{opacity: 0.8}}>
                                         {account?.email}
                                     </Typography>
                                 </Box>
@@ -92,19 +92,18 @@ function AccountPage() {
                             <Typography variant="body1">Name: {account?.name}</Typography>
                             <Typography
                                 variant="body1">Age: {new Date(account?.age).toLocaleDateString()}</Typography>
-                            <Typography variant="body1">City: {account?.city}</Typography>
+                            {isMyAccount && <Typography variant="body1">City: {account?.city}</Typography>}
                             <Typography variant="body1">Gender: {account?.gender}</Typography>
                         </Stack>
 
 
-
+                        {/* Owned Avatars */}
                         <Typography
                             variant="h6"
-                            style={{
+                            sx={{
                                 fontFamily: "'Kalam', sans-serif",
                                 color: "#3b82f6",
                                 marginBottom: "10px",
-                                textAlign: "center",
                             }}
                         >
                             Owned Avatars
@@ -125,20 +124,52 @@ function AccountPage() {
                                         />
                                         <Typography
                                             variant="body2"
-                                            style={{
+                                            sx={{
                                                 fontFamily: "'Kalam', sans-serif",
                                                 marginTop: "5px",
                                             }}
                                         >
                                             {avatarItem.name}
                                         </Typography>
+                                        {/*check if the page is  being visited by the logged in user or a friend*/}
+                                        {isMyAccount &&
+                                            (avatarItem.id === avatar.id ? (
+                                                    <Button
+                                                        disabled={true}
+                                                        sx={{
+                                                            backgroundColor: 'grey',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            padding: '10px 15px',
+                                                            cursor: 'not-allowed',
+                                                            marginTop: '10px'
+                                                        }}
+                                                    >
+                                                        Selected
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        onClick={() => handleSelect(avatarItem.id)}
+                                                        sx={{
+                                                            backgroundColor: 'blue',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            padding: '10px 15px',
+                                                            cursor: 'pointer',
+                                                            marginTop: '10px'
+                                                        }}
+                                                    >
+                                                        Select
+                                                    </Button>
+                                                )
+                                            )}
                                     </Box>
                                 ))}
                             </Stack>
                         ) : (
                             <Typography
                                 variant="body1"
-                                style={{
+                                sx={{
                                     fontFamily: "'Kalam', sans-serif",
                                     opacity: 0.8,
                                 }}
