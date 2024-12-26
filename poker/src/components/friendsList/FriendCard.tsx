@@ -12,8 +12,10 @@ import {
     ListItemText,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {useContext, useState} from "react";
-import {useDeleteFriend} from "../../hooks/useAccount.ts";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDeleteFriend } from "../../hooks/useAccount.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
 
 interface FriendCardProps {
@@ -27,6 +29,7 @@ function FriendCard({ friend }: FriendCardProps) {
     const { username } = useContext(SecurityContext);
     const { triggerDeleteFriend, isPending } = useDeleteFriend();
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleOpenDialog = () => {
         setDialogOpen(true);
@@ -41,6 +44,10 @@ function FriendCard({ friend }: FriendCardProps) {
             triggerDeleteFriend({ username, friendUsername: friend.username });
         }
         setDialogOpen(false);
+    };
+
+    const navigateToProfile = () => {
+        navigate(`/account/${friend.username}`);
     };
 
     return (
@@ -78,6 +85,22 @@ function FriendCard({ friend }: FriendCardProps) {
                     }}
                 />
 
+
+                <IconButton
+                    onClick={navigateToProfile}
+                    aria-label="view profile"
+                    sx={{
+                        color: "rgba(255, 255, 255, 0.7)",
+                        marginRight: "8px",
+                        "&:hover": {
+                            color: "#3b82f6",
+                        },
+                    }}
+                >
+                    <AccountCircleIcon />
+                </IconButton>
+
+
                 <IconButton
                     onClick={handleOpenDialog}
                     aria-label="delete friend"
@@ -92,7 +115,7 @@ function FriendCard({ friend }: FriendCardProps) {
                 </IconButton>
             </ListItem>
 
-            {/* Confirmation Dialog */}
+
             <Dialog
                 open={isDialogOpen}
                 onClose={handleCloseDialog}
