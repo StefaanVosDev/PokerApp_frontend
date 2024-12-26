@@ -1,7 +1,22 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
-import {addFriend, buyAvatar, createAccount, deleteFriend, getAvatars, getFriends, getPokerPoints, getLoggedInAvatar, getAccount} from "../services/accountService.ts";
+import {addFriend, buyAvatar, createAccount, deleteFriend, getAvatars, getFriends, getPokerPoints, getLoggedInAvatar, getAccount, selectAvatar} from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
+
+export function useSelectAvatar(username: string, avatarId: string | null) {
+    const {mutate: triggerSelectAvatar, isPending: isSelectingAvatar, isError: isErrorSelectingAvatar, isSuccess: isSuccessSelectingAvatar} = useMutation({
+        mutationFn: async () => {
+            await selectAvatar(username, avatarId);
+        },
+    });
+
+    return {
+        triggerSelectAvatar,
+        isSelectingAvatar,
+        isErrorSelectingAvatar,
+        isSuccessSelectingAvatar
+    };
+}
 
 export function useAddFriend() {
     const queryClient = useQueryClient();
@@ -147,14 +162,14 @@ export function useLoggedInAvatar(isAuthenticated: () => boolean) {
     }
 }
 
-export function useAccount(id: string) {
+export function useAccount(username: string) {
     const {
         isLoading,
         isError,
         data: account,
     } = useQuery({
-        queryKey: ['account', id],
-        queryFn: () => getAccount(id),
+        queryKey: ['account', username],
+        queryFn: () => getAccount(username),
         refetchInterval: 1000
     })
 

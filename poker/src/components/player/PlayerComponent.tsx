@@ -1,9 +1,11 @@
-import {Avatar, Box, Card, Stack, Typography} from "@mui/material";
+import {Alert, Avatar, Box, Card, Stack, Typography} from "@mui/material";
 import {Turn} from "../../model/Turn.ts";
 import Player from "../../model/Player.ts";
 import "./PlayerComponent.scss";
 import {AnimatePresence, motion} from "framer-motion";
 import {useEffect, useState} from "react";
+import {useAccount} from "../../hooks/useAccount.ts";
+import Loader from "../loader/Loader.tsx";
 
 interface PlayerProps {
     player: Player & { cards: string[] };
@@ -24,21 +26,14 @@ function generateSparkles(count: number) {
     }));
 }
 
-function PlayerComponent({
-                             player,
-                             index,
-                             dealerIndex,
-                             turns,
-                             playerPositions,
-                             winRound,
-                             animationAllowed
-                         }: PlayerProps) {
+function PlayerComponent({player, index, dealerIndex, turns, playerPositions, winRound, animationAllowed}: PlayerProps) {
     const turnsFromPlayer = turns.filter(turn => turn.player.id == player.id);
     const moneyGambledThisPhase = turnsFromPlayer.map(turn => turn.moneyGambled).reduce((sum, money) => sum + money, 0);
     const turn = turnsFromPlayer.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[turnsFromPlayer.length - 1];
     const playerMove = turn ? (turn.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
     const hasFolded = turn?.moveMade.toString() === "FOLD";
     const isDealer = index === dealerIndex;
+    const {isLoading: isLoadingAccount, isError: isErrorLoadingAccount, account} = useAccount(player.username);
 
     const [playSparkles, setPlaySparkles] = useState(winRound && animationAllowed);
     const [sparkles] = useState(() => generateSparkles(10));
@@ -50,12 +45,12 @@ function PlayerComponent({
         }
     });
 
-    function avatar() {
+    function avatarComponent() {
         return (
             <Avatar
                 className={`player-avatar ${turn?.moveMade?.toString() === "ON_MOVE" ? "active" : ""}`}
                 alt="Profile pic"
-                src="/src/assets/duckpfp.png"
+                src={account?.activeAvatar?.image}
                 sx={{
                     width: 48,
                     height: 48,
@@ -66,6 +61,9 @@ function PlayerComponent({
             />
         )
     }
+
+    if (isLoadingAccount) return <Loader>Loading avatar...</Loader>
+    if (isErrorLoadingAccount) return <Alert severity="error" variant="filled">Error loading avatar!</Alert>
 
     return (
         <div
@@ -82,7 +80,7 @@ function PlayerComponent({
             )}
             {playSparkles && animationAllowed ?
                 <div className="sparkle-container">
-                    {avatar()}
+                    {avatarComponent()}
 
                     <AnimatePresence>
                         {playSparkles &&
@@ -105,13 +103,13 @@ function PlayerComponent({
                                         ease: "easeInOut",
                                     }}
                                 >
-                                    {avatar()}
+                                    {avatarComponent()}
                                 </motion.div>
                             ))}
                     </AnimatePresence>
                 </div>
 
-                : avatar()
+                : avatarComponent()
             }
             <div className="player-box">
                 <Card sx={{
