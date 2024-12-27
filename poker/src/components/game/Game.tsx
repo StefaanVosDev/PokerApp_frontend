@@ -13,6 +13,8 @@ import {usePlayersHand} from "../../hooks/usePlayer.ts";
 import {useGame} from "../../hooks/useGame.ts";
 import {useUpdateGameStatus} from "../../hooks/useUpdateGameStatus";
 import SecurityContext from "../../context/SecurityContext";
+import ChatLog from "./ChatLog.tsx";
+import ChatIcon from "./ChatIcon.tsx";
 
 function Game() {
     const {id: gameId} = useParams<{ id: string }>();
@@ -21,10 +23,13 @@ function Game() {
     const [isEndOfRound, setIsEndOfRound] = useState(false);
     const [isHandlingProcessMove, setIsHandlingProcessMove] = useState(false);
     const [isGameInProgress, setIsGameInProgress] = useState(false);
-    const [isGameStatusUpdated] = useState(false);
 
-    const { isLoadingRound,isErrorLoadingRound, round } = useCurrentRound(String(gameId), isEndOfRound, isGameInProgress);
-    const { turnId } = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
+    const {
+        isLoadingRound,
+        isErrorLoadingRound,
+        round
+    } = useCurrentRound(String(gameId), isEndOfRound, isGameInProgress);
+    const {turnId} = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
 
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
     const playerIds = game ? game.players.map((player) => player.id) : [];
@@ -59,7 +64,8 @@ function Game() {
     const [totalMoneyInPot, setTotalMoneyInPot] = useState(0);
     const {
         updateStatus,
-        isPending: isUpdatingStatus,} = useUpdateGameStatus();
+        isPending: isUpdatingStatus,
+    } = useUpdateGameStatus();
     const {loggedInUser} = useContext(SecurityContext)
     const [isGameStatusError, setIsGameStatusError] = useState(false);
     const isFirstPlayer = game && game.players.length > 0 && game.players[0].username === loggedInUser?.toString();
@@ -71,6 +77,7 @@ function Game() {
         }
     }, [game]);
 
+    const [isChatLogOpen, setIsChatLogOpen] = useState(false);
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -144,17 +151,22 @@ function Game() {
     }
 
 
-    if (isProcessingMove) {
+    if (isProcessingMove)
         return <Loader>registering move</Loader>;
-    }
-    if (isErrorProcessingMove || !processMove) {
+    if (isErrorProcessingMove || !processMove)
         return <Alert severity="error" variant="filled">Error registering move</Alert>;
-    }
-    if (isLoadingRound && isGameStatusUpdated && isGameInProgress) return <Loader>Loading current round...</Loader>;
-    if (isErrorLoadingRound && isGameStatusUpdated && isGameInProgress) return <Alert severity="error" variant="filled">Error loading current round</Alert>;
 
-    if (isLoadingTurns && isGameStatusUpdated && isGameInProgress) return <Loader>Loading turns...</Loader>;
-    if (isErrorLoadingTurns && isGameStatusUpdated && isGameInProgress) return <Alert severity="error" variant="filled">Error loading turns</Alert>;
+    if (isLoadingRound && isGameInProgress)
+        return <Loader>Loading current round...</Loader>;
+
+    if (isErrorLoadingRound && isGameInProgress)
+        return <Alert severity="error" variant="filled">Error loading current round</Alert>;
+
+    if (isLoadingTurns && isGameInProgress)
+        return <Loader>Loading turns...</Loader>;
+
+    if (isErrorLoadingTurns && isGameInProgress)
+        return <Alert severity="error" variant="filled">Error loading turns</Alert>;
 
     if (gameLoading)
         return <Loader>Loading game...</Loader>;
@@ -162,9 +174,9 @@ function Game() {
     if (gameError || !game)
         return <Alert severity="error" variant="filled">Error loading game data</Alert>;
 
-    if (handsLoading) {
+    if (handsLoading)
         return <Loader>Loading hands...</Loader>;
-    }
+
     if (handsError)
         return <Alert severity="error" variant="filled">Error loading hands</Alert>;
 
@@ -187,11 +199,15 @@ function Game() {
         cards: (playersHand[player.id] || []).map(mapCardToImage), // Map cards to images
     }));
 
+    const toggleChatLog = () => {
+        setIsChatLogOpen(!isChatLogOpen);
+    }
+
     return (
         <>
             <div className="updateStatus">
                 {!isGameInProgress && (
-                    <div className="waiting">
+                    <div>
                         <h2>Waiting for players...</h2>
                         {isFirstPlayer && (
                             <Button
@@ -223,9 +239,9 @@ function Game() {
                 isGameInProgress={isGameInProgress}
             />
             {isGameInProgress && (
-            <div className="pot-money">
-                Pot ${totalMoneyInPot}
-            </div>)}
+                <div className="pot-money">
+                    Pot ${totalMoneyInPot}
+                </div>)}
             {!isEndOfRound && isGameInProgress && (
                 <ActionButtons
                     shouldShowCheckButton={shouldShowCheckButton}
@@ -244,7 +260,19 @@ function Game() {
                     isGameInProgress={isGameInProgress}
                 />
             )}
+            {loggedInUser && game.players.map(player => player.username).includes(loggedInUser.toString()) && (
+                <>
+                    <button className="toggle-chat-log" onClick={toggleChatLog}>
+                        <ChatIcon/>
+                    </button>
+                    {isChatLogOpen && <ChatLog
+                        gameId={String(gameId)}
+                        loggedInUserPosition={game.players.filter(player => player.username == loggedInUser?.toString())[0]?.position}
+                    />}
+                </>
+            )}
         </>
     );
 }
+
 export default Game;

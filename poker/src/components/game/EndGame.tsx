@@ -24,7 +24,7 @@ function EndGame() {
             {winner &&
                 <>
                     <Box className="winner-info" mb={4}>
-                        <img src="/src/assets/duckpfp.png" alt={`${winner.username}'s avatar`}
+                        <img src="/src/assets/duckpfp.svg" alt={`${winner.username}'s avatar`}
                              style={{borderRadius: '50%', width: '150px', height: '150px'}}/>
                         <Typography variant="h4" gutterBottom>Congratulations {winner.username}</Typography>
                         <Typography variant="h5">Winning with ${winner.money}</Typography>

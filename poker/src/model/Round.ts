@@ -5,9 +5,6 @@ export type Round = {
     phase: Phase;
     dealerIndex: number;
     turns: Turn[];
-    // communityCards: Card[];
-    // deck: Card[];
-    // game: Game;
     createdAt: string;
 };
 

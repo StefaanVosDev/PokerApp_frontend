@@ -1,6 +1,7 @@
 import axios from "axios";
 import {Game} from "../model/Game.ts";
-import {CreateGameFormInputs} from "../components/game/forminput/CreateGameFormInputs.ts";
+import {CreateGameFormInputs} from "../components/createGame/forminput/CreateGameFormInputs.ts";
+import {GameMessage} from "../model/GameMessage.ts";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -32,8 +33,16 @@ export async function joinGame(gameId: string) {
 
 export async function getIsOnMove(gameId: string | undefined) {
         const response = await axios.get(`/api/games/${gameId}/isOnMove`);
-        console.log('isOnMove response:', response.data);
         return response.data;
+}
+
+export async function getMessages(gameId: string) {
+    const {data: messages} = await axios.get<GameMessage[]>(`/api/games/messages?gameId=${gameId}`);
+    return messages;
+}
+
+export async function sendMessage(gameId: string, message: string) {
+    await axios.post(`/api/games/${gameId}/addMessage?message=${message}`);
 }
 
 export const getStatusColor = (status: string): string => {

@@ -7,5 +7,3 @@ export interface PlayingCard {
 export enum Suit {
     SPADES, DIAMONDS, HEARTS, CLUBS
 }
-
-export type CardData = Omit<PlayingCard, 'id'>;

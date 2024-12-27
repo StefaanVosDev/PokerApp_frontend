@@ -8,8 +8,8 @@
 
 .updateStatus {
   position: absolute;
-  top: 7.5rem;
-  left: 3rem;
+  top: 36%;
+  left: 42%;
   z-index: 10;
   color: white;
   font-family: 'Kalam', sans-serif;
@@ -107,4 +107,75 @@
   position: absolute;
   left: 45%;
   top: 25%
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+.toggle-chat-log {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  background-color: black;
+  border: none;
+  cursor: pointer;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fade-out {
+  animation: fadeOut 3s forwards;
+}
+
+.balloon-text-0 {
+  position: absolute;
+  top: 13%;
+  left: 370%;
+}
+
+.balloon-text-1 {
+  position: absolute;
+  top: 13%;
+  left: 370%;
+}
+
+.balloon-text-2 {
+  position: absolute;
+  top: 42%;
+  left: 423%;
+}
+
+.balloon-text-3 {
+  position: absolute;
+  top: 72%;
+  left: 345%;
+}
+
+.balloon-text-4 {
+  position: absolute;
+  top: 72%;
+  left: 190%;
+}
+
+.balloon-text-5 {
+  position: absolute;
+  top: 50%;
+  left: 120%;
+}
+
+.balloon-text-6 {
+  position: absolute;
+  top: 13%;
+  left: 170%;
 }

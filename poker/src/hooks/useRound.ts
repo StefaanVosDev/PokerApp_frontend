@@ -1,6 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {
-    createNewRound,
     createNewRoundIfFinished,
     dividePot,
     getCommunityCards,
@@ -20,19 +19,6 @@ export function useCommunityCards(gameId: string, roundStarted: boolean) {
         isError,
         communityCards,
     }
-}
-
-export function useCreateNewRound(gameId: string | undefined) {
-    const {mutate, isPending, isError, isSuccess} = useMutation({
-        mutationFn: async () => await createNewRound(gameId)
-    });
-
-    return {
-        triggerNewRound: mutate,
-        isPending,
-        isError,
-        isSuccess
-    };
 }
 
 export function useCreateNewRoundIfFinished(gameId: string, roundId: string) {

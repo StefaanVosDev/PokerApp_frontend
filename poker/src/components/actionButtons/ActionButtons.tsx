@@ -1,6 +1,7 @@
-import {Button, Slider} from "@mui/material";
+import {Alert, Button, Slider} from "@mui/material";
 import "./ActionButtons.scss";
 import {useIsOnMove} from "../../hooks/useGame";
+import Loader from "../loader/Loader.tsx";
 
 interface ActionButtonsProps {
     shouldShowCheckButton: boolean;
@@ -37,7 +38,10 @@ function ActionButtons({
                        }: ActionButtonsProps) {
 
 
-    const {isOnMove, refetch: refetchIsOnMove} = useIsOnMove(String(gameId), isGameInProgress);
+    const {isLoading, isError, isOnMove, refetch: refetchIsOnMove} = useIsOnMove(String(gameId), isGameInProgress);
+
+    if (isLoading) return <Loader>Loading...</Loader>;
+    if (isError) return <Alert severity="error" variant="filled">Error...</Alert>;
 
     async function handleCheck() {
         setHandlingProcessMove(true);

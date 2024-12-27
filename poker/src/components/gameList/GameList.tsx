@@ -4,7 +4,7 @@ import Loader from "../loader/Loader.tsx";
 import {useEffect, useState} from "react";
 import './GameList.scss';
 import {useGames} from "../../hooks/useGame.ts";
-import {GameCard} from "./GameCard.tsx";
+import {GameCard} from "../game/GameCard.tsx";
 
 export default function GameList() {
     const navigate = useNavigate();

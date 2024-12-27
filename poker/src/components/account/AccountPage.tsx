@@ -104,6 +104,7 @@ function AccountPage() {
                                 fontFamily: "'Kalam', sans-serif",
                                 color: "#3b82f6",
                                 marginBottom: "10px",
+                                textAlign: "center",
                             }}
                         >
                             Owned Avatars
