@@ -68,11 +68,11 @@ export default function PokerTable({
 
     return (
         <div className="poker-table">
-            <img src="/src/assets/table.svg" alt="Poker Table" className="poker-table-image"/>
+            <img src="https://storage.googleapis.com/poker_stacks/others/table.svg" alt="Poker Table" className="poker-table-image"/>
             <div className="dealer">
                 <Avatar
                     alt="Dealer"
-                    src="/src/assets/dealer.svg"
+                    src="https://storage.googleapis.com/poker_stacks/others/dealer.svg"
                     sx={{
                         width: 100,
                         height: 100,
@@ -88,7 +88,7 @@ export default function PokerTable({
                     key={player.id}
                     player={{
                         ...player,
-                        cards: showCards ? player.cards : (isGameInProgress ? ["/images/back_of_card.png", "/images/back_of_card.png"] : [])
+                        cards: showCards ? player.cards : (isGameInProgress ? ["https://storage.googleapis.com/poker_stacks/cards/back_of_card.png", "https://storage.googleapis.com/poker_stacks/cards/back_of_card.png"] : [])
                     }}
                     index={index}
                     dealerIndex={dealerIndex}

@@ -8,5 +8,5 @@ export function mapCardToImage(card: Card): string {
         DIAMONDS: "diamonds",
     };
 
-    return `/images/${SuitLabels[card.suit]}_${card.rank}.png`;
+    return `https://storage.googleapis.com/poker_stacks/cards/${SuitLabels[card.suit]}_${card.rank}.png`;
 }

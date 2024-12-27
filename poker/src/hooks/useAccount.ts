@@ -162,7 +162,7 @@ export function useLoggedInAvatar(isAuthenticated: () => boolean) {
     }
 }
 
-export function useAccount(username: string) {
+export function useAccount(username: string | undefined) {
     const {
         isLoading,
         isError,

@@ -75,7 +75,7 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
         >
             {isDealer && (
                 <div className={`dealer-disk player-${index}`}>
-                    <img src="/src/assets/dealer-disk.svg" alt="Dealer disk"/>
+                    <img src="https://storage.googleapis.com/poker_stacks/others/dealer-disk.svg" alt="Dealer disk"/>
                 </div>
             )}
             {playSparkles && animationAllowed ?
