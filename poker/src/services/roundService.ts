@@ -12,14 +12,6 @@ export async function getCommunityCards(id: string) {
     return null;
 }
 
-export async function createNewRound(gameId: string | undefined) {
-    if (gameId) {
-        const {data} = await axios.post(`/api/rounds?gameId=${gameId}`);
-        return data;
-    }
-    return null;
-}
-
 export async function getCurrentRound(gameId: string) {
     if (gameId) {
         const {data: round} = await axios.get<Round>(`/api/rounds/current?gameId=${gameId}`);

@@ -17,7 +17,7 @@ export default function Navbar() {
 
     return (
         <nav className="custom-navbar">
-            <div>
+            <div className="brand-container">
                 <CircleDollarSign className="icon"/>
                 <a href="/home" className="brand">
                     Stacks

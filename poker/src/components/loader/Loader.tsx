@@ -1,5 +1,5 @@
 import CircularProgress from '@mui/material/CircularProgress';
-import { Stack, Typography } from '@mui/material';
+import {Stack, Typography} from '@mui/material';
 import {ReactNode} from "react";
 import {motion} from "framer-motion";
 import "./Loader.scss"
@@ -31,6 +31,6 @@ function Loader({ children } : LoaderProps) {
             <Typography variant="h4">{children}</Typography>
         </Stack>
     );
-};
+}
 
 export default Loader

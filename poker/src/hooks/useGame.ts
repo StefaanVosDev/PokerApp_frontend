@@ -1,6 +1,14 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
-import {createGame, getGame, getGames, getIsOnMove, joinGame} from "../services/gameService.ts";
-import {CreateGameFormInputs} from "../components/game/forminput/CreateGameFormInputs.ts";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {
+    createGame,
+    getGame,
+    getGames,
+    getIsOnMove,
+    getMessages,
+    joinGame,
+    sendMessage
+} from "../services/gameService.ts";
+import {CreateGameFormInputs} from "../components/createGame/forminput/CreateGameFormInputs.ts";
 
 export function useGame(gameId: string) {
     const {isLoading, isError, data: game} = useQuery({
@@ -67,4 +75,38 @@ export function useJoinGame(gameId: string) {
         isErrorJoining,
         error
     };
+}
+
+export function useMessages(gameId: string) {
+    const {isLoading, isError, data: messages} = useQuery({
+        queryKey: ['messages'],
+        queryFn: () => getMessages(gameId),
+        refetchInterval: 1000
+    });
+
+    return {
+        isLoading,
+        isError,
+        messages,
+    };
+}
+
+export function useSendMessage(gameId: string) {
+    const queryClient = useQueryClient();
+
+    const {mutate, isPending, isError, isSuccess} = useMutation({
+        mutationFn: async (message: string) => {
+            await sendMessage(gameId, message);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['messages']});
+
+        }
+    });
+    return {
+        isPending,
+        isError,
+        isSuccess,
+        sendMessage: mutate,
+    }
 }
