@@ -9,7 +9,7 @@ type LoaderProps = {
 };
 
 function Loader({ children } : LoaderProps) {
-    const chipImageSrc = '/src/assets/stacks_chip.png';
+    const chipImageSrc = 'https://storage.googleapis.com/poker_stacks/others/stacks_chip.png';
 
     return (
         <Stack alignItems="center" spacing={4} marginTop={20}>

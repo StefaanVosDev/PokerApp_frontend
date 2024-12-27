@@ -49,9 +49,12 @@ export async function getLoggedInAvatar(isAuthenticated: () => boolean) {
     return null;
 }
 
-export async function getAccount(username : string) {
-    const {data} = await axios.get<Account>('/api/accounts/' + username);
-    return data;
+export async function getAccount(username : string | undefined) {
+    if (username) {
+        const {data} = await axios.get<Account>('/api/accounts/' + username);
+        return data;
+    }
+    return null;
 }
 
 export async function addFriend(username: string, friendUsername: string): Promise<void> {
