@@ -1,6 +1,8 @@
 import {Turn} from "../model/Turn.ts";
 import {Round} from "../model/Round.ts";
 import axios from "axios";
+import CurrentTurnDto from "../model/dto/CurrentTurnDto.ts";
+
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -52,13 +54,9 @@ export async function allinAndMove(turnId: string | undefined, gameId: string, r
 
 }
 
-type StringWrapper = {
-    content: string;
-}
-
 export async function getCurrentTurnId(gameId: string) {
     if (gameId) {
-        const {data} = await axios.get<StringWrapper>(`/api/turns/current?gameId=${gameId}`);
+        const {data} = await axios.get<CurrentTurnDto>(`/api/turns/current?gameId=${gameId}`);
         return data;
     }
     return null;
@@ -97,4 +95,9 @@ export function getMinimumRaise(lastBet: number, currentPlayerMoney: number, big
     if (lastBet * 2 > currentPlayerMoney) return currentPlayerMoney;
     if (lastBet > bigBlind) return lastBet * 2
     return bigBlind;
+}
+
+export async function getTurn(turnId: string) {
+    const {data} = await axios.get<CurrentTurnDto>("/api/turns/" + turnId);
+    return data;
 }

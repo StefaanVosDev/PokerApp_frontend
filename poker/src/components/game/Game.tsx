@@ -15,6 +15,7 @@ import {useUpdateGameStatus} from "../../hooks/useUpdateGameStatus";
 import SecurityContext from "../../context/SecurityContext";
 import ChatLog from "./ChatLog.tsx";
 import ChatIcon from "./ChatIcon.tsx";
+import Timer from "./Timer.tsx";
 
 function Game() {
     const {id: gameId} = useParams<{ id: string }>();
@@ -29,7 +30,7 @@ function Game() {
         isErrorLoadingRound,
         round
     } = useCurrentRound(String(gameId), isEndOfRound, isGameInProgress);
-    const {turnId} = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
+    const {isErrorLoadingTurn, isLoadingTurn, turn} = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
 
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
     const playerIds = game ? game.players.map((player) => player.id) : [];
@@ -40,7 +41,7 @@ function Game() {
         isErrorProcessingMove,
         processMove,
         isSuccessProcessingMove
-    } = useProcessMove(turnId?.content, String(gameId), String(roundId));
+    } = useProcessMove(turn?.id, String(gameId), String(roundId));
     const {isLoadingTurns, isErrorLoadingTurns, turns} = useTurns(roundId, isGameInProgress);
     const [shouldShowCheckButton, setShouldShowCheckButton] = useState(false);
     const [amountToCall, setAmountToCall] = useState(0);
@@ -69,7 +70,7 @@ function Game() {
     const {loggedInUser} = useContext(SecurityContext)
     const [isGameStatusError, setIsGameStatusError] = useState(false);
     const isFirstPlayer = game && game.players.length > 0 && game.players[0].username === loggedInUser?.toString();
-
+    const timerActive = isGameInProgress && game?.settings.timer
 
     useEffect(() => {
         if (game) {
@@ -192,6 +193,10 @@ function Game() {
     if (isErrorCreateNewRoundIfFinished)
         return <Alert severity="error" variant="filled">Error starting new round</Alert>;
 
+    if (isLoadingTurn) return <Loader>preparing next turn...</Loader>
+
+    if (isErrorLoadingTurn) return <Alert severity="error" variant="filled">Error preparing next turn!</Alert>
+
 
     // Map each player's cards
     const playersWithCards = game.players.map((player) => ({
@@ -201,6 +206,13 @@ function Game() {
 
     const toggleChatLog = () => {
         setIsChatLogOpen(!isChatLogOpen);
+    }
+
+    function handleExpire() {
+        if (timerActive && setIsHandlingProcessMove && processMove) {
+            setIsHandlingProcessMove(true)
+            processMove({moveMade: "FOLD"})
+        }
     }
 
     return (
@@ -227,6 +239,7 @@ function Game() {
                     </div>
                 )}
             </div>
+            {timerActive && turn && <Timer duration={60} turnId={turn.id} onExpire={handleExpire}/>}
             <PokerTable
                 players={playersWithCards}
                 turns={turns ? turns.filter(turn => turn.madeInPhase == round!.phase || turn.moveMade.toString() === "FOLD") : []}
