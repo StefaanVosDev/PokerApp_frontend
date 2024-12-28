@@ -6,11 +6,27 @@ import {
     foldAndMove,
     getCurrentTurnId,
     getTurns,
-    raiseAndMove
+    raiseAndMove,
+    getTurn
 } from "../services/turnService.ts";
 
+export function useTurn(turnId: string) {
+    const {isLoading: isLoadingTurn, isError: isErrorLoadingTurn, data: turn} = useQuery({
+        queryKey: ['turn', turnId],
+        queryFn: () => getTurn(turnId),
+        refetchInterval: 900
+    })
+
+    return {
+        isLoadingTurn,
+        isErrorLoadingTurn,
+        turn,
+    }
+}
+
+
 export function useCurrentTurn(gameId: string, isEndOfRound: boolean, isProcessingMove: boolean, isInProgress: boolean) {
-    const {isLoading: isLoadingTurn, isError: isErrorLoadingTurn, data: turnId} = useQuery({
+    const {isLoading: isLoadingTurn, isError: isErrorLoadingTurn, data: turn} = useQuery({
         queryKey: ['turn', gameId],
         queryFn: () => getCurrentTurnId(gameId),
         enabled: !isEndOfRound && !isProcessingMove && isInProgress,
@@ -20,7 +36,7 @@ export function useCurrentTurn(gameId: string, isEndOfRound: boolean, isProcessi
     return {
         isLoadingTurn,
         isErrorLoadingTurn,
-        turnId,
+        turn,
     }
 }
 
