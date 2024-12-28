@@ -117,7 +117,7 @@ export default function PokerTable({
             ))}
             <div className="community-cards">
                 {communityCards && communityCards.map((card, index) => (
-                        <img key={index} src={`/images/${card.suit.toString().toLowerCase()}_${card.rank}.png`}
+                        <img key={index} src={`https://storage.googleapis.com/poker_stacks/cards/${card.suit.toString().toLowerCase()}_${card.rank}.png`}
                              alt={`${card.suit.toString().toLowerCase()}_${card.rank}`} className="community-card"/>
                     )
                 )}
