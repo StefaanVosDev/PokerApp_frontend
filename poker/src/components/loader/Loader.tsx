@@ -4,9 +4,9 @@ import {ReactNode} from "react";
 import {motion} from "framer-motion";
 import "./Loader.scss"
 
-type LoaderProps = {
+interface LoaderProps {
     children: ReactNode
-};
+}
 
 function Loader({ children } : LoaderProps) {
     const chipImageSrc = 'https://storage.googleapis.com/poker_stacks/others/stacks_chip.png';

@@ -67,9 +67,9 @@ function Game() {
         updateStatus,
         isPending: isUpdatingStatus,
     } = useUpdateGameStatus();
-    const {loggedInUser} = useContext(SecurityContext)
+    const {loggedInUser, username} = useContext(SecurityContext)
     const [isGameStatusError, setIsGameStatusError] = useState(false);
-    const isFirstPlayer = game && game.players.length > 0 && game.players[0].username === loggedInUser?.toString();
+    const isFirstPlayer = game && game.players.length > 0 && game.players[0].username === username?.toString();
     const timerActive = isGameInProgress && game?.settings.timer
 
     useEffect(() => {
