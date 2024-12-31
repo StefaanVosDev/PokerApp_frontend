@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import {Box, Typography, TextField, IconButton, ListItem, CircularProgress, Alert, Drawer,} from "@mui/material";
+import * as React from "react";
+import {useEffect, useRef, useState} from "react";
+import {Alert, Box, CircularProgress, Drawer, IconButton, ListItem, TextField, Typography,} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import { useGetMessages, useSendMessage } from "../../hooks/useDirectMessages.ts";
-import * as React from "react";
+import {useGetMessages, useSendMessage} from "../../hooks/useDirectMessages.ts";
 
 interface ChatComponentProps {
     open: boolean;
@@ -111,7 +111,7 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
                         severity="error"
                         sx={{ backgroundColor: "rgba(255, 0, 0, 0.1)", color: "white" }}
                     >
-                        {error?.message || "Failed to load messages."}
+                        {error?.message ?? "Failed to load messages."}
                     </Alert>
                 )}
                 {sortedMessages.map((message, index) => (

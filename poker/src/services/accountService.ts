@@ -19,7 +19,7 @@ export async function createAccount(account: Account) {
 }
 
 export async function getFriends(username: string | undefined | null) {
-    const {data} = await axios.get<FriendsListDto[]>(`/api/accounts/friends/${username}`);
+    const {data} = await axios.get<FriendsListDto[]>(`/api/friends/${username}`);
     return data;
 }
 
@@ -38,7 +38,7 @@ export async function getPokerPoints() {
     return data;
 }
 export async function deleteFriend(username: string, friendUsername: string) {
-    await axios.delete(`/api/accounts/friends/${username}/${friendUsername}`);
+    await axios.delete(`/api/friends/${username}/${friendUsername}`);
 }
 
 export async function getLoggedInAvatar(isAuthenticated: () => boolean) {
@@ -57,18 +57,9 @@ export async function getAccount(username : string | undefined) {
     return null;
 }
 
-export async function addFriend(username: string, friendUsername: string): Promise<void> {
-    try {
-        await axios.post(`/api/accounts/friends/${username}/${friendUsername}`);
-    } catch (error: unknown) {
-        if (axios.isAxiosError(error) && error.response) {
-
-            const { data } = error.response;
-            throw new Error(typeof data === "string" ? data : "An error occurred");
-        }
-
-        throw new Error("Network error occurred. Please try again later.");
-    }
+export async function addFriend(username: string, friendUsername: string) {
+    const {data} = await axios.post(`/api/friends/${username}/${friendUsername}`);
+    return data
 }
 
 export async function selectAvatar(username: string, avatarId: string | null) {

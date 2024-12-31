@@ -1,11 +1,4 @@
-import {
-    Avatar,
-    Typography,
-    Paper,
-    Box,
-    Stack,
-    Alert, Button,
-} from "@mui/material";
+import {Alert, Avatar, Box, Button, Paper, Stack, Typography,} from "@mui/material";
 import {useAccount, useLoggedInAvatar, useSelectAvatar} from "../../hooks/useAccount.ts";
 import {useParams} from "react-router-dom";
 import Loader from "../loader/Loader.tsx";

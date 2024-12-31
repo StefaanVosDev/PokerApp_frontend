@@ -1,10 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {
-    createNewRoundIfFinished,
-    dividePot,
-    getCommunityCards,
-    getCurrentRound
-} from "../services/roundService.ts";
+import {createNewRoundIfFinished, dividePot, getCommunityCards, getCurrentRound} from "../services/roundService.ts";
 
 export function useCommunityCards(gameId: string, roundStarted: boolean) {
     const {isLoading, isError, data: communityCards} = useQuery({

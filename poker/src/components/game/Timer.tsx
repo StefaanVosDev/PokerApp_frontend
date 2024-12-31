@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import "./Timer.scss"
-import { FaRegClock } from 'react-icons/fa';
-import { useTurn } from '../../hooks/useTurn.ts'
+import {FaRegClock} from 'react-icons/fa';
+import {useTurn} from '../../hooks/useTurn.ts'
 import Loader from "../loader/Loader.tsx";
 import {Alert} from "@mui/material";
 

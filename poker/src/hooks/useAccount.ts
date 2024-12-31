@@ -1,7 +1,19 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Account from "../model/Account.ts";
-import {addFriend, buyAvatar, createAccount, deleteFriend, getAvatars, getFriends, getPokerPoints, getLoggedInAvatar, getAccount, selectAvatar} from "../services/accountService.ts";
+import {
+    addFriend,
+    buyAvatar,
+    createAccount,
+    deleteFriend,
+    getAccount,
+    getAvatars,
+    getFriends,
+    getLoggedInAvatar,
+    getPokerPoints,
+    selectAvatar
+} from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
+
 
 export function useSelectAvatar(username: string, avatarId: string | null) {
     const {mutate: triggerSelectAvatar, isPending: isSelectingAvatar, isError: isErrorSelectingAvatar, isSuccess: isSuccessSelectingAvatar} = useMutation({

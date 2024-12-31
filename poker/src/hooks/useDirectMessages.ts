@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMessages, sendMessage } from "../services/DirectMessagingService.ts";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {getMessages, sendMessage} from "../services/DirectMessagingService.ts";
 import DirectMessageDto from "../model/DirectMessageDto.ts";
 
 

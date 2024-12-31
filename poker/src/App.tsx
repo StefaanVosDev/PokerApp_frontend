@@ -1,6 +1,5 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import './App.scss';
-import HelloWorld from './components/helloworld/HelloWorld.tsx';
 import {cyan} from "@mui/material/colors";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
@@ -39,7 +38,6 @@ function App() {
                     <BrowserRouter>
                         <Navbar/>
                             <Routes>
-                                <Route path="/hello" element={<HelloWorld/>}/>
                                 <Route path="/home" element={<Home/>}/>
                                 <Route path="/" element={<Home/>}/>
                                 <Route path="/game/:id" element={<RouteGuard><Game/></RouteGuard>}/>

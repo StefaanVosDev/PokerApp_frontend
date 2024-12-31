@@ -45,14 +45,14 @@ function ActionButtons({
 
     async function handleCheck() {
         setHandlingProcessMove(true);
-        await processMove({moveMade: "CHECK"});
+        processMove({moveMade: "CHECK"});
         await new Promise((resolve) => setTimeout(resolve, 100));
         await refetchIsOnMove();
     }
 
     async function handleFold() {
         setHandlingProcessMove(true);
-        await processMove({moveMade: "FOLD"});
+        processMove({moveMade: "FOLD"});
         await new Promise((resolve) => setTimeout(resolve, 100));
         await refetchIsOnMove();
     }
@@ -60,9 +60,9 @@ function ActionButtons({
     async function handleCall(amount: number) {
         setHandlingProcessMove(true);
         if (amount >= currentPlayerMoney)
-            await processMove({moveMade: "ALL_IN"});
+            processMove({moveMade: "ALL_IN"});
         else
-            await processMove({moveMade: "CALL", amount: amount});
+            processMove({moveMade: "CALL", amount: amount});
         await new Promise((resolve) => setTimeout(resolve, 100));
         await refetchIsOnMove();
     }
@@ -70,9 +70,9 @@ function ActionButtons({
     async function handleRaise(amount: number) {
         setHandlingProcessMove(true);
         if (amount >= currentPlayerMoney)
-            await processMove({moveMade: "ALL_IN"});
+            processMove({moveMade: "ALL_IN"});
         else
-            await processMove({moveMade: "RAISE", amount: amount});
+            processMove({moveMade: "RAISE", amount: amount});
         await new Promise((resolve) => setTimeout(resolve, 100));
         await refetchIsOnMove();
     }
