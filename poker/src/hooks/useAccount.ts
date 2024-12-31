@@ -135,6 +135,7 @@ export function useFriends(username: string | undefined | null) {
         queryKey: ['friends', username],
         queryFn: () => getFriends(username),
         enabled: !!username, // Ensure the query only runs when username is truthy
+        refetchInterval: 5000
     });
 
     return {
