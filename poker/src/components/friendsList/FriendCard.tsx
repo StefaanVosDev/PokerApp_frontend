@@ -1,13 +1,26 @@
-import {Avatar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListItem, ListItemAvatar, ListItemText, Badge,} from "@mui/material";
+import {
+    Avatar,
+    Badge,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    IconButton,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SendIcon from "@mui/icons-material/Send";
-import { useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDeleteFriend } from "../../hooks/useAccount.ts";
+import {useContext, useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useDeleteFriend} from "../../hooks/useAccount.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
 import DirectMessage from "./DirectMessage"; // Import the updated DM component
-import { useGetMessages } from "../../hooks/useDirectMessages.ts";
+import {useGetMessages} from "../../hooks/useDirectMessages.ts";
 
 interface FriendCardProps {
     friend: {
@@ -19,12 +32,12 @@ interface FriendCardProps {
 function FriendCard({ friend }: FriendCardProps) {
     const { username } = useContext(SecurityContext);
     const { triggerDeleteFriend, isPending } = useDeleteFriend();
-    const [isDialogOpen, setDialogOpen] = useState(false);
-    const [isDMOpen, setDMOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDMOpen, setIsDMOpen] = useState(false);
     const [lastOpened, setLastOpened] = useState<Date | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
-    const { messages } = useGetMessages(friend.username, username || "");
+    const { messages } = useGetMessages(friend.username, username ?? "");
 
     useEffect(() => {
         if (!isDMOpen && messages && messages.length > 0) {
@@ -51,22 +64,22 @@ function FriendCard({ friend }: FriendCardProps) {
 
 
     const handleOpenDialog = () => {
-        setDialogOpen(true);
+        setIsDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
-        setDialogOpen(false);
+        setIsDialogOpen(false);
     };
 
     const handleConfirmDelete = () => {
         if (!isPending && username) {
             triggerDeleteFriend({ username, friendUsername: friend.username });
         }
-        setDialogOpen(false);
+        setIsDialogOpen(false);
     };
 
     const toggleDM = () => {
-        setDMOpen((prev) => !prev);
+        setIsDMOpen((prev) => !prev);
         if (!isDMOpen) {
             const now = new Date();
             setLastOpened(now);
@@ -92,7 +105,7 @@ function FriendCard({ friend }: FriendCardProps) {
             >
                 <ListItemAvatar>
                     <Avatar
-                        src={friend.image || undefined}
+                        src={friend.image ?? undefined}
                         sx={{
                             backgroundColor: !friend.image ? "#3b82f6" : undefined,
                             color: !friend.image ? "white" : undefined,
@@ -233,7 +246,7 @@ function FriendCard({ friend }: FriendCardProps) {
             <DirectMessage
                 open={isDMOpen}
                 onClose={toggleDM}
-                sender={username || ""}
+                sender={username ?? ""}
                 receiver={friend.username}
             />
         </>

@@ -1,14 +1,27 @@
 import {useForm} from 'react-hook-form';
-import {Alert, Button, FormControlLabel, Switch, TextField, Typography} from '@mui/material';
+import {
+    Alert,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    Switch,
+    TextField,
+    Typography
+} from '@mui/material';
 import './CreateGame.scss';
 import {CreateGameFormInputs} from './forminput/CreateGameFormInputs.ts';
 import {useNavigate} from "react-router-dom";
 import {useCreateGame} from "../../hooks/useGame.ts";
+import {useState} from "react";
 
 export default function CreateGame() {
     const navigate = useNavigate();
     const {register, handleSubmit, formState: {errors}, watch} = useForm<CreateGameFormInputs>();
     const {mutate, error} = useCreateGame();
+    const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
 
     const smallBlind = watch('settings.smallBlind');
     const startingChips = watch('settings.startingChips');
@@ -16,10 +29,19 @@ export default function CreateGame() {
     const onSubmit = (data: CreateGameFormInputs) => {
         mutate(data, {
             onSuccess: () => {
-                alert('Game created successfully!');
-                navigate(-1);
+                setIsConfirmationDialogOpen(true);
             }
         });
+    };
+
+    const handleCloseConfirmationDialog = () => {
+        setIsConfirmationDialogOpen(false);
+        navigate(-1);
+    };
+
+    const handleGoBack = () => {
+        setIsConfirmationDialogOpen(false);
+        navigate('/games');
     };
 
     return (
@@ -137,7 +159,7 @@ export default function CreateGame() {
                     className="create-game-input"
                 />
 
-                {error && <Alert severity="error">{(error as Error).message}</Alert>}
+                {error && <Alert severity="error">{error.message}</Alert>}
 
                 <div className="create-game-buttons">
                     <Button
@@ -149,6 +171,64 @@ export default function CreateGame() {
                     </Button>
                 </div>
             </form>
+
+            <Dialog
+                open={isConfirmationDialogOpen}
+                onClose={handleCloseConfirmationDialog}
+                PaperProps={{
+                    sx: {
+                        backgroundColor: "rgba(26, 32, 44, 0.9)",
+                        backdropFilter: "blur(10px)",
+                        WebkitBackdropFilter: "blur(10px)",
+                        color: "white",
+                        fontFamily: "Kalam, sans-serif",
+                        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                        borderRadius: "10px",
+                    },
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        fontWeight: "bold",
+                        fontFamily: "Kalam, sans-serif",
+                        color: "white",
+                    }}
+                >
+                    Game Created Successfully
+                </DialogTitle>
+                <DialogContent>
+                    <Typography
+                        sx={{
+                            fontFamily: "Kalam, sans-serif",
+                            color: "rgba(255, 255, 255, 0.8)",
+                        }}
+                    >
+                        Your game has been created successfully. What would you like to do next?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => handleGoBack()}
+                        sx={{
+                            fontFamily: "Kalam, sans-serif",
+                            color: "#3b82f6",
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                    >
+                        Back
+                    </Button>
+                    <Button
+                        onClick={() => setIsConfirmationDialogOpen(false)}
+                        sx={{
+                            fontFamily: "Kalam, sans-serif",
+                            color: "#3b82f6",
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                    >
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }

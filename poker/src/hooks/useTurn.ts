@@ -5,9 +5,9 @@ import {
     checkAndMove,
     foldAndMove,
     getCurrentTurnId,
+    getTurn,
     getTurns,
-    raiseAndMove,
-    getTurn
+    raiseAndMove
 } from "../services/turnService.ts";
 
 export function useTurn(turnId: string) {

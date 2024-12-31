@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, KeyboardEvent} from "react";
+import {KeyboardEvent, useEffect, useRef, useState} from "react";
 import {useMessages, useSendMessage} from "../../hooks/useGame.ts";
 import {Alert, Box, Button, IconButton, InputBase, Typography} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
