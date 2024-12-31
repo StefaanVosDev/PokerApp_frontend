@@ -87,7 +87,7 @@ export default function FriendsList() {
                         WebkitBackdropFilter: "blur(10px)",
                         boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
                         color: "white",
-                        width: 300,
+                        width: 330,
                         fontFamily: "Kalam, sans-serif",
                     },
                 }}
