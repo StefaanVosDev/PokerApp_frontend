@@ -1,10 +1,11 @@
-import {Alert, Avatar, Box, Button, Paper, Stack, Typography,} from "@mui/material";
+import {Alert, Avatar, Box, Paper, Stack, Typography,} from "@mui/material";
 import {useAccount, useLoggedInAvatar, useSelectAvatar} from "../../hooks/useAccount.ts";
 import {useParams} from "react-router-dom";
 import Loader from "../loader/Loader.tsx";
 import "./AccountPage.scss";
 import {useContext, useEffect, useState} from "react";
 import SecurityContext from "../../context/SecurityContext.ts";
+import AvatarCard from "./AvatarCard.tsx";
 
 function AccountPage() {
     const {username} = useParams();
@@ -29,8 +30,8 @@ function AccountPage() {
     if (isSelectingAvatar) return <Loader>selecting avatar...</Loader>
     if (isError || !account) return <Alert severity="error" variant="filled">Error loading account!</Alert>
     if (isErrorLoadingAvatar || !avatar) return <Alert severity="error" variant="filled">Error loading data!</Alert>
-    if (isErrorSelectingAvatar || !triggerSelectAvatar) return <Alert severity="error" variant="filled">Error selecting
-        avatar!</Alert>
+    if (isErrorSelectingAvatar || !triggerSelectAvatar)
+        return <Alert severity="error" variant="filled">Error selecting avatar!</Alert>
 
     function handleSelect(selectedAvatarId: string) {
         setSelectedAvatarId(selectedAvatarId)
@@ -106,58 +107,12 @@ function AccountPage() {
                         {account?.ownedAvatars && account.ownedAvatars.length > 0 ? (
                             <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
                                 {account.ownedAvatars.map((avatarItem, index) => (
-                                    <Box key={index} textAlign="center">
-                                        <Avatar
-                                            src={avatarItem.image}
-                                            alt={avatarItem.name}
-                                            sx={{
-                                                width: 80,
-                                                height: 80,
-                                                border: `2px solid #3b82f6`,
-                                            }}
-                                        />
-                                        <Typography
-                                            variant="body2"
-                                            sx={{
-                                                fontFamily: "'Kalam', sans-serif",
-                                                marginTop: "5px",
-                                            }}
-                                        >
-                                            {avatarItem.name}
-                                        </Typography>
-                                        {/*check if the page is  being visited by the logged in user or a friend*/}
-                                        {isMyAccount &&
-                                            (avatarItem.id === avatar.id ? (
-                                                    <Button
-                                                        disabled={true}
-                                                        sx={{
-                                                            backgroundColor: 'grey',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            padding: '10px 15px',
-                                                            cursor: 'not-allowed',
-                                                            marginTop: '10px'
-                                                        }}
-                                                    >
-                                                        Selected
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        onClick={() => handleSelect(avatarItem.id)}
-                                                        sx={{
-                                                            backgroundColor: 'blue',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            padding: '10px 15px',
-                                                            cursor: 'pointer',
-                                                            marginTop: '10px'
-                                                        }}
-                                                    >
-                                                        Select
-                                                    </Button>
-                                                )
-                                            )}
-                                    </Box>
+                                   <AvatarCard
+                                       avatarItem={avatarItem}
+                                       key={index}
+                                       isMyAccount={isMyAccount}
+                                       avatar={avatar}
+                                       handleSelect={handleSelect}/>
                                 ))}
                             </Stack>
                         ) : (

@@ -39,9 +39,10 @@ export default function PokerTable({
                                        loggedInUser,
                                        isGameInProgress
                                    }: PokerTableProps) {
+    const {game} = useGame(String(gameId));
+
     const sortedPlayers = players.sort((a, b) => a.position - b.position);
     const openSpots = maxPlayers - players.length;
-    const {game} = useGame(String(gameId));
     const roundStarted = turns.length > 0;
 
     const {
@@ -116,7 +117,7 @@ export default function PokerTable({
                 </Button>
             ))}
             <div className="community-cards">
-                {communityCards && communityCards.map((card, index) => (
+                {communityCards?.map((card, index) => (
                         <img key={index} src={`https://storage.googleapis.com/poker_stacks/cards/${card.suit.toString().toLowerCase()}_${card.rank}.png`}
                              alt={`${card.suit.toString().toLowerCase()}_${card.rank}`} className="community-card"/>
                     )

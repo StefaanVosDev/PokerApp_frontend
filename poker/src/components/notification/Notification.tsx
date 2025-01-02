@@ -1,19 +1,15 @@
-import {useContext, useEffect, useState} from 'react';
-import {Alert, Box, Button} from '@mui/material';
-import {useProcessFriendRequest} from '../../hooks/useNotification.ts';
-import SecurityContext from "../../context/SecurityContext.ts";
+import {ReactNode, useEffect, useState} from 'react';
+import {Alert, Box} from '@mui/material';
 
 interface NotificationProps {
-    friendRequest: { id: string, requestingFriendUsername: string };
+    message: string;
+    action: ReactNode;
     onClose: () => void;
 }
 
-function FriendRequestNotification ({ friendRequest, onClose }: NotificationProps ) {
-    const { username } = useContext(SecurityContext);
-
+function Notification({message, action, onClose}: NotificationProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
-    const { processRequest } = useProcessFriendRequest(username);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -25,12 +21,6 @@ function FriendRequestNotification ({ friendRequest, onClose }: NotificationProp
 
         return () => clearTimeout(timer);
     }, [isHovered, onClose]);
-
-    const handleAcceptRequest = () => {
-        processRequest({ accept: true, id: friendRequest.id });
-        setIsVisible(false);
-        setTimeout(onClose, 500);
-    };
 
     return (
         <Box
@@ -51,30 +41,19 @@ function FriendRequestNotification ({ friendRequest, onClose }: NotificationProp
                 WebkitBackdropFilter: 'blur(10px)',
                 animation: `${isVisible ? 'slideIn' : 'slideOut'} 0.5s forwards`,
                 '@keyframes slideIn': {
-                    from: { transform: 'translateX(100%)' },
-                    to: { transform: 'translateX(0)' },
+                    from: {transform: 'translateX(100%)'},
+                    to: {transform: 'translateX(0)'},
                 },
                 '@keyframes slideOut': {
-                    from: { transform: 'translateX(0)' },
-                    to: { transform: 'translateX(100%)' },
+                    from: {transform: 'translateX(0)'},
+                    to: {transform: 'translateX(100%)'},
                 },
             }}
         >
             <Alert
                 severity="info"
                 action={
-                    <Button
-                        color="inherit"
-                        size="small"
-                        onClick={handleAcceptRequest}
-                        sx={{
-                            color: '#3b82f6',
-                            fontFamily: 'Kalam, sans-serif',
-                            '&:hover': { textDecoration: 'underline' },
-                        }}
-                    >
-                        Accept
-                    </Button>
+                    action
                 }
                 sx={{
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -82,10 +61,10 @@ function FriendRequestNotification ({ friendRequest, onClose }: NotificationProp
                     fontFamily: 'Kalam, sans-serif',
                 }}
             >
-                {friendRequest.requestingFriendUsername} sent you a friend request.
+                {message}
             </Alert>
         </Box>
     );
 }
 
-export default FriendRequestNotification;
+export default Notification;

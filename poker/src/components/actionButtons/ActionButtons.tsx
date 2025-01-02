@@ -2,43 +2,54 @@ import {Alert, Button, Slider} from "@mui/material";
 import "./ActionButtons.scss";
 import {useIsOnMove} from "../../hooks/useGame";
 import Loader from "../loader/Loader.tsx";
+import {calculateCurrentTurnDetails, calculateLastBet, getMinimumRaise} from "../../services/turnService.ts";
+import {useEffect, useState} from "react";
+import {Turn} from "../../model/Turn.ts";
+import {Round} from "../../model/Round.ts";
 
 interface ActionButtonsProps {
-    shouldShowCheckButton: boolean;
-    amountToCall: number;
-    currentPlayerMoney: number;
     showRaiseOptions: boolean;
-    raiseAmount: number;
     setShowRaiseOptions: (value: boolean) => void;
-    setRaiseAmount: (value: number) => void;
-    getMinimumRaise: (lastBet: number, currentPlayerMoney: number, bigBlind: number) => number;
-    lastBet: number;
     processMove: (move: { moveMade: string, amount?: number }) => void;
     setHandlingProcessMove: (value: boolean) => void;
     bigBlind: number;
     gameId: string;
     isGameInProgress: boolean;
+    turns: Turn[];
+    round: Round | undefined | null;
 }
 
 function ActionButtons({
-                           shouldShowCheckButton,
-                           amountToCall,
-                           currentPlayerMoney,
                            showRaiseOptions,
-                           raiseAmount,
                            setShowRaiseOptions,
-                           setRaiseAmount,
-                           getMinimumRaise,
-                           lastBet,
                            processMove,
                            setHandlingProcessMove,
                            bigBlind,
                            gameId,
-                           isGameInProgress
+                           isGameInProgress,
+                           turns,
+                           round
                        }: ActionButtonsProps) {
 
-
     const {isLoading, isError, isOnMove, refetch: refetchIsOnMove} = useIsOnMove(String(gameId), isGameInProgress);
+
+    const [raiseAmount, setRaiseAmount] = useState(0);
+
+    const currentPlayer = turns?.find(turn => turn.moveMade.toString() === "ON_MOVE")?.player;
+    const currentPlayerMoney = currentPlayer ? currentPlayer.money : 0;
+
+    const lastBet = calculateLastBet(turns, round);
+
+    useEffect(() => {
+        if (showRaiseOptions) {
+            const minRaise = getMinimumRaise(lastBet, currentPlayerMoney, bigBlind);
+            setRaiseAmount(minRaise);
+        }
+    }, [lastBet, currentPlayerMoney, bigBlind, showRaiseOptions]);
+
+    if (!turns || !round) return <Loader>Loading...</Loader>;
+
+    const {shouldShowCheckButton, amountToCall} = calculateCurrentTurnDetails(turns, round, lastBet);
 
     if (isLoading) return <Loader>Loading...</Loader>;
     if (isError) return <Alert severity="error" variant="filled">Error...</Alert>;
@@ -77,6 +88,42 @@ function ActionButtons({
         await refetchIsOnMove();
     }
 
+    function renderRaiseButton() {
+        if (amountToCall < currentPlayerMoney) {
+            if (showRaiseOptions) {
+                return (
+                    <Button
+                        className="confirm-button"
+                        variant="contained"
+                        onClick={() => handleRaise(raiseAmount)}
+                    >
+                        Confirm
+                    </Button>
+                );
+            } else if (amountToCall * 2 < currentPlayerMoney) {
+                return (
+                    <Button
+                        className="raise-button"
+                        variant="contained"
+                        onClick={() => setShowRaiseOptions(true)}
+                    >
+                        Raise
+                    </Button>
+                );
+            } else {
+                return (
+                    <Button
+                        className="raise-button"
+                        variant="contained"
+                        onClick={() => handleRaise(currentPlayerMoney)}
+                    >
+                        All In
+                    </Button>
+                );
+            }
+        }
+        return null;
+    }
 
     return (
         <>
@@ -124,36 +171,7 @@ function ActionButtons({
                                 {amountToCall > currentPlayerMoney ? "Call all-in $" + currentPlayerMoney : "Call $" + amountToCall}
                             </Button>
                         )}
-
-                        {amountToCall < currentPlayerMoney &&
-                            (showRaiseOptions ? (
-                                    <Button
-                                        className="confirm-button"
-                                        variant="contained"
-                                        onClick={() => handleRaise(raiseAmount)}
-                                    >
-                                        Confirm
-                                    </Button>
-                                ) : (
-                                    amountToCall * 2 < currentPlayerMoney ? (
-                                        <Button
-                                            className="raise-button"
-                                            variant="contained"
-                                            onClick={() => setShowRaiseOptions(true)}
-                                        >
-                                            Raise
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            className="raise-button"
-                                            variant="contained"
-                                            onClick={() => handleRaise(currentPlayerMoney)}
-                                        >
-                                            All In
-                                        </Button>
-                                    )
-                                )
-                            )}
+                        {renderRaiseButton()}
                     </>
                 ) : (
                     <div>Waiting for other players...</div>
