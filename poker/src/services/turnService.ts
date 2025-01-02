@@ -70,12 +70,12 @@ export async function getTurns(roundId: string | undefined) {
     return null;
 }
 
-export function calculateLastBet(turns: Turn[], round: Round) {
-    const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round.phase);
+export function calculateLastBet(turns: Turn[], round: Round | undefined | null) {
+    const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round?.phase);
     return currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
 }
 
-export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet: number, bigBlind: number) {
+export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet: number) {
     const currentTurn = turns.find(turn => turn.moveMade.toString() === "ON_MOVE");
     if (!currentTurn) return {shouldShowCheckButton: false, amountToCall: 0, raiseAmount: 0};
 
@@ -86,8 +86,7 @@ export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet
 
     return {
         shouldShowCheckButton: totalGambled === lastBet,
-        amountToCall: lastBet - totalGambled,
-        raiseAmount: getMinimumRaise(lastBet, currentTurn.player.money, bigBlind),
+        amountToCall: lastBet - totalGambled
     };
 }
 

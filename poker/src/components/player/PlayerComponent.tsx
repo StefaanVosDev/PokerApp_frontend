@@ -27,10 +27,16 @@ function generateSparkles(count: number) {
 }
 
 function PlayerComponent({player, index, dealerIndex, turns, playerPositions, winRound, animationAllowed}: PlayerProps) {
-    const turnsFromPlayer = turns.filter(turn => turn.player.id == player.id);
-    const moneyGambledThisPhase = turnsFromPlayer.map(turn => turn.moneyGambled).reduce((sum, money) => sum + money, 0);
-    const turn = turnsFromPlayer.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[turnsFromPlayer.length - 1];
-    const playerMove = turn ? (turn.moveMade + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
+    const turnsFromPlayer = turns.filter(turn => turn.player.id === player.id);
+    const moneyGambledThisPhase = turnsFromPlayer.reduce((sum, turn) => sum + turn.moneyGambled, 0);
+    const turn = turnsFromPlayer.reduce((latestTurn, currentTurn) => {
+        return new Date(currentTurn.createdAt).getTime() > new Date(latestTurn.createdAt).getTime()
+            ? currentTurn
+            : latestTurn;
+    }, turnsFromPlayer[0]);
+
+    const moneyGambledDisplay = moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase;
+    const playerMove = turn ? (turn.moveMade + "  " + moneyGambledDisplay) : "Waiting...";
     const hasFolded = turn?.moveMade.toString() === "FOLD";
     const isDealer = index === dealerIndex;
     const {isLoading: isLoadingAccount, isError: isErrorLoadingAccount, account} = useAccount(player.username);

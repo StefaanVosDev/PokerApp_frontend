@@ -1,5 +1,10 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {acceptRequest, declineRequest, getFriendRequests} from "../services/notificationService.ts"
+import {
+    acceptRequest,
+    declineRequest,
+    getFriendRequests,
+    getGameNotifications
+} from "../services/notificationService.ts"
 
 export function useProcessFriendRequest(username: string | undefined) {
     const queryClient = useQueryClient();
@@ -41,5 +46,23 @@ export function useFriendRequests(username : string | undefined) {
         isLoadingFriendRequests,
         isErrorLoadingFriendRequests,
         friendRequests
+    }
+}
+
+export function useGameNotifications(username : string | undefined) {
+    const {
+        isLoading: isLoadingGameNotifications,
+        isError: isErrorLoadingGameNotifications,
+        data: gameNotifications,
+    } = useQuery({
+        queryKey: ['gameNotifications', username],
+        queryFn: () => getGameNotifications(username),
+        refetchInterval: 5000
+    })
+
+    return {
+        isLoadingGameNotifications,
+        isErrorLoadingGameNotifications,
+        gameNotifications
     }
 }

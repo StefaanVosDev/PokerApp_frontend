@@ -20,27 +20,24 @@ function Timer({duration, onExpire, turnId}: TimerProps) {
 
     useEffect(() => {
         if (isLoadingTurn || !turn) return;
-        
-        if (!isLoadingTurn && turn) {
-            const startTime = new Date(turn.startTime).getTime();
-            const elapsedTime = (Date.now() - startTime) / 1000
 
-            setTimeLeft((Math.floor(Math.max(duration - elapsedTime, 0))))
+        const startTime = new Date(turn.startTime).getTime();
+        const elapsedTime = (Date.now() - startTime) / 1000
 
-            const interval = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev! <= 1) {
-                        clearInterval(interval)
-                        if (onExpire) onExpire()
-                        return 0
-                    }
-                    return prev! - 1
-                });
-            }, 1000)
+        setTimeLeft((Math.floor(Math.max(duration - elapsedTime, 0))))
 
-            return () => clearInterval(interval)
-        }
-        
+        const interval = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev! <= 1) {
+                    clearInterval(interval)
+                    if (onExpire) onExpire()
+                    return 0
+                }
+                return prev! - 1
+            });
+        }, 1000)
+
+        return () => clearInterval(interval)
     }, [duration, isLoadingTurn, onExpire, timeLeft, turn])
 
     if (isLoadingTurn) return <Loader>Loading current turn...</Loader>
@@ -49,7 +46,7 @@ function Timer({duration, onExpire, turnId}: TimerProps) {
     return (
         <div className="timer">
             <div className={`timer-content ${isUrgent ? 'timer-text-urgent' : 'timer-text'}`}>
-                <FaRegClock className={`clock-icon ${isUrgent ? 'clock-pulse-urgent' : 'clock-pulse'}`} />
+                <FaRegClock className={`clock-icon ${isUrgent ? 'clock-pulse-urgent' : 'clock-pulse'}`}/>
                 <span className="time-text">Time left: {timeLeft}s</span>
             </div>
         </div>

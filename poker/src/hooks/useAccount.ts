@@ -183,7 +183,7 @@ export function useAccount(username: string | undefined) {
     } = useQuery({
         queryKey: ['account', username],
         queryFn: () => getAccount(username),
-        refetchInterval: 1000
+        refetchInterval: 10000
     })
 
     return {

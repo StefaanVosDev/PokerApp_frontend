@@ -179,3 +179,7 @@
   top: 13%;
   left: 170%;
 }
+
+.disabled-button:hover {
+  cursor: not-allowed;
+}

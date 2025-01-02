@@ -13,10 +13,13 @@ interface ChatComponentProps {
 }
 
 export default function DirectMessage({open, onClose, sender, receiver,}: ChatComponentProps) {
-    const [newMessage, setNewMessage] = useState<string>("");
     const { messages, isLoading, isError, error } = useGetMessages(sender, receiver);
     const { triggerSendMessage, isPending } = useSendMessage();
+
+    const [newMessage, setNewMessage] = useState<string>("");
+
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
 
     const handleSendMessage = () => {
         if (newMessage.trim()) {

@@ -1,8 +1,9 @@
-import {Card, CardContent, Typography} from "@mui/material";
+import {Alert, Card, CardContent, Typography} from "@mui/material";
 import {Game} from "../../model/Game.ts";
 import {Cancel, CheckCircle} from "@mui/icons-material";
 import {getStatusColor} from "../../services/gameService.ts";
 import {usePlayerOnMove} from "../../hooks/usePlayer";
+import Loader from "../loader/Loader.tsx";
 
 interface GameCardProps {
     onClick: () => void;
@@ -13,8 +14,12 @@ export function GameCard({onClick, game}: GameCardProps) {
 
     const currentPlayers = game.players.length;
     const statusColor = getStatusColor(game.status);
-    const {player} = usePlayerOnMove(game.id);
+    const {isLoading, isError, player} = usePlayerOnMove(game.id);
 
+    if (isLoading)
+        return <Loader>Loading...</Loader>;
+    if (isError)
+        return <Alert severity="error" variant="filled">Error player on move </Alert>;
 
     return <Card
         className="game-card"

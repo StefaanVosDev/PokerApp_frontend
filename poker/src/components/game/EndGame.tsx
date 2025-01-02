@@ -7,9 +7,9 @@ import {useAccount} from "../../hooks/useAccount.ts";
 function EndGame() {
     const {winnerId} = useParams<{ winnerId: string }>();
     const navigate = useNavigate();
+
     const {isLoading, isError, winner} = useWinner(winnerId);
     const {isLoading: isLoadingAccount, isError: isErrorLoadingAccount, account} = useAccount(winner?.username);
-
 
     if (isLoading)
         return <Loader>Loading winner data...</Loader>;
@@ -17,7 +17,6 @@ function EndGame() {
         return <Alert severity="error">Error loading winner data...</Alert>
     if (isLoadingAccount) return <Loader>Loading avatar...</Loader>
     if (isErrorLoadingAccount) return <Alert severity="error" variant="filled">Error loading avatar!</Alert>
-
 
     const handleGoHome = () => {
         navigate('/');

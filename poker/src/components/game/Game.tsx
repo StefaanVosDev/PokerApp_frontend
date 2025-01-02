@@ -1,10 +1,9 @@
 import PokerTable from "../pokertable/PokerTable.tsx";
-import {Alert, Button} from "@mui/material";
+import {Alert, Button, Tooltip} from "@mui/material";
 import {useNavigate, useParams} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import Loader from "../loader/Loader.tsx";
 import "./Game.scss";
-import {calculateCurrentTurnDetails, calculateLastBet, getMinimumRaise} from "../../services/turnService.ts";
 import {mapCardToImage} from "../../services/mapToCardService.ts";
 import ActionButtons from "../actionButtons/ActionButtons.tsx";
 import {useCurrentTurn, useProcessMove, useTurns} from "../../hooks/useTurn.ts";
@@ -14,47 +13,52 @@ import {useGame} from "../../hooks/useGame.ts";
 import {useUpdateGameStatus} from "../../hooks/useUpdateGameStatus";
 import SecurityContext from "../../context/SecurityContext";
 import ChatLog from "./ChatLog.tsx";
-import ChatIcon from "./ChatIcon.tsx";
 import Timer from "./Timer.tsx";
 
 function Game() {
     const {id: gameId} = useParams<{ id: string }>();
-
+    const {loggedInUser, username} = useContext(SecurityContext);
     const navigate = useNavigate();
+
     const [isEndOfRound, setIsEndOfRound] = useState(false);
     const [isHandlingProcessMove, setIsHandlingProcessMove] = useState(false);
-    const [isGameInProgress, setIsGameInProgress] = useState(false);
+    const [showRaiseOptions, setShowRaiseOptions] = useState(false);
+    const [isGameStatusError, setIsGameStatusError] = useState(false);
 
+    const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
+    const isGameInProgress = game?.status === "IN_PROGRESS";
     const {
         isLoadingRound,
         isErrorLoadingRound,
         round
     } = useCurrentRound(String(gameId), isEndOfRound, isGameInProgress);
-    const {isErrorLoadingTurn, isLoadingTurn, turn} = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
 
-    const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
+    const {
+        isErrorLoadingTurn,
+        isLoadingTurn,
+        turn
+    } = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
+
     const playerIds = game ? game.players.map((player) => player.id) : [];
     const {isLoading: handsLoading, isError: handsError, playersHand} = usePlayersHand(playerIds, isEndOfRound);
     const roundId = round ? round.id : "";
+
     const {
         isProcessingMove,
         isErrorProcessingMove,
         processMove,
         isSuccessProcessingMove
     } = useProcessMove(turn?.id, String(gameId), String(roundId));
+
     const {isLoadingTurns, isErrorLoadingTurns, turns} = useTurns(roundId, isGameInProgress);
-    const [shouldShowCheckButton, setShouldShowCheckButton] = useState(false);
-    const [amountToCall, setAmountToCall] = useState(0);
-    const [currentPlayerMoney, setCurrentPlayerMoney] = useState(1000);
-    const [lastBet, setLastBet] = useState(0);
-    const [raiseAmount, setRaiseAmount] = useState(0);
-    const [showRaiseOptions, setShowRaiseOptions] = useState(false);
+
     const {
         isPending: isLoadingCreateNewRoundIfFinished,
         isError: isErrorCreateNewRoundIfFinished,
         triggerNewRound,
         isSuccessCreatingNewRound
     } = useCreateNewRoundIfFinished(String(gameId), roundId);
+
     const {
         isDividingPot,
         isErrorDividingPot,
@@ -62,52 +66,22 @@ function Game() {
         isSuccessDividingPot,
         winnings
     } = useDividePot(roundId);
-    const [totalMoneyInPot, setTotalMoneyInPot] = useState(0);
+
     const {
         updateStatus,
         isPending: isUpdatingStatus,
     } = useUpdateGameStatus();
-    const {loggedInUser, username} = useContext(SecurityContext)
-    const [isGameStatusError, setIsGameStatusError] = useState(false);
+
     const isFirstPlayer = game && game.players.length > 0 && game.players[0].username === username?.toString();
-    const timerActive = isGameInProgress && game?.settings.timer
-
-    useEffect(() => {
-        if (game) {
-            setIsGameInProgress(game.status === "IN_PROGRESS");
-        }
-    }, [game]);
-
-    const [isChatLogOpen, setIsChatLogOpen] = useState(false);
+    const timerActive = isGameInProgress && game?.settings.timer;
+    const totalMoneyInPot = turns?.reduce((sum, turn) => sum + turn.moneyGambled, 0) ?? 0;
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
             setShowRaiseOptions(false);
             setIsHandlingProcessMove(false)
         }
-        if (turns) {
-            const currentPlayer = turns.find(turn => turn.moveMade.toString() === "ON_MOVE")?.player;
-            setCurrentPlayerMoney(currentPlayer ? currentPlayer.money : 0);
-            setTotalMoneyInPot(turns.reduce((sum, turn) => sum + turn.moneyGambled, 0));
-        }
     }, [isSuccessProcessingMove, turns]);
-
-    useEffect(() => {
-        if (!turns || !round || !game) return;
-
-        const lastBet = calculateLastBet(turns, round);
-        setLastBet(lastBet);
-
-        const {
-            shouldShowCheckButton,
-            amountToCall,
-            raiseAmount
-        } = calculateCurrentTurnDetails(turns, round, lastBet, game.settings.bigBlind);
-        setShouldShowCheckButton(shouldShowCheckButton);
-        setAmountToCall(amountToCall);
-        setRaiseAmount(raiseAmount);
-    }, [turns, round]);
-
 
     useEffect(() => {
         if (round && round.phase === "FINISHED") {
@@ -141,7 +115,7 @@ function Game() {
 
     async function handleUpdateGameStatus() {
         setIsGameStatusError(false);
-        if (gameId) {
+        if (gameId && game && game.players.length > 1) {
             try {
                 updateStatus(gameId);
             } catch (error) {
@@ -204,10 +178,6 @@ function Game() {
         cards: (playersHand[player.id] || []).map(mapCardToImage), // Map cards to images
     }));
 
-    const toggleChatLog = () => {
-        setIsChatLogOpen(!isChatLogOpen);
-    }
-
     function handleExpire() {
         if (timerActive && setIsHandlingProcessMove && processMove) {
             setIsHandlingProcessMove(true)
@@ -222,14 +192,24 @@ function Game() {
                     <div>
                         <h2>Waiting for players...</h2>
                         {isFirstPlayer && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleUpdateGameStatus}
-                                disabled={isUpdatingStatus || !gameId || game.status !== "WAITING"}
+
+                            <Tooltip
+                                title={game.players.length === 1 ? "Cannot start the game with less than 2 players" : ""}
+                                arrow
+                                disableHoverListener={game.players.length !== 1}
                             >
-                                Start game
-                            </Button>
+                                <span>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleUpdateGameStatus}
+                                        disabled={isUpdatingStatus || !gameId || game.status !== "WAITING"}
+                                        className={game.players.length === 1 ? "disabled-button" : ""}
+                                    >
+                                        Start game
+                                    </Button>
+                                </span>
+                            </Tooltip>
                         )}
                         {isGameStatusError && (
                             <Alert severity="error" variant="filled">
@@ -257,32 +237,22 @@ function Game() {
                 </div>)}
             {!isEndOfRound && isGameInProgress && (
                 <ActionButtons
-                    shouldShowCheckButton={shouldShowCheckButton}
-                    amountToCall={amountToCall}
-                    currentPlayerMoney={currentPlayerMoney}
                     showRaiseOptions={showRaiseOptions}
-                    raiseAmount={raiseAmount}
                     setShowRaiseOptions={setShowRaiseOptions}
-                    setRaiseAmount={setRaiseAmount}
                     processMove={processMove}
-                    getMinimumRaise={getMinimumRaise}
-                    lastBet={lastBet}
                     setHandlingProcessMove={setIsHandlingProcessMove}
                     bigBlind={game.settings.bigBlind}
                     gameId={String(gameId)}
                     isGameInProgress={isGameInProgress}
+                    turns={turns ?? []}
+                    round={round}
                 />
             )}
             {loggedInUser && game.players.map(player => player.username).includes(loggedInUser.toString()) && (
-                <>
-                    <button className="toggle-chat-log" onClick={toggleChatLog}>
-                        <ChatIcon/>
-                    </button>
-                    {isChatLogOpen && <ChatLog
-                        gameId={String(gameId)}
-                        loggedInUserPosition={game.players.filter(player => player.username == loggedInUser?.toString())[0]?.position}
-                    />}
-                </>
+                <ChatLog
+                    gameId={String(gameId)}
+                    loggedInUserPosition={game.players.filter(player => player.username == loggedInUser?.toString())[0]?.position}
+                />
             )}
         </>
     );
