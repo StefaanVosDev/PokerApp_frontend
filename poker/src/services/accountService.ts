@@ -3,11 +3,12 @@ import Account from "../model/Account.ts";
 import FriendsListDto from "../model/FriendsListDto.ts";
 import {Avatar} from "../model/Avatar.ts";
 import Achievement from "../model/Achievement";
+import AccountDto from "../model/dto/AccountDto.ts";
 
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
-export async function createAccount(account: Account) {
+export async function createAccount(account: AccountDto) {
     const {data} = await axios.post<Account>('/api/accounts', {
         username: account.username,
         email: account.email,

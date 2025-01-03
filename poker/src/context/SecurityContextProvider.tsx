@@ -4,9 +4,9 @@ import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../se
 import {isExpired} from 'react-jwt';
 import Cookies from 'js-cookie';
 import Keycloak from 'keycloak-js';
-import Account from '../model/Account.ts';
 import {useCreateAccount} from "../hooks/useAccount.ts";
 import Loader from "../components/loader/Loader.tsx";
+import AccountDto from "../model/dto/AccountDto.ts";
 
 interface IWithChildren {
     children: ReactNode;
@@ -49,7 +49,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
 
 
     function triggerCreateAccountFromKeycloak() {
-        const account: Account = {
+        const account: AccountDto = {
             username: keycloak.idTokenParsed?.preferred_username,
             email: keycloak.idTokenParsed?.email,
             name: keycloak.idTokenParsed?.name,

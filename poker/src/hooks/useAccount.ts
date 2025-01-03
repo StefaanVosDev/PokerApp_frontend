@@ -1,5 +1,4 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import Account from "../model/Account.ts";
 import {
     addFriend,
     buyAvatar,
@@ -13,6 +12,7 @@ import {
     getAchievements, getAchievementsPerAccount,selectAvatar
 } from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
+import AccountDto from "../model/dto/AccountDto.ts";
 
 
 export function useSelectAvatar(username: string, avatarId: string | null) {
@@ -76,7 +76,7 @@ export function useCreateAccount() {
     const queryClient = useQueryClient();
 
     const {mutate, isPending, isError, isSuccess, error} = useMutation({
-        mutationFn: async (account: Account) => await createAccount(account),
+        mutationFn: async (account: AccountDto) => await createAccount(account),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['accounts']});
         }
