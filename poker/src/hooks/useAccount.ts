@@ -5,12 +5,12 @@ import {
     buyAvatar,
     createAccount,
     deleteFriend,
-    getAccount,
     getAvatars,
     getFriends,
-    getLoggedInAvatar,
     getPokerPoints,
-    selectAvatar
+    getLoggedInAvatar,
+    getAccount,
+    getAchievements, getAchievementsPerAccount,selectAvatar
 } from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
 
@@ -191,4 +191,41 @@ export function useAccount(username: string | undefined) {
         isError,
         account
     }
+}
+export function useAchievementsPerAccount(accountId: string | undefined) {
+    const {
+        isLoading: isLoadingAchievementsPerAccount,
+        isError: isErrorAchievementsPerAccount,
+        data: achievementsPerAccount,
+    } = useQuery({
+        queryKey: ["achievementsPerAccount", accountId],
+        queryFn: () => getAchievementsPerAccount(accountId),
+        enabled: !!accountId,
+        refetchInterval: 10000
+    });
+
+    return {
+        isLoadingAchievementsPerAccount,
+        isErrorAchievementsPerAccount,
+        achievementsPerAccount,
+    };
+}
+
+export function useAchievements() {
+    const {
+        isLoading: isLoadingAchievements,
+        isError: isErrorAchievements,
+        data: achievements,
+    } = useQuery({
+        queryKey: ["achievements"],
+        queryFn: getAchievements,
+        refetchInterval: 1000
+    });
+
+    return {
+        isLoadingAchievements,
+        isErrorAchievements,
+        achievements,
+
+    };
 }

@@ -29,7 +29,6 @@ export function useWinner(winnerId: string | undefined) {
         {
             queryKey: ['winner', winnerId],
             queryFn: () => getWinner(winnerId),
-            refetchInterval: 1000
         })
 
     return {

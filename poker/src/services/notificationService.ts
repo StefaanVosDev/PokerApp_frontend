@@ -1,6 +1,7 @@
 import axios from "axios";
 import FriendRequestDto from "../model/dto/FriendRequestDto.ts";
 import GameNotificationDto from "../model/dto/GameNotificationDto.ts";
+import AchievementNotificationDto from "../model/dto/AchievementNotificationDto";
 
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -24,5 +25,10 @@ export async function declineRequest(id: string) {
 export async function getGameNotifications(username: string | undefined) {
     if (!username) return null;
     const {data} = await axios.get<GameNotificationDto[]>(`/api/notifications/game/${username}`);
+    return data;
+}
+export async function getAchievementNotifications(username: string | undefined) {
+    if (!username) return null;
+    const {data} = await axios.get<AchievementNotificationDto[]>(`/api/notifications/achievement/${username}`);
     return data;
 }

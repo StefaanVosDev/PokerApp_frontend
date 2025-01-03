@@ -2,6 +2,7 @@ import axios from "axios";
 import Account from "../model/Account.ts";
 import FriendsListDto from "../model/FriendsListDto.ts";
 import {Avatar} from "../model/Avatar.ts";
+import Achievement from "../model/Achievement";
 
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -66,6 +67,16 @@ export async function selectAvatar(username: string, avatarId: string | null) {
     if (!avatarId) return null;
     const {data} = await axios.put<string>(`/api/accounts/${username}/active-avatar?avatarId=${avatarId}`);
     return data;
+}
+
+
+export async function getAchievementsPerAccount(id: string | undefined) {
+    const {data} = await axios.get<Achievement[]>(`/api/achievements/${id}`);
+    return data;
+}
+export async function getAchievements() {
+    const {data : achievements} = await axios.get<Achievement[]>(`/api/achievements`);
+    return achievements;
 }
 
 
