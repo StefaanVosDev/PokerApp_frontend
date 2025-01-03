@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     acceptRequest,
-    declineRequest,
+    declineRequest, getAchievementNotifications,
     getFriendRequests,
     getGameNotifications
 } from "../services/notificationService.ts"
@@ -64,5 +64,22 @@ export function useGameNotifications(username : string | undefined) {
         isLoadingGameNotifications,
         isErrorLoadingGameNotifications,
         gameNotifications
+    }
+}
+export function useAchievementNotifications(username : string | undefined) {
+    const {
+        isLoading: isLoadingAchievementNotifications,
+        isError: isErrorLoadingAchievementNotifications,
+        data: achievementNotifications,
+    } = useQuery({
+        queryKey: ['achievementNotifications', username],
+        queryFn: () => getAchievementNotifications(username),
+        refetchInterval: 5000
+    })
+
+    return {
+        isLoadingAchievementNotifications,
+        isErrorLoadingAchievementNotifications,
+        achievementNotifications
     }
 }

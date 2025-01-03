@@ -2,6 +2,7 @@ import {Alert, Avatar, Box, Paper, Stack, Typography,} from "@mui/material";
 import {useAccount, useLoggedInAvatar, useSelectAvatar} from "../../hooks/useAccount.ts";
 import {useParams} from "react-router-dom";
 import Loader from "../loader/Loader.tsx";
+import Achievement from "../achievement/Achievement.tsx";
 import "./AccountPage.scss";
 import {useContext, useEffect, useState} from "react";
 import SecurityContext from "../../context/SecurityContext.ts";
@@ -103,7 +104,6 @@ function AccountPage() {
                         >
                             Owned Avatars
                         </Typography>
-
                         {account?.ownedAvatars && account.ownedAvatars.length > 0 ? (
                             <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
                                 {account.ownedAvatars.map((avatarItem, index) => (
@@ -126,6 +126,35 @@ function AccountPage() {
                                 No avatars owned yet.
                             </Typography>
                         )}
+                    </Paper>
+                </Box>
+                <Box
+                    sx={{
+                        position: "relative",
+                        display: "inline-block",
+                        borderRadius: "15px",
+                        overflow: "hidden",
+                        width: "100%",
+                        maxWidth: "900px",
+                    }}
+                >
+                    <div className="background-blur glow"></div>
+                    <Paper
+                        elevation={3}
+                        style={{
+                            backgroundColor: "rgba(26, 32, 44, 0.6)",
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)",
+                            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                            color: "white",
+                            fontFamily: "'Kalam', sans-serif",
+                            padding: "20px",
+                            borderRadius: "15px",
+                            position: "relative",
+                            zIndex: 2,
+                        }}
+                    >
+                        <Achievement username={username} />
                     </Paper>
                 </Box>
             </Stack>
