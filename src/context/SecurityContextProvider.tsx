@@ -34,7 +34,7 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
                     if (newToken) {
                         Cookies.set('authToken', newToken, { secure: true, sameSite: 'Strict', expires: 1 });
                         Cookies.set('loggedInUser', keycloak.idTokenParsed?.given_name || '', { secure: true, sameSite: 'Strict', expires: 1 });
-                        addAccessTokenToAuthHeader(newToken);
+                        addAccessTokenToAuthHeader(newToken);   
                         setLoggedInUser(keycloak.idTokenParsed?.given_name);
                         setUsername(keycloak.idTokenParsed?.preferred_username);
                         triggerCreateAccountFromKeycloak();

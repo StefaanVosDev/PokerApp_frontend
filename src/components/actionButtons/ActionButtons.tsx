@@ -1,5 +1,4 @@
-import {Alert, Button, Slider} from "@mui/material";
-import "./ActionButtons.scss";
+import {Alert, Box, Button, Slider} from "@mui/material";
 import {useIsOnMove} from "../../hooks/useGame";
 import Loader from "../loader/Loader.tsx";
 import {calculateCurrentTurnDetails, calculateLastBet, getMinimumRaise} from "../../services/turnService.ts";
@@ -92,8 +91,12 @@ function ActionButtons({
         if (amountToCall < currentPlayerMoney) {
             if (showRaiseOptions) {
                 return (
-                    <Button
-                        className="confirm-button"
+                    <Button sx={{
+                        backgroundColor: "#8bc34a",
+                        "&:hover": {
+                            backgroundColor: "#9ccc65"
+                        }
+                    }}
                         variant="contained"
                         onClick={() => handleRaise(raiseAmount)}
                     >
@@ -103,7 +106,6 @@ function ActionButtons({
             } else if (amountToCall * 2 < currentPlayerMoney) {
                 return (
                     <Button
-                        className="raise-button"
                         variant="contained"
                         onClick={() => setShowRaiseOptions(true)}
                     >
@@ -113,7 +115,6 @@ function ActionButtons({
             } else {
                 return (
                     <Button
-                        className="raise-button"
                         variant="contained"
                         onClick={() => handleRaise(currentPlayerMoney)}
                     >
@@ -128,8 +129,35 @@ function ActionButtons({
     return (
         <>
             {showRaiseOptions &&
-                <div className="raise-options">
-                    <div className="slider-container">
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "15px",
+                }}>
+                    <Box sx={{
+                        position: "relative",
+                        width: "300px",
+                        height: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        ".MuiSlider-root": {
+                            width: "100%",
+                            height: "8px",
+                            transform: "none",
+                            color: "#ffb74d",
+                        },
+                        ".MuiSlider-thumb": {
+                            width: "20px",
+                            height: "20px",
+                        },
+                        ".MuiSlider-valueLabel": {
+                            backgroundColor: "#ffb74d",
+                            color: "black",
+                            fontWeight: "bold",
+                        },
+                    }}>
                         <Slider
                             orientation="horizontal"
                             value={raiseAmount}
@@ -140,14 +168,42 @@ function ActionButtons({
                             valueLabelDisplay="on"
                             valueLabelFormat={(value) => value === currentPlayerMoney ? "ALL IN" : value}
                         />
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             }
-            <div className="buttons-container">
+            <Box sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "15px",
+                marginTop: "20px 0",
+
+                "& button": {
+                    padding: "10px 15px",
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                    borderRadius: "8px",
+                    transition: "background-color 0.3s, transform 0.2s",
+                    "&:hover": {
+                        backgroundColor: "#5c6bc0",
+                        transform: "scale(1.05)"
+                    },
+                    "&:active": {
+                        transform: "scale(0.95)"
+                    }
+                }
+            }}>
                 {isOnMove ? (
                     <>
                         <Button
-                            className="fold-button"
+                            sx={{
+                                backgroundColor: "#ef5350",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#e57373"
+                                }
+                            }}
                             variant="contained"
                             color="secondary"
                             onClick={handleFold}
@@ -176,7 +232,7 @@ function ActionButtons({
                 ) : (
                     <div>Waiting for other players...</div>
                 )}
-            </div>
+            </Box>
         </>
     );
 }

@@ -13,8 +13,8 @@ interface ChatComponentProps {
 }
 
 export default function DirectMessage({open, onClose, sender, receiver,}: ChatComponentProps) {
-    const { messages, isLoading, isError, error } = useGetMessages(sender, receiver);
-    const { triggerSendMessage, isPending } = useSendMessage();
+    const {messages, isLoading, isError, error} = useGetMessages(sender, receiver);
+    const {triggerSendMessage, isPending} = useSendMessage();
 
     const [newMessage, setNewMessage] = useState<string>("");
 
@@ -41,7 +41,7 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
 
     useEffect(() => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            messagesEndRef.current.scrollIntoView({behavior: "smooth"});
         }
     }, [messages]);
 
@@ -50,7 +50,6 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
         (a, b) => new Date(a.timestamp || 0).getTime() - new Date(b.timestamp || 0).getTime()
     );
 
-    // Render
     return (
         <Drawer
             anchor="bottom"
@@ -88,13 +87,13 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
                     borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
                 }}
             >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                <Box sx={{display: "flex", alignItems: "center"}}>
+                    <Typography variant="h6" sx={{fontWeight: "bold"}}>
                         {receiver}
                     </Typography>
                 </Box>
-                <IconButton onClick={onClose} sx={{ color: "white" }}>
-                    <CloseIcon />
+                <IconButton onClick={onClose} sx={{color: "white"}}>
+                    <CloseIcon/>
                 </IconButton>
             </Box>
 
@@ -108,11 +107,11 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
                     flexDirection: "column",
                 }}
             >
-                {isLoading && <CircularProgress sx={{ color: "white", margin: "auto" }} />}
+                {isLoading && <CircularProgress sx={{color: "white", margin: "auto"}}/>}
                 {isError && (
                     <Alert
                         severity="error"
-                        sx={{ backgroundColor: "rgba(255, 0, 0, 0.1)", color: "white" }}
+                        sx={{backgroundColor: "rgba(255, 0, 0, 0.1)", color: "white"}}
                     >
                         {error?.message ?? "Failed to load messages."}
                     </Alert>
@@ -133,7 +132,16 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
                                 maxWidth: "70%",
                             }}
                         >
-                            <Typography variant="body2">{message.message}</Typography>
+                            <Typography variant="body2">
+                                {
+                                    message.gameId ? (
+                                        <>
+                                            {message.sender} invited you to join a game. Click <a href={`/game/${message.gameId}`} style={{ color: message.sender === sender ? "#292f3a" : "#3f5d93"}}>here</a> to join
+                                        </>
+                                        ) : (
+                                            message.message
+                                    )}
+                            </Typography>
                             <Typography
                                 variant="caption"
                                 sx={{
@@ -168,20 +176,20 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
                     fullWidth
                     disabled={isPending}
                     sx={{
-                        input: { color: "white" },
+                        input: {color: "white"},
                         backgroundColor: "rgba(255, 255, 255, 0.1)",
                         borderRadius: "10px",
                         "& .MuiOutlinedInput-root": {
-                            "& fieldset": { border: "none" },
+                            "& fieldset": {border: "none"},
                         },
                     }}
                 />
                 <IconButton
                     onClick={handleSendMessage}
                     disabled={isPending}
-                    sx={{ color: "white", marginLeft: "0.5rem" }}
+                    sx={{color: "white", marginLeft: "0.5rem"}}
                 >
-                    <SendIcon />
+                    <SendIcon/>
                 </IconButton>
             </Box>
         </Drawer>

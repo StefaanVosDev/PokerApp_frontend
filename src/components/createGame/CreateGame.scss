@@ -1,29 +1,13 @@
-.create-game-container {
+.create-game-form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 3rem;
-  background-color: black;
-  color: white;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 500px;
   font-family: 'Kalam', sans-serif;
-  min-height: 100vh;
+}
 
-  .create-game-title {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: white;
-    font-family: 'Kalam', sans-serif;
-  }
-
-  .create-game-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 500px;
-    font-family: 'Kalam', sans-serif;
-  }
-
+.create-game-container {
   .create-game-input {
     background-color: #2d2d2d;
     color: white;
@@ -79,24 +63,6 @@
     }
   }
 
-
-
-
-  .create-game-select {
-    background-color: #2d2d2d;
-    color: white;
-    font-family: 'Kalam', sans-serif;
-
-    .MuiInputLabel-root {
-      color: white;
-    }
-
-    .MuiSelect-root {
-      background-color: #2d2d2d;
-      color: white;
-    }
-  }
-
   .create-game-buttons {
     display: flex;
     justify-content: center;
@@ -109,27 +75,6 @@
       font-size: 1.2rem;
       border-radius: 5px;
       background-color: cornflowerblue;
-    }
-  }
-
-  .submission-error {
-    margin-top: 1rem;
-  }
-
-  .back-button {
-    position: absolute;
-    top: 8.5rem;
-    left: 3rem;
-    z-index: 10;
-    background-color: #4CAF50;
-    color: white;
-    font-family: 'Kalam', sans-serif;
-    padding: 10px 20px;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-
-    &:hover {
-      background-color: #45a049;
     }
   }
 }

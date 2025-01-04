@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useAccount, useAchievements, useAchievementsPerAccount } from "../../hooks/useAccount.ts";
+import {useState} from "react";
+import {useAccount, useAchievements, useAchievementsPerAccount} from "../../hooks/useAccount.ts";
 import AchievementCard from "./AchievementCard";
 import {
-    Container,
-    Typography,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
     Box,
     Button,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
+    Container,
     List,
     ListItem,
     ListItemText,
-    Alert,
+    Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Loader from "../loader/Loader";

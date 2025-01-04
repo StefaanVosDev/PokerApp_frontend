@@ -1,6 +1,7 @@
 import {useForm} from 'react-hook-form';
 import {
     Alert,
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -16,19 +17,27 @@ import {CreateGameFormInputs} from './forminput/CreateGameFormInputs.ts';
 import {useNavigate} from "react-router-dom";
 import {useCreateGame} from "../../hooks/useGame.ts";
 import {useState} from "react";
+import Loader from "../loader/Loader.tsx";
+import {Game} from "../../model/Game.ts";
 
 export default function CreateGame() {
     const navigate = useNavigate();
     const {register, handleSubmit, formState: {errors}, watch} = useForm<CreateGameFormInputs>();
-    const {mutate, error} = useCreateGame();
+    const {createGame, isPending, error} = useCreateGame();
     const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+    const [responseData, setResponseData] = useState<Game | null>(null);
+
+    if (isPending) {
+        return <Loader>Loading...</Loader>;
+    }
 
     const smallBlind = watch('settings.smallBlind');
     const startingChips = watch('settings.startingChips');
 
     const onSubmit = (data: CreateGameFormInputs) => {
-        mutate(data, {
-            onSuccess: () => {
+        createGame(data, {
+            onSuccess: (responseData) => {
+                setResponseData(responseData)
                 setIsConfirmationDialogOpen(true);
             }
         });
@@ -39,21 +48,56 @@ export default function CreateGame() {
         navigate(-1);
     };
 
-    const handleGoBack = () => {
+    const handleGoToGame = () => {
+        setIsConfirmationDialogOpen(false);
+        if (responseData)
+            navigate('/game/'+responseData.id)
+    }
+
+    const handleGoLobby = () => {
         setIsConfirmationDialogOpen(false);
         navigate('/games');
     };
 
     return (
-        <div className="create-game-container">
+        <Box className="create-game-container" sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '3rem',
+            backgroundColor: 'black',
+            color: 'white',
+            fontFamily: 'Kalam, sans-serif',
+            minHeight: '100vh',
+        }}>
             <Button
-                className="back-button"
+                sx={{
+                    position: 'absolute',
+                    top: '8.5rem',
+                    left: '3rem',
+                    zIndex: 10,
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    fontFamily: 'Kalam, sans-serif',
+                    padding: '10px 20px',
+                    borderRadius: '5px',
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                    '&:hover': {
+                        backgroundColor: '#45a049',
+                    },
+                }}
                 variant="contained"
                 onClick={() => navigate(-1)}
             >
                 Back
             </Button>
-            <Typography variant="h4" component="h1" className="create-game-title">
+            <Typography variant="h4" component="h1" sx={{
+                fontSize: '2.5rem',
+                marginBottom: '2rem',
+                color: 'white',
+                fontFamily: 'Kalam, sans-serif',
+                marginTop: '1rem',
+            }}>
                 Create a New Game
             </Typography>
 
@@ -208,14 +252,24 @@ export default function CreateGame() {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={() => handleGoBack()}
+                        onClick={() => handleGoToGame()}
                         sx={{
                             fontFamily: "Kalam, sans-serif",
                             color: "#3b82f6",
                             "&:hover": { textDecoration: "underline" },
                         }}
                     >
-                        Back
+                        Go to Game
+                    </Button>
+                    <Button
+                        onClick={() => handleGoLobby()}
+                        sx={{
+                            fontFamily: "Kalam, sans-serif",
+                            color: "#3b82f6",
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                    >
+                        Lobby
                     </Button>
                     <Button
                         onClick={() => setIsConfirmationDialogOpen(false)}
@@ -229,6 +283,6 @@ export default function CreateGame() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Box>
     );
 }

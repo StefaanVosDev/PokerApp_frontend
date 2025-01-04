@@ -13,10 +13,9 @@ export async function getMessages(sender: string, receiver: string) {
 
 
 export async function sendMessage(directMessage: DirectMessageDto) {
-    const {data} = await axios.post<DirectMessageDto>('/api/directMessages', {
+    await axios.post('/api/directMessages', {
         sender: directMessage.sender,
         receiver: directMessage.receiver,
         message: directMessage.message
     });
-    return data;
 }

@@ -1,8 +1,7 @@
 import {useNavigate} from "react-router-dom";
-import {Alert, Button, Typography} from "@mui/material";
+import {Alert, Box, Button, Typography} from "@mui/material";
 import Loader from "../loader/Loader.tsx";
 import {useEffect, useState} from "react";
-import './GameList.scss';
 import {useGames} from "../../hooks/useGame.ts";
 import {GameCard} from "../game/GameCard.tsx";
 
@@ -47,9 +46,32 @@ export default function GameList() {
 
 
     return (
-        <div className="game-list-container">
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2rem',
+            backgroundColor: 'black',
+            color: 'white',
+            fontFamily: 'Kalam, sans-serif',
+        }}>
             <Button
-                className="create-game-button"
+                sx={{
+                    position: 'absolute',
+                    top: '7.5rem',
+                    left: '3rem',
+                    zIndex: 10,
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    fontFamily: 'Kalam, sans-serif',
+                    padding: '10px 20px',
+                    borderRadius: '5px',
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                    '&:hover': {
+                        backgroundColor: '#45a049',
+                    }
+                }}
                 variant="contained"
                 onClick={handleCreateGame}
             >
@@ -57,18 +79,44 @@ export default function GameList() {
             </Button>
 
             <Button
-                className="back-button"
+                sx={{
+                    position: 'absolute',
+                    top: '11.5rem',
+                    left: '3rem',
+                    zIndex: 10,
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    fontFamily: 'Kalam, sans-serif',
+                    padding: '10px 20px',
+                    borderRadius: '5px',
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                    '&:hover': {
+                        backgroundColor: '#45a049',
+                    }
+                }}
                 variant="contained"
                 onClick={() => navigate("/")}
             >
                 Back
             </Button>
 
-            <Typography variant="h4" component="h1" className="title">
+            <Typography sx={{
+                paddingTop: '4rem',
+                fontSize: '2.5rem',
+                marginBottom: '2rem',
+                fontFamily: 'Kalam, sans-serif',
+            }} component="h1">
                 Available Games
             </Typography>
 
-            <div className="game-list">
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                width: '100%',
+                maxWidth: '600px',
+                fontFamily: 'Kalam, sans-serif',
+            }}>
                 {displayedGames.length === 0 ? (
                     <Alert severity="info">No games available</Alert>
                 ) : (
@@ -78,9 +126,21 @@ export default function GameList() {
                         );
                     })
                 )}
-            </div>
+            </Box>
 
-            <div className="pagination-controls">
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: '2rem',
+                fontFamily: 'Kalam, sans-serif',
+                '& button': {
+                    backgroundColor: '#1e1e1e',
+                    color: 'white',
+                    margin: '0 1rem',
+                    padding: '0.5rem 1rem',
+                    fontFamily: 'Kalam, sans-serif',
+                }
+            }}>
                 {currentPage !== 0 && (
                     <Button
                         variant="contained"
@@ -89,7 +149,10 @@ export default function GameList() {
                         Previous
                     </Button>
                 )}
-                <Typography variant="body1" className="pagination-info">
+                <Typography sx={{
+                    margin: '0 1rem',
+                    fontFamily: 'Kalam, sans-serif',
+                }} variant="body1">
                     Page {currentPage + 1} of {totalPages}
                 </Typography>
                 {currentPage !== totalPages - 1 && (
@@ -100,7 +163,7 @@ export default function GameList() {
                         Next
                     </Button>
                 )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

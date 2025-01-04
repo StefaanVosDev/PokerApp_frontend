@@ -14,7 +14,7 @@ interface PlayerProps {
     turns: Turn[];
     playerPositions: { top: string, left: string }[];
     winRound: boolean;
-    animationAllowed: boolean;
+    isEndOfRound: boolean;
 }
 
 function generateSparkles(count: number) {
@@ -26,7 +26,7 @@ function generateSparkles(count: number) {
     }));
 }
 
-function PlayerComponent({player, index, dealerIndex, turns, playerPositions, winRound, animationAllowed}: PlayerProps) {
+function PlayerComponent({player, index, dealerIndex, turns, playerPositions, winRound, isEndOfRound}: PlayerProps) {
     const turnsFromPlayer = turns.filter(turn => turn.player.id === player.id);
     const moneyGambledThisPhase = turnsFromPlayer.reduce((sum, turn) => sum + turn.moneyGambled, 0);
     const turn = turnsFromPlayer.reduce((latestTurn, currentTurn) => {
@@ -41,7 +41,7 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
     const isDealer = index === dealerIndex;
     const {isLoading: isLoadingAccount, isError: isErrorLoadingAccount, account} = useAccount(player.username);
 
-    const [playSparkles, setPlaySparkles] = useState(winRound && animationAllowed);
+    const [playSparkles, setPlaySparkles] = useState(winRound && isEndOfRound);
     const [sparkles] = useState(() => generateSparkles(10));
 
     useEffect(() => {
@@ -62,7 +62,11 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                     height: 48,
                     border: '2px solid #ffd700',
                     left: -80,
-                    top: 7
+                    top: 7,
+                    ...(turn?.moveMade?.toString() === "ON_MOVE" && {
+                        boxShadow: '0 0 20px 5px rgb(59, 130, 246)',
+                        animation: 'pulse 1.5s infinite'
+                    })
                 }}
             />
         )
@@ -72,11 +76,16 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
     if (isErrorLoadingAccount) return <Alert severity="error" variant="filled">Error loading avatar!</Alert>
 
     return (
-        <div
-            className="player"
-            style={{
+        <Box
+            sx={{
                 top: playerPositions[index].top,
                 left: playerPositions[index].left,
+                position: 'absolute',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
             }}
         >
             {isDealer && (
@@ -84,8 +93,12 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                     <img src="https://storage.googleapis.com/poker_stacks/others/dealer-disk.svg" alt="Dealer disk"/>
                 </div>
             )}
-            {playSparkles && animationAllowed ?
-                <div className="sparkle-container">
+            {playSparkles && isEndOfRound ?
+                <Box sx={{
+                    position: 'relative',
+                    display: 'inline-block',
+                    overflow: 'visible',
+                }}>
                     {avatarComponent()}
 
                     <AnimatePresence>
@@ -113,11 +126,11 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                                 </motion.div>
                             ))}
                     </AnimatePresence>
-                </div>
+                </Box>
 
                 : avatarComponent()
             }
-            <div className="player-box">
+            <Box sx={{marginTop: '10px'}}>
                 <Card sx={{
                     padding: 2,
                     backgroundColor: '#2e3b55',
@@ -153,9 +166,8 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                 >
                     {playerMove}
                 </Typography>
-            </div>
+            </Box>
             <Box
-                className={`player-cards ${hasFolded ? " folded" : ""}`}
                 sx={{
                     position: 'absolute',
                     bottom: 45,
@@ -163,7 +175,9 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                     display: 'flex',
                     gap: 1,
                     zIndex: 1,
-                    marginBottom: 1
+                    marginBottom: 1,
+                    marginTop: '8px',
+                    opacity: hasFolded ? 0.5 : 1,
                 }}
             >
                 {player.cards.map((card, cardIndex) => (
@@ -177,11 +191,13 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                             border: '1px solid #fff',
                             backgroundColor: '#fff',
                             overflow: 'hidden',
+                            borderRadius: '3px',
+                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)'
                         }}
                     />
                 ))}
             </Box>
-        </div>
+        </Box>
     );
 }
 

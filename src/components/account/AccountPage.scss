@@ -1,8 +1,3 @@
-.background-pulse {
-  box-shadow: 0 0 20px 5px rgb(59, 130, 246);
-  animation: pulse 1s infinite;
-}
-
 .glow {
   position: absolute;
   inset: -1rem;
@@ -11,13 +6,4 @@
   border-radius: 50%;
   filter: blur(3rem);
   animation: pulse 1s infinite;
-}
-
-.account-container {
-  background-color: #000000;
-  min-height: 100vh;
-  padding-top: 80px;
-  font-family: 'Kalam', sans-serif;
-  color: #FFFFFF;
-  position: relative;
 }

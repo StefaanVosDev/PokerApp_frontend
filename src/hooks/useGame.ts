@@ -27,9 +27,21 @@ export function useGame(gameId: string) {
 }
 
 export function useCreateGame() {
-    return useMutation<CreateGameFormInputs, Error, CreateGameFormInputs>({
-        mutationFn: createGame,
+    const queryClient = useQueryClient();
+
+    const {mutate, isPending, error} = useMutation({
+        mutationFn: async (gameData: CreateGameFormInputs) => await createGame(gameData),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ['games']});
+            return data;
+        }
     });
+
+    return {
+        createGame: mutate,
+        isPending,
+        error
+    };
 }
 
 export function useGames() {
