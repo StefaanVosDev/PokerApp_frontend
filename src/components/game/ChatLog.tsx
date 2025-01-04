@@ -11,6 +11,16 @@ interface ChatLogProps {
     loggedInUserPosition: number;
 }
 
+const balloonPositions = [
+    { top: '13%', left: '370%'},
+    { top: '42%', left: '423%'},
+    { top: '72%', left: '345%'},
+    { top: '72%', left: '190%'},
+    { top: '50%', left: '120%'},
+    { top: '13%', left: '170%'}
+]
+
+
 function ChatLog({gameId, loggedInUserPosition}: ChatLogProps) {
     const [isChatLogOpen, setIsChatLogOpen] = useState(false);
     const [newMessage, setNewMessage] = useState("");
@@ -25,7 +35,7 @@ function ChatLog({gameId, loggedInUserPosition}: ChatLogProps) {
         if (messageEndRef.current) {
             messageEndRef.current.scrollIntoView({behavior: "smooth"});
         }
-    }, [messages, activeScreen]);
+    }, [messages, activeScreen, isChatLogOpen]);
 
     useEffect(() => {
         if (messages && messages.length > 0) {
@@ -73,9 +83,16 @@ function ChatLog({gameId, loggedInUserPosition}: ChatLogProps) {
 
     return (
         <>
-            <button className="toggle-chat-log" onClick={toggleChatLog}>
+            <Button sx={{
+                position: 'fixed',
+                left: 90,
+                bottom: 10,
+                backgroundColor: 'black',
+                border: 'none',
+                cursor: 'pointer',
+            }} onClick={toggleChatLog}>
                 <ChatIcon/>
-            </button>
+            </Button>
             {isChatLogOpen && (
                 <Box sx={{
                     position: 'fixed',
@@ -106,7 +123,15 @@ function ChatLog({gameId, loggedInUserPosition}: ChatLogProps) {
                             sx={{color: '#fff'}}/></IconButton>
                     </Box>
                     {activeScreen === "chat" && (
-                        <Box className="messages" sx={{flex: 1, maxHeight: '100%', overflowY: 'auto', marginTop: 1}}>
+                        <Box sx={{
+                            flex: 1,
+                            maxHeight: '100%',
+                            overflowY: 'auto',
+                            marginTop: 1,
+                            '&::-webkit-scrollbar': {
+                                display: 'none'
+                            }
+                        }}>
                             {messages?.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()).map((message, index) => (
                                 <Typography key={index} sx={{marginBottom: 1, color: '#fff'}}>
                                     [{new Date(message.timestamp).toLocaleString()}]-{message?.player?.username}: {message.content}
@@ -167,11 +192,22 @@ function ChatLog({gameId, loggedInUserPosition}: ChatLogProps) {
                             {isError && <Alert severity="error">Error sending message</Alert>}
                         </Box>
                     )}
-                    {balloonText && <Box className={`balloon-text-${balloonPosition} fade-out`} sx={{
-                        fontSize: "3rem",
-                        color: 'white',
-                        zIndex: 10,
-                    }}>{balloonText}</Box>}
+                    {balloonText &&
+                        <Box sx={{
+                            fontSize: "3rem",
+                            color: 'white',
+                            zIndex: 10,
+                            animation: 'fadeOut 3s forwards',
+                            '@keyframes fadeOut': {
+                                '0%': { opacity: 1 },
+                                '85%': { opacity: 1 },
+                                '100%': { opacity: 0 },
+                            },
+                            position: 'absolute',
+                            top: balloonPositions[balloonPosition].top,
+                            left: balloonPositions[balloonPosition].left,
+
+                        }}>{balloonText}</Box>}
                 </Box>
             )}
         </>

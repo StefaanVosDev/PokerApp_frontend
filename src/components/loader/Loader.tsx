@@ -16,7 +16,7 @@ function Loader({ children } : LoaderProps) {
             <CircularProgress
                 variant="determinate"
                 value={100}
-                style={{
+                sx={{
                     color: 'transparent',
                     position: 'relative',
                 }}

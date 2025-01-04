@@ -3,4 +3,5 @@ export default interface DirectMessageDto {
     receiver: string
     message: string
     timestamp?: Date
+    gameId?: string
 }

@@ -23,13 +23,18 @@ function EndGame() {
     };
 
     return (
-        <Container maxWidth="sm" style={{textAlign: 'center', marginTop: '50px'}}>
+        <Container maxWidth="sm" sx={{textAlign: 'center', marginTop: '50px'}}>
             <Typography variant="h3" gutterBottom>Game Over</Typography>
             {winner && account?.activeAvatar &&
                 <>
-                    <Box className="winner-info" mb={4}>
-                        <img src={account.activeAvatar.image} alt={`${winner.username}'s avatar`}
-                             style={{borderRadius: '50%', width: '150px', height: '150px'}}/>
+                    <Box mb={4} sx={{
+                        '& img': {
+                            borderRadius: '50%',
+                            width: '150px',
+                            height: '150px'
+                        }
+                    }}>
+                        <img src={account.activeAvatar.image} alt={`${winner.username}'s avatar`}/>
                         <Typography variant="h4" gutterBottom>Congratulations {winner.username}</Typography>
                         <Typography variant="h5">Winning with ${winner.money}</Typography>
                     </Box>

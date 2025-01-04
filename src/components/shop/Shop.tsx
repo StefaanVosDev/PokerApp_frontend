@@ -1,6 +1,5 @@
 import {useAvatars, useBuyAvatar, usePokerPoints} from "../../hooks/useAccount.ts";
 import {Avatar} from "../../model/Avatar.ts";
-import "./Shop.scss";
 import {
     Alert,
     Box,
@@ -64,7 +63,10 @@ function Shop() {
     };
 
     return (
-        <div className="shop-container">
+        <Box sx={{
+            paddingTop: '70px',
+            textAlign: 'center'
+        }}>
             <Box
                 display="flex"
                 justifyContent="space-between"
@@ -123,8 +125,8 @@ function Shop() {
                     marginTop: "30px"
                 }}
             >
-                {avatars?.map((avatar: Avatar) => (
-                    <AvatarCard avatar={avatar} handleBuyAvatar={handleBuyAvatar} key={avatar.id}/>
+                {avatars?.map((avatar: Avatar, index) => (
+                    <AvatarCard avatar={avatar} handleBuyAvatar={handleBuyAvatar} key={index}/>
                 ))}
             </Box>
 
@@ -242,7 +244,7 @@ function Shop() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Box>
     );
 }
 

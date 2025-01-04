@@ -1,9 +1,8 @@
 import PokerTable from "../pokertable/PokerTable.tsx";
-import {Alert, Button, Tooltip} from "@mui/material";
+import {Alert, Box, Button, Tooltip, Typography} from "@mui/material";
 import {useNavigate, useParams} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import Loader from "../loader/Loader.tsx";
-import "./Game.scss";
 import {mapCardToImage} from "../../services/mapToCardService.ts";
 import ActionButtons from "../actionButtons/ActionButtons.tsx";
 import {useCurrentTurn, useProcessMove, useTurns} from "../../hooks/useTurn.ts";
@@ -17,7 +16,7 @@ import Timer from "./Timer.tsx";
 
 function Game() {
     const {id: gameId} = useParams<{ id: string }>();
-    const {loggedInUser, username} = useContext(SecurityContext);
+    const {username} = useContext(SecurityContext);
     const navigate = useNavigate();
 
     const [isEndOfRound, setIsEndOfRound] = useState(false);
@@ -103,7 +102,7 @@ function Game() {
         if (isSuccessDividingPot) {
             setTimeout(() => {
                 triggerNewRound()
-            }, 5000)
+            }, 10000)
         }
     }, [isSuccessDividingPot]);
 
@@ -187,7 +186,17 @@ function Game() {
 
     return (
         <>
-            <div className="updateStatus">
+            <Box sx={{
+                position: 'absolute',
+                top: '36%',
+                left: '42%',
+                zIndex: 10,
+                color: 'white',
+                fontFamily: 'Kalam, sans-serif',
+                padding: '10px 20px',
+                borderRadius: 5,
+                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+            }}>
                 {!isGameInProgress && (
                     <div>
                         <h2>Waiting for players...</h2>
@@ -204,7 +213,13 @@ function Game() {
                                         color="primary"
                                         onClick={handleUpdateGameStatus}
                                         disabled={isUpdatingStatus || !gameId || game.status !== "WAITING"}
-                                        className={game.players.length === 1 ? "disabled-button" : ""}
+                                        sx={{
+                                            ...(game.players.length === 1 && {
+                                                '&:hover': {
+                                                    cursor: 'not-allowed'
+                                                },
+                                            })
+                                        }}
                                     >
                                         Start game
                                     </Button>
@@ -218,7 +233,7 @@ function Game() {
                         )}
                     </div>
                 )}
-            </div>
+            </Box>
             {timerActive && turn && <Timer duration={60} turnId={turn.id} onExpire={handleExpire}/>}
             <PokerTable
                 players={playersWithCards}
@@ -227,14 +242,25 @@ function Game() {
                 maxPlayers={game.maxPlayers}
                 gameId={String(gameId)}
                 winnings={winnings}
-                animationAllowed={isEndOfRound}
-                loggedInUser={loggedInUser}
+                isEndOfRound={isEndOfRound}
                 isGameInProgress={isGameInProgress}
             />
             {isGameInProgress && (
-                <div className="pot-money">
+                <Typography sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    fontSize: '3rem',
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    textShadow: '0 0 5px rgba(0, 0, 0, 0.8)',
+                    position: 'absolute',
+                    top: '30%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                }}>
                     Pot ${totalMoneyInPot}
-                </div>)}
+                </Typography>)}
             {!isEndOfRound && isGameInProgress && (
                 <ActionButtons
                     showRaiseOptions={showRaiseOptions}
@@ -248,10 +274,10 @@ function Game() {
                     round={round}
                 />
             )}
-            {loggedInUser && game.players.map(player => player.username).includes(loggedInUser.toString()) && (
+            {username && game.players.map(player => player.username).includes(username) && (
                 <ChatLog
                     gameId={String(gameId)}
-                    loggedInUserPosition={game.players.filter(player => player.username == loggedInUser?.toString())[0]?.position}
+                    loggedInUserPosition={game.players.filter(player => player.username == username)[0]?.position}
                 />
             )}
         </>

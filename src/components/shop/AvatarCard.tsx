@@ -10,7 +10,11 @@ function AvatarCard({ avatar, handleBuyAvatar}: AvatarCardProps) {
     return <Box
         key={avatar.name}
         className="avatar-item"
-        flex="0 1 calc(33.333% - 16px)"
+        sx={{
+            flex: "0 1 calc(25% - 20px)",
+            maxWidth: "calc(25% - 20px)",
+            boxSizing: "border-box",
+        }}
     >
         <Card
             className="avatar-card"

@@ -70,6 +70,10 @@ export async function selectAvatar(username: string, avatarId: string | null) {
     return data;
 }
 
+export async function inviteFriend(username: string | undefined, gameId: string, friends: string[]) {
+    if (!username) return null;
+    await axios.post(`/api/friends/invite/${username}/${gameId}`, friends);
+}
 
 export async function getAchievementsPerAccount(id: string | undefined) {
     const {data} = await axios.get<Achievement[]>(`/api/achievements/${id}`);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import FriendRequestDto from "../model/dto/FriendRequestDto.ts";
 import GameNotificationDto from "../model/dto/GameNotificationDto.ts";
+import InviteNotificationDto from "../model/dto/InviteNotificationDto.ts";
 import AchievementNotificationDto from "../model/dto/AchievementNotificationDto";
 
 
@@ -27,6 +28,13 @@ export async function getGameNotifications(username: string | undefined) {
     const {data} = await axios.get<GameNotificationDto[]>(`/api/notifications/game/${username}`);
     return data;
 }
+
+export async function getInviteNotifications(username: string | undefined) {
+    if (!username) return null;
+    const {data} = await axios.get<InviteNotificationDto[]>(`/api/notifications/invite/${username}`);
+    return data;
+}
+
 export async function getAchievementNotifications(username: string | undefined) {
     if (!username) return null;
     const {data} = await axios.get<AchievementNotificationDto[]>(`/api/notifications/achievement/${username}`);

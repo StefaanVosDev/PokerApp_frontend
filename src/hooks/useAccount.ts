@@ -4,12 +4,15 @@ import {
     buyAvatar,
     createAccount,
     deleteFriend,
+    getAccount,
+    getAchievements,
+    getAchievementsPerAccount,
     getAvatars,
     getFriends,
-    getPokerPoints,
     getLoggedInAvatar,
-    getAccount,
-    getAchievements, getAchievementsPerAccount,selectAvatar
+    getPokerPoints,
+    inviteFriend,
+    selectAvatar
 } from "../services/accountService.ts";
 import {Avatar} from "../model/Avatar.ts";
 import AccountDto from "../model/dto/AccountDto.ts";
@@ -227,5 +230,22 @@ export function useAchievements() {
         isErrorAchievements,
         achievements,
 
+    };
+}
+
+export function useInviteFriend(username: string | undefined, gameId: string) {
+    const queryClient = useQueryClient();
+
+    const { mutate, isPending, isError } = useMutation({
+        mutationFn: async ( friends: string[]) => await inviteFriend(username, gameId,friends),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["messages"] });
+        },
+    });
+
+    return {
+        triggerInviteFriends: mutate,
+        isPending,
+        isError,
     };
 }

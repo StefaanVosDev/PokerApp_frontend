@@ -40,7 +40,14 @@ function AccountPage() {
     }
 
     return (
-        <div className="account-container">
+        <Box sx={{
+            backgroundColor: "#000000",
+            minHeight: "100vh",
+            paddingTop: "80px",
+            fontFamily: "Kalam', sans-serif",
+            color: "#FFFFFF",
+            position: "relative"
+        }}>
             <Stack spacing={4} alignItems="center">
                 {/* Merged Account Details and Owned Avatars */}
                 <Box
@@ -53,7 +60,7 @@ function AccountPage() {
                         maxWidth: "900px",
                     }}
                 >
-                    <div className="background-blur glow"></div>
+                    <div className="glow"></div>
                     <Paper
                         elevation={3}
                         sx={{
@@ -106,10 +113,10 @@ function AccountPage() {
                         </Typography>
                         {account?.ownedAvatars && account.ownedAvatars.length > 0 ? (
                             <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
-                                {account.ownedAvatars.map((avatarItem, index) => (
+                                {account.ownedAvatars.map((avatarItem) => (
                                    <AvatarCard
                                        avatarItem={avatarItem}
-                                       key={index}
+                                       key={avatarItem.id}
                                        isMyAccount={isMyAccount}
                                        avatar={avatar}
                                        handleSelect={handleSelect}/>
@@ -158,7 +165,7 @@ function AccountPage() {
                     </Paper>
                 </Box>
             </Stack>
-        </div>
+        </Box>
     );
 }
 
