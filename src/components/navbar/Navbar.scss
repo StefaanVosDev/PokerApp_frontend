@@ -1,0 +1,91 @@
+.custom-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+  padding: 0 1rem;
+  position: fixed; /* Sticks the navbar to the top */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(26, 32, 44, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  .brand-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .brand {
+    font-size: 4.0rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #3b82f6;
+    }
+  }
+
+  .icon {
+    width: 4rem;
+    height: 3rem;
+    color: white;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+
+    .link {
+      font-size: 1.4rem;
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s;
+
+      &:hover {
+        color: #3b82f6;
+      }
+    }
+  }
+
+  .logout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .welcomeUser {
+    font-size: 1.4rem;
+    padding-right: 30px;
+    color: #3b82f6;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 2rem;
+
+    .button {
+      color: white;
+      border: 1px solid white;
+      padding: 0.5rem 1rem;
+      margin-right: 20px;
+      border-radius: 0.25rem;
+      background: none;
+      transition: all 0.3s;
+      font-size: 1.2rem;
+      font-family: 'Kalam', sans-serif;
+
+      &:hover {
+        background: #3b82f6;
+      }
+    }
+  }
+}

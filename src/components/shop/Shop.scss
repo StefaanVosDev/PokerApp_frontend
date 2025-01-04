@@ -1,0 +1,12 @@
+.shop-container {
+    padding-top: 70px;
+    text-align: center;
+}
+
+
+.avatar-item {
+    flex: 0 1 calc(25% - 20px);
+    max-width: calc(25% - 20px);
+    box-sizing: border-box;
+}
+
