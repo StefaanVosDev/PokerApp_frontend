@@ -13,6 +13,8 @@ import {RouteGuard} from "./components/routeguard/RouteGuard.tsx";
 import EndGame from "./components/game/EndGame.tsx";
 import AccountPage from "./components/account/AccountPage.tsx";
 import Shop from "./components/shop/Shop.tsx";
+import ChatBot from "./components/chatbot/ChatBot.tsx";
+import {ChatBotProvider} from "./context/ChatBotContext.tsx";
 
 const theme = createTheme({
     palette: {
@@ -28,15 +30,15 @@ const theme = createTheme({
 })
 
 
-
 function App() {
     const queryClient = new QueryClient()
     return (
         <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
                 <SecurityContextProvider>
-                    <BrowserRouter>
-                        <Navbar/>
+                    <ChatBotProvider>
+                        <BrowserRouter>
+                            <Navbar/>
                             <Routes>
                                 <Route path="/home" element={<Home/>}/>
                                 <Route path="/" element={<Home/>}/>
@@ -47,7 +49,9 @@ function App() {
                                 <Route path="/shop" element={<RouteGuard><Shop/></RouteGuard>}/>
                                 <Route path="/account/:username" element={<RouteGuard><AccountPage/></RouteGuard>}/>
                             </Routes>
-                    </BrowserRouter>
+                            <ChatBot/>
+                        </BrowserRouter>
+                    </ChatBotProvider>
                 </SecurityContextProvider>
             </QueryClientProvider>
         </ThemeProvider>
