@@ -5,7 +5,7 @@ export type Game = {
     id: string;
     status: string;
     maxPlayers: number;
-    players: Player[]; // Array of players
+    players: Player[];
     name : string;
     winner : Player;
     settings: Configuration;

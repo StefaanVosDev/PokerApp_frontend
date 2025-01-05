@@ -4,12 +4,15 @@ import Loader from "../loader/Loader.tsx";
 import {useEffect, useState} from "react";
 import {useGames} from "../../hooks/useGame.ts";
 import {GameCard} from "../game/GameCard.tsx";
+import GameFilterForm from "./GameFilterForm";
+import {Game} from "../../model/Game";
 
 export default function GameList() {
     const navigate = useNavigate();
-    const {isLoading, isError, games} = useGames();
+    const { isLoading, isError, games } = useGames();
     const [selectedGameId, setSelectedGameId] = useState<string | undefined>(undefined);
     const [currentPage, setCurrentPage] = useState(0);
+    const [filteredGames, setFilteredGames] = useState<Game[]>([]);
     const gamesPerPage = 3;
 
     useEffect(() => {
@@ -18,15 +21,20 @@ export default function GameList() {
         }
     }, [selectedGameId, navigate]);
 
+    useEffect(() => {
+        if (Array.isArray(games)) {
+            setFilteredGames(games);
+        }
+    }, [games]);
+
     if (isLoading) return <Loader>Loading games...</Loader>;
     if (isError) return <Alert severity="error">Error loading games</Alert>;
-
 
     const handleGameClick = (gameId: string) => {
         setSelectedGameId(gameId);
     };
 
-    const totalPages = Math.ceil((Array.isArray(games) ? games.length : 0) / gamesPerPage);
+    const totalPages = Math.ceil(filteredGames.length / gamesPerPage);
 
     const handleNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
@@ -36,14 +44,24 @@ export default function GameList() {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
     };
 
-    const displayedGames = Array.isArray(games)
-        ? games.slice(currentPage * gamesPerPage, (currentPage + 1) * gamesPerPage)
-        : [];
+    const displayedGames = filteredGames.slice(currentPage * gamesPerPage, (currentPage + 1) * gamesPerPage);
 
     const handleCreateGame = () => {
         navigate('/create-game');
     };
 
+    const onFilteredGames = (games: Game[], reset: boolean = false) => {
+        if (reset) {
+            setFilteredGames(games);
+            setCurrentPage(0);
+        } else {
+            setFilteredGames(games);
+        }
+    };
+
+    const resetPage = () => {
+        setCurrentPage(0);
+    };
 
     return (
         <Box sx={{
@@ -56,6 +74,8 @@ export default function GameList() {
             color: 'white',
             fontFamily: 'Kalam, sans-serif',
         }}>
+            <GameFilterForm games={games || []} onFilteredGames={onFilteredGames} resetPage={resetPage}  />
+
             <Button
                 sx={{
                     position: 'absolute',
@@ -120,50 +140,49 @@ export default function GameList() {
                 {displayedGames.length === 0 ? (
                     <Alert severity="info">No games available</Alert>
                 ) : (
-                    displayedGames.map((game) => {
-                        return (
-                            <GameCard key={game.id} onClick={() => handleGameClick(game.id)} game={game}/>
-                        );
-                    })
+                    displayedGames.map((game) => (
+                        <GameCard key={game.id} onClick={() => handleGameClick(game.id)} game={game} />
+                    ))
                 )}
             </Box>
 
-            <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '2rem',
-                fontFamily: 'Kalam, sans-serif',
-                '& button': {
-                    backgroundColor: '#1e1e1e',
-                    color: 'white',
-                    margin: '0 1rem',
-                    padding: '0.5rem 1rem',
-                    fontFamily: 'Kalam, sans-serif',
-                }
-            }}>
-                {currentPage !== 0 && (
-                    <Button
-                        variant="contained"
-                        onClick={handlePrevPage}
+            {filteredGames.length > gamesPerPage && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginTop: '2rem',
+                        fontFamily: 'Kalam, sans-serif',
+                        '& button': {
+                            backgroundColor: '#1e1e1e',
+                            color: 'white',
+                            margin: '0 1rem',
+                            padding: '0.5rem 1rem',
+                            fontFamily: 'Kalam, sans-serif',
+                        },
+                    }}
+                >
+                    {currentPage !== 0 && (
+                        <Button variant="contained" onClick={handlePrevPage}>
+                            Previous
+                        </Button>
+                    )}
+                    <Typography
+                        sx={{
+                            margin: '0 1rem',
+                            fontFamily: 'Kalam, sans-serif',
+                        }}
+                        variant="body1"
                     >
-                        Previous
-                    </Button>
-                )}
-                <Typography sx={{
-                    margin: '0 1rem',
-                    fontFamily: 'Kalam, sans-serif',
-                }} variant="body1">
-                    Page {currentPage + 1} of {totalPages}
-                </Typography>
-                {currentPage !== totalPages - 1 && (
-                    <Button
-                        variant="contained"
-                        onClick={handleNextPage}
-                    >
-                        Next
-                    </Button>
-                )}
-            </Box>
+                        Page {currentPage + 1} of {totalPages}
+                    </Typography>
+                    {currentPage !== totalPages - 1 && (
+                        <Button variant="contained" onClick={handleNextPage}>
+                            Next
+                        </Button>
+                    )}
+                </Box>
+            )}
         </Box>
     );
 }
