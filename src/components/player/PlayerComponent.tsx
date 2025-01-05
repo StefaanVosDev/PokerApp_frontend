@@ -3,12 +3,14 @@ import {Turn} from "../../model/Turn.ts";
 import Player from "../../model/Player.ts";
 import "./PlayerComponent.scss";
 import {AnimatePresence, motion} from "framer-motion";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useAccount} from "../../hooks/useAccount.ts";
 import Loader from "../loader/Loader.tsx";
+import {getHandType} from "../../services/playerService.ts";
+import SecurityContext from "../../context/SecurityContext.ts";
 
 interface PlayerProps {
-    player: Player & { cards: string[] };
+    player: Player & { cards: string[], score: number };
     index: number;
     dealerIndex: number;
     turns: Turn[];
@@ -27,6 +29,8 @@ function generateSparkles(count: number) {
 }
 
 function PlayerComponent({player, index, dealerIndex, turns, playerPositions, winRound, isEndOfRound}: PlayerProps) {
+    const {username} = useContext(SecurityContext)
+
     const turnsFromPlayer = turns.filter(turn => turn.player.id === player.id);
     const moneyGambledThisPhase = turnsFromPlayer.reduce((sum, turn) => sum + turn.moneyGambled, 0);
     const turn = turnsFromPlayer.reduce((latestTurn, currentTurn) => {
@@ -40,6 +44,7 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
     const hasFolded = turn?.moveMade.toString() === "FOLD";
     const isDealer = index === dealerIndex;
     const {isLoading: isLoadingAccount, isError: isErrorLoadingAccount, account} = useAccount(player.username);
+    const handType = getHandType(player.score);
 
     const [playSparkles, setPlaySparkles] = useState(winRound && isEndOfRound);
     const [sparkles] = useState(() => generateSparkles(10));
@@ -164,8 +169,23 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                         color: '#aaa',
                     }}
                 >
-                    {playerMove}
+                    {playerMove.replace("_", " ")}
                 </Typography>
+                {(player.username === username || (isEndOfRound && !hasFolded)) &&
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            position: 'absolute',
+                            bottom: -20,
+                            right: 35,
+                            fontStyle: 'italic',
+                            fontSize: '0.8em',
+                            color: '#aaa',
+                        }}
+                    >
+                        {handType}
+                    </Typography>
+                }
             </Box>
             <Box
                 sx={{

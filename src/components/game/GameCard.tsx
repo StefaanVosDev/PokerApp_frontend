@@ -77,8 +77,8 @@ export function GameCard({onClick, game}: GameCardProps) {
                 style={{color: statusColor}}
             >
                 {game.status === 'FINISHED' && game.players.some(player => player.isWinner)
-                    ? `Status: ${game.status}, Winner: ${game.players.find(player => player.isWinner)?.username}`
-                    : `Status: ${game.status}`}
+                    ? `Status: ${game.status.replace("_", " ")}, Winner: ${game.players.find(player => player.isWinner)?.username}`
+                    : `Status: ${game.status.replace("_", " ")}`}
             </Typography>
             <Typography sx={{
                 marginTop: '0.5rem',
