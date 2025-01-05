@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {getPlayerHand, getPlayerOnMove, getWinner} from "../services/playerService.ts";
+import {getPlayerHand, getPlayerOnMove, getPlayersOnMove, getWinner} from "../services/playerService.ts";
 import Card from "../model/Card.ts";
 
 export function usePlayersHand(playerIds: string[], isEndOfRound: boolean) {
@@ -49,5 +49,21 @@ export function usePlayerOnMove(gameId: string | undefined) {
         isLoading,
         isError,
         player
+    }
+}
+
+
+export function usePlayersOnMove() {
+    const {isLoading, isError, data: playersOnMove} = useQuery(
+        {
+            queryKey: ['currentPlayersOnMove'],
+            queryFn: () => getPlayersOnMove(),
+            refetchInterval: 10000
+        })
+
+    return {
+        isLoading,
+        isError,
+        playersOnMove
     }
 }

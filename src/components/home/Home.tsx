@@ -1,8 +1,19 @@
 import "./Home.scss";
 import Features from "../features/Features.tsx";
+import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import SecurityContext from "../../context/SecurityContext";
 
 
 export default function Home() {
+
+    const navigate = useNavigate();
+
+    const {loggedInUser} = useContext(SecurityContext);
+
+    const handleNavigate = () => {
+        navigate("/games");
+    };
 
 
     return (
@@ -42,7 +53,10 @@ export default function Home() {
                             Experience the best online poker platform with features designed for both beginners and pros
                         </p>
                     </div>
-                </div>
+                    {loggedInUser ? (
+                    <button className="navigate-button" onClick={handleNavigate}>Play now!</button>
+                    ) : null}
+                    </div>
             </div>
             <Features/>
         </>

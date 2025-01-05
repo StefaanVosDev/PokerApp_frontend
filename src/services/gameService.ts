@@ -54,7 +54,7 @@ export const getStatusColor = (status: string): string => {
         case "WAITING":
             return "yellow";
         default:
-            return "white";  // Default color in case the status doesn't match any of the above
+            return "white";
     }
 };
 
