@@ -1,5 +1,5 @@
 import Player from "../../model/Player.ts";
-import {PlayerStatus, Turn} from "../../model/Turn.ts";
+import {Turn} from "../../model/Turn.ts";
 import {
     Alert,
     Avatar,
@@ -24,7 +24,7 @@ import {useFriends, useInviteFriend} from "../../hooks/useAccount.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
 
 interface PokerTableProps {
-    players: (Player & { cards: string[] })[]; // Players with cards as image paths
+    players: (Player & { cards: string[], score: number })[]; // Players with cards as image paths
     turns: Turn[];
     dealerIndex: number;
     maxPlayers: number;
@@ -142,14 +142,15 @@ export default function PokerTable({
                 />
             </div>
             {sortedPlayers.slice(0, 6).map((player, index) => {
-                const hasFolded = turns.some((turn) => turn.player.id === player.id && turn.moveMade === PlayerStatus.FOLD);
+                const hasFolded = turns.some((turn) => turn.player.username === player.username && turn.moveMade.toString() === 'FOLD');
 
                 const showCards = isGameInProgress && (player.username === username?.toString() || (isEndOfRound && !hasFolded));
                 return <PlayerComponent
                     key={player.id}
                     player={{
                         ...player,
-                        cards: showCards ? player.cards : (isGameInProgress ? [backOfCard, backOfCard] : [])
+                        cards: showCards ? player.cards : (isGameInProgress ? [backOfCard, backOfCard] : []),
+                        score: player.score
                     }}
                     index={index}
                     dealerIndex={dealerIndex}

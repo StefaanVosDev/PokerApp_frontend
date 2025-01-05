@@ -4,4 +4,5 @@ export default interface PlayersHand {
     playerId: string;
     gameId: string;
     hand: Card[];
+    score: number;
 }

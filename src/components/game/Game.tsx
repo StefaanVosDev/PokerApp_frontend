@@ -39,7 +39,7 @@ function Game() {
     } = useCurrentTurn(String(gameId), isEndOfRound, isHandlingProcessMove, isGameInProgress);
 
     const playerIds = game ? game.players.map((player) => player.id) : [];
-    const {isLoading: handsLoading, isError: handsError, playersHand} = usePlayersHand(playerIds, isEndOfRound);
+    const {isLoading: handsLoading, isError: handsError, playersHand} = usePlayersHand(playerIds, isGameInProgress);
     const roundId = round ? round.id : "";
 
     const {
@@ -174,7 +174,8 @@ function Game() {
     // Map each player's cards
     const playersWithCards = game.players.map((player) => ({
         ...player,
-        cards: (playersHand[player.id] || []).map(mapCardToImage), // Map cards to images
+        cards: (playersHand[player.id]?.hand || []).map(mapCardToImage), // Map cards to images
+        score: playersHand[player.id]?.score || 0,
     }));
 
     function handleExpire() {

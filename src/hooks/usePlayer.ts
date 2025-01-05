@@ -2,18 +2,21 @@ import {useQuery} from "@tanstack/react-query";
 import {getPlayerHand, getPlayerOnMove, getPlayersOnMove, getWinner} from "../services/playerService.ts";
 import Card from "../model/Card.ts";
 
-export function usePlayersHand(playerIds: string[], isEndOfRound: boolean) {
+export function usePlayersHand(playerIds: string[], isGameInProgress: boolean) {
     const {isLoading, isError, data} = useQuery({
         queryKey: ['playersHand', playerIds],
         queryFn: async () => {
             const hands = await Promise.all(playerIds.map((id) => getPlayerHand(id)));
 
             return playerIds.reduce((acc, playerId, index) => {
-                acc[playerId] = hands[index]!.hand; // Store hand by playerId
+                acc[playerId] = {
+                    hand: hands[index]!.hand,
+                    score: hands[index]!.score
+                }; // Store hand by playerId
                 return acc;
-            }, {} as Record<string, Card[]>);
+            }, {} as Record<string, { hand: Card[], score: number}>);
         },
-        enabled: playerIds.length > 0 && !isEndOfRound, // Enable only if there are playerIds
+        enabled: playerIds.length > 0 && isGameInProgress, // Enable only if there are playerIds
         refetchInterval: 1000
     });
 

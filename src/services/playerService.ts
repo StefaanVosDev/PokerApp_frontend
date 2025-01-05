@@ -30,3 +30,28 @@ export async function getPlayersOnMove() {
     const {data: players} = await axios.get<PlayerGame[]>(`/api/players/playersOnMove`);
     return players;
 }
+
+export function getHandType(score: number) {
+    switch (score) {
+        case 900:
+            return "Royal Flush";
+        case 800:
+            return "Straight Flush";
+        case 700:
+            return "Four of a Kind";
+        case 600:
+            return "Full House";
+        case 500:
+            return "Flush";
+        case 400:
+            return "Straight";
+        case 300:
+            return "Three of a Kind";
+        case 200:
+            return "Two Pair";
+        case 100:
+            return "One Pair";
+        default:
+            return "High Card";
+    }
+}
