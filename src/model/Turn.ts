@@ -12,12 +12,12 @@ export type Turn = {
 }
 
 export enum PlayerStatus {
-    ON_MOVE,
-    RAISE,
-    CALL,
-    FOLD,
-    ALL_IN,
-    CHECK,
-    SMALL_BLIND,
-    BIG_BLIND
+    ON_MOVE = "ON_MOVE",
+    RAISE = "RAISE",
+    CALL = "CALL",
+    FOLD = "FOLD",
+    ALL_IN = "ALL_IN",
+    CHECK = "CHECK",
+    SMALL_BLIND = "SMALL_BLIND",
+    BIG_BLIND = "BIG_BLIND"
 }

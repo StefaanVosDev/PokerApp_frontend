@@ -1,7 +1,7 @@
 import {Alert, Box, Card, CardContent, Typography} from "@mui/material";
 import {Game} from "../../model/Game.ts";
 import {Cancel, CheckCircle} from "@mui/icons-material";
-import {getStatusColor} from "../../services/gameService.ts";
+import {getStatusColor} from "../../services/gameService/gameService.ts";
 import {usePlayerOnMove} from "../../hooks/usePlayer";
 import Loader from "../loader/Loader.tsx";
 

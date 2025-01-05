@@ -7,7 +7,7 @@ import {
     getMessages,
     joinGame,
     sendMessage
-} from "../services/gameService.ts";
+} from "../services/gameService/gameService.ts";
 import {CreateGameFormInputs} from "../components/createGame/forminput/CreateGameFormInputs.ts";
 
 export function useGame(gameId: string) {

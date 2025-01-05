@@ -3,9 +3,11 @@ import {useContext, useEffect, useState} from "react";
 import SecurityContext from "../../context/SecurityContext.ts";
 import {CircleDollarSign} from 'lucide-react';
 import FriendsList from "../friendsList/FriendsList.tsx";
-import {Alert, Avatar} from "@mui/material";
+import {Alert} from "@mui/material";
 import {useLoggedInAvatar} from "../../hooks/useAccount.ts";
 import Loader from "../loader/Loader.tsx";
+import ProfilePic from "../profilePic/ProfilePic.tsx";
+
 import {
     useAchievementNotifications,
     useGameNotifications,
@@ -141,16 +143,7 @@ export default function Navbar() {
                             {
                                 avatar && (
                                     <a href={`/account/${avatar.username}`}>
-                                        <Avatar
-                                            alt="Profile pic"
-                                            src={avatar.image}
-                                            sx={{
-                                                width: 48,
-                                                height: 48,
-                                                border: '2px solid #ffd700',
-                                                left: -15,
-                                            }}
-                                        />
+                                        <ProfilePic isActive={false} left={-15} image={avatar.image}/>
                                     </a>
                                 )
                             }

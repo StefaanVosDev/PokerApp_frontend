@@ -4,12 +4,13 @@ import Loader from "../loader/Loader.tsx";
 import {useEffect, useState} from "react";
 import {useGames} from "../../hooks/useGame.ts";
 import {GameCard} from "../game/GameCard.tsx";
+import {calculateTotalPages, filterDisplayedGames} from "../../services/gameListHelperService/gameListHelperService.ts";
 import GameFilterForm from "./GameFilterForm";
 import {Game} from "../../model/Game";
 
 export default function GameList() {
     const navigate = useNavigate();
-    const { isLoading, isError, games } = useGames();
+    const {isLoading, isError, games} = useGames();
     const [selectedGameId, setSelectedGameId] = useState<string | undefined>(undefined);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredGames, setFilteredGames] = useState<Game[]>([]);
@@ -34,7 +35,7 @@ export default function GameList() {
         setSelectedGameId(gameId);
     };
 
-    const totalPages = Math.ceil(filteredGames.length / gamesPerPage);
+    const totalPages = calculateTotalPages(games, gamesPerPage);
 
     const handleNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
@@ -44,7 +45,7 @@ export default function GameList() {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
     };
 
-    const displayedGames = filteredGames.slice(currentPage * gamesPerPage, (currentPage + 1) * gamesPerPage);
+    const displayedGames = filterDisplayedGames(games, gamesPerPage, currentPage)
 
     const handleCreateGame = () => {
         navigate('/create-game');

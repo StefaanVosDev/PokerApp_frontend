@@ -1,4 +1,4 @@
-import {updateGameStatus} from "../services/gameService";
+import {updateGameStatus} from "../services/gameService/gameService.ts";
 import {useMutation} from "@tanstack/react-query";
 
 export function useUpdateGameStatus() {

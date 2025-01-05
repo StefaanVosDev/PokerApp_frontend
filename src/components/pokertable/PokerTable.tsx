@@ -19,6 +19,7 @@ import PlayerComponent from "../player/PlayerComponent.tsx";
 import {useGame, useJoinGame} from "../../hooks/useGame.ts";
 import {useCommunityCards} from "../../hooks/useRound.ts";
 import Loader from "../loader/Loader.tsx";
+import {checkUserInGame} from "../../services/pokerTableHelperService/pokerTableHelperService.ts";
 import {useContext, useState} from "react";
 import {useFriends, useInviteFriend} from "../../hooks/useAccount.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
@@ -96,7 +97,7 @@ export default function PokerTable({
         join();
     }
 
-    const isUserInGame = players.some((player) => player.username === username);
+    const isUserInGame = checkUserInGame(players, username);
 
     function handleCloseInvitePopup() {
         setIsInvitePopupOpen(false);

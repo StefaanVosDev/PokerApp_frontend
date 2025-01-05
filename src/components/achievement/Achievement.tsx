@@ -23,7 +23,7 @@ interface AchievementProps {
 
 function Achievement({ username }: AchievementProps) {
     const { achievements, isLoadingAchievements, isErrorAchievements } = useAchievements();
-    const { account,isError, isLoading } = useAccount(String(username));
+    const { account, isError, isLoading } = useAccount(String(username));
 
     const [currentPage, setCurrentPage] = useState(1);
     const achievementsPerPage = 6;
