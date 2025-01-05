@@ -1,9 +1,9 @@
 import PokerTable from "../pokertable/PokerTable.tsx";
 import {Alert, Box, Button, Tooltip, Typography} from "@mui/material";
 import {useNavigate, useParams} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState, useRef} from "react";
 import Loader from "../loader/Loader.tsx";
-import {mapCardToImage} from "../../services/mapToCardService.ts";
+import {mapPlayersWithCards} from "../../services/mapToCardService/mapToCardService.ts";
 import ActionButtons from "../actionButtons/ActionButtons.tsx";
 import {useCurrentTurn, useProcessMove, useTurns} from "../../hooks/useTurn.ts";
 import {useCreateNewRoundIfFinished, useCurrentRound, useDividePot} from "../../hooks/useRound.ts";
@@ -23,6 +23,7 @@ function Game() {
     const [isHandlingProcessMove, setIsHandlingProcessMove] = useState(false);
     const [showRaiseOptions, setShowRaiseOptions] = useState(false);
     const [isGameStatusError, setIsGameStatusError] = useState(false);
+    const hasTriggeredDividePot = useRef(false);
 
     const {isLoading: gameLoading, isError: gameError, game} = useGame(String(gameId));
     const isGameInProgress = game?.status === "IN_PROGRESS";
@@ -74,6 +75,7 @@ function Game() {
     const isFirstPlayer = game && game.players.length > 0 && game.players[0].username === username?.toString();
     const timerActive = isGameInProgress && game?.settings.timer;
     const totalMoneyInPot = turns?.reduce((sum, turn) => sum + turn.moneyGambled, 0) ?? 0;
+    const lastCalledRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (isSuccessProcessingMove) {
@@ -83,13 +85,21 @@ function Game() {
     }, [isSuccessProcessingMove, turns]);
 
     useEffect(() => {
-        if (round && round.phase === "FINISHED") {
+        if (round && round.phase === "FINISHED" && !hasTriggeredDividePot.current) {
+            hasTriggeredDividePot.current = true;
             setIsEndOfRound(true);
-            setTimeout(() => {
-                triggerDividePot();
-            }, 1000);
+
+            const now = Date.now();
+            if (lastCalledRef.current === null || now - lastCalledRef.current >= 10000) {
+                lastCalledRef.current = now; //double check but better safe than sorry
+                setTimeout(() => {
+                    triggerDividePot();
+                }, 1000);
+            } else {
+                console.warn("Trigger blocked: Please wait 10 seconds before retrying.");
+            }
         }
-    }, [round?.phase]);
+    }, [round?.phase, triggerDividePot]);
 
     useEffect(() => {
         if (game && game.players.length === 1 && game.status === "IN_PROGRESS") {
@@ -100,6 +110,7 @@ function Game() {
 
     useEffect(() => {
         if (isSuccessDividingPot) {
+            hasTriggeredDividePot.current = false;
             setTimeout(() => {
                 triggerNewRound()
             }, 10000)
@@ -172,11 +183,7 @@ function Game() {
 
 
     // Map each player's cards
-    const playersWithCards = game.players.map((player) => ({
-        ...player,
-        cards: (playersHand[player.id]?.hand || []).map(mapCardToImage), // Map cards to images
-        score: playersHand[player.id]?.score || 0,
-    }));
+    const playersWithCards = mapPlayersWithCards(game.players, playersHand);
 
     function handleExpire() {
         if (timerActive && setIsHandlingProcessMove && processMove) {

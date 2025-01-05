@@ -1,7 +1,7 @@
 import {ReactNode, useEffect, useState} from 'react';
 import SecurityContext from './SecurityContext';
 import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../services/auth';
-import {isExpired} from 'react-jwt';
+import {isExpired, decodeToken} from 'react-jwt';
 import Cookies from 'js-cookie';
 import Keycloak from 'keycloak-js';
 import {useCreateAccount} from "../hooks/useAccount.ts";
@@ -38,6 +38,9 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
                         setLoggedInUser(keycloak.idTokenParsed?.given_name);
                         setUsername(keycloak.idTokenParsed?.preferred_username);
                         triggerCreateAccountFromKeycloak();
+
+                        // Start token expiration timer
+                        scheduleLogoutOnTokenExpiry(newToken);
                     }
                 }
                 setIsKeycloakInitialized(true);
@@ -47,6 +50,18 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
             });
     }, []);
 
+    function scheduleLogoutOnTokenExpiry(token: string) {
+        const decodedToken = decodeToken<{ exp: number }>(token);
+        if (decodedToken && decodedToken.exp) {
+            const expirationTimeInMs = decodedToken.exp * 1000 - Date.now();
+            if (expirationTimeInMs > 0) {
+                setTimeout(() => {
+                    console.warn("Token has expired. Logging out...");
+                    logout();
+                }, expirationTimeInMs);
+            }
+        }
+    }
 
     function triggerCreateAccountFromKeycloak() {
         const account: AccountDto = {
@@ -67,34 +82,27 @@ export default function SecurityContextProvider({ children }: IWithChildren) {
     }
 
     function logout() {
-        // Check if Keycloak is ready
         if (!keycloak || !keycloak.authenticated) {
             console.warn("Keycloak is not initialized or user is already logged out.");
             return;
         }
 
-        // Clean up cookies and headers
         Cookies.remove('authToken');
         Cookies.remove('loggedInUser');
         removeAccessTokenFromAuthHeader();
 
         setLoggedInUser(undefined);
 
-        // Force Keycloak logout
         const logoutOptions = { redirectUri: import.meta.env.VITE_REACT_APP_URL };
         keycloak.logout(logoutOptions).catch((error) => {
             console.error("Keycloak logout failed:", error);
         });
     }
 
-
-
-
     function isAuthenticated(): boolean {
         const token = Cookies.get('authToken');
         return token ? !isExpired(token) && isSuccess : false;
     }
-
 
     if (!isKeycloakInitialized || isCreatingAccount) {
         return <Loader>Loading...</Loader>

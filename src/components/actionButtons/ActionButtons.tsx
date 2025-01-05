@@ -1,7 +1,7 @@
 import {Alert, Box, Button, Slider} from "@mui/material";
 import {useIsOnMove} from "../../hooks/useGame";
 import Loader from "../loader/Loader.tsx";
-import {calculateCurrentTurnDetails, calculateLastBet, getMinimumRaise} from "../../services/turnService.ts";
+import {calculateCurrentTurnDetails, calculateLastBet, getMinimumRaise} from "../../services/turnService/turnService.ts";
 import {useEffect, useState} from "react";
 import {Turn} from "../../model/Turn.ts";
 import {Round} from "../../model/Round.ts";

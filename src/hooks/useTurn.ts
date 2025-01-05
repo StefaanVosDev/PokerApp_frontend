@@ -5,10 +5,10 @@ import {
     checkAndMove,
     foldAndMove,
     getCurrentTurnId,
-    getTurn,
     getTurns,
-    raiseAndMove
-} from "../services/turnService.ts";
+    raiseAndMove,
+    getTurn
+} from "../services/turnService/turnService.ts";
 
 export function useTurn(turnId: string) {
     const {isLoading: isLoadingTurn, isError: isErrorLoadingTurn, data: turn} = useQuery({

@@ -32,6 +32,8 @@ export function useWinner(winnerId: string | undefined) {
         {
             queryKey: ['winner', winnerId],
             queryFn: () => getWinner(winnerId),
+            enabled: Boolean(winnerId),
+            refetchInterval: 1000
         })
 
     return {

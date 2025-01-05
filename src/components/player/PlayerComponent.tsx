@@ -1,13 +1,14 @@
-import {Alert, Avatar, Box, Card, Stack, Typography} from "@mui/material";
+import {Alert, Box, Card, Stack, Typography} from "@mui/material";
 import {Turn} from "../../model/Turn.ts";
 import Player from "../../model/Player.ts";
-import "./PlayerComponent.scss";
+import "./PlayerComponent.scss"
 import {AnimatePresence, motion} from "framer-motion";
 import {useContext, useEffect, useState} from "react";
 import {useAccount} from "../../hooks/useAccount.ts";
 import Loader from "../loader/Loader.tsx";
 import {getHandType} from "../../services/playerService.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
+import ProfilePic from "../profilePic/ProfilePic.tsx";
 
 interface PlayerProps {
     player: Player & { cards: string[], score: number };
@@ -24,9 +25,20 @@ function generateSparkles(count: number) {
         id: index,
         x: Math.random() * 200 - 100,
         y: Math.random() * 200 - 100,
-        scale: Math.random() * 0.5 + 0.5,
+        scale: Math.random() + 1,
     }));
 }
+
+const PlayerStatusLabels: Record<string, string> = {
+    ON_MOVE: "ON MOVE",
+    RAISE: "RAISE",
+    CALL: "CALL",
+    FOLD: "FOLD",
+    ALL_IN: "ALL IN",
+    CHECK: "CHECK",
+    SMALL_BLIND: "SMALL BLIND",
+    BIG_BLIND: "BIG BLIND"
+};
 
 function PlayerComponent({player, index, dealerIndex, turns, playerPositions, winRound, isEndOfRound}: PlayerProps) {
     const {username} = useContext(SecurityContext)
@@ -39,15 +51,14 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
             : latestTurn;
     }, turnsFromPlayer[0]);
 
-    const moneyGambledDisplay = moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase;
-    const playerMove = turn ? (turn.moveMade + "  " + moneyGambledDisplay) : "Waiting...";
+    const playerMove = turn ? (PlayerStatusLabels[turn.moveMade] + "  " + (moneyGambledThisPhase == 0 ? "" : moneyGambledThisPhase)) : "Waiting...";
     const hasFolded = turn?.moveMade.toString() === "FOLD";
     const isDealer = index === dealerIndex;
     const {isLoading: isLoadingAccount, isError: isErrorLoadingAccount, account} = useAccount(player.username);
     const handType = getHandType(player.score);
 
     const [playSparkles, setPlaySparkles] = useState(winRound && isEndOfRound);
-    const [sparkles] = useState(() => generateSparkles(10));
+    const [sparkles] = useState(() => generateSparkles(20));
 
     useEffect(() => {
         if (winRound) {
@@ -55,27 +66,6 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
             return () => clearTimeout(timer);
         }
     });
-
-    function avatarComponent() {
-        return (
-            <Avatar
-                className={`player-avatar ${turn?.moveMade?.toString() === "ON_MOVE" ? "active" : ""}`}
-                alt="Profile pic"
-                src={account?.activeAvatar?.image}
-                sx={{
-                    width: 48,
-                    height: 48,
-                    border: '2px solid #ffd700',
-                    left: -80,
-                    top: 7,
-                    ...(turn?.moveMade?.toString() === "ON_MOVE" && {
-                        boxShadow: '0 0 20px 5px rgb(59, 130, 246)',
-                        animation: 'pulse 1.5s infinite'
-                    })
-                }}
-            />
-        )
-    }
 
     if (isLoadingAccount) return <Loader>Loading avatar...</Loader>
     if (isErrorLoadingAccount) return <Alert severity="error" variant="filled">Error loading avatar!</Alert>
@@ -99,12 +89,9 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                 </div>
             )}
             {playSparkles && isEndOfRound ?
-                <Box sx={{
-                    position: 'relative',
-                    display: 'inline-block',
-                    overflow: 'visible',
-                }}>
-                    {avatarComponent()}
+                <div className="sparkle-container">
+                    <ProfilePic isActive={turn?.moveMade?.toString() === "ON_MOVE"} left={-80}
+                                image={account?.activeAvatar?.image} top={7}/>
 
                     <AnimatePresence>
                         {playSparkles &&
@@ -127,13 +114,14 @@ function PlayerComponent({player, index, dealerIndex, turns, playerPositions, wi
                                         ease: "easeInOut",
                                     }}
                                 >
-                                    {avatarComponent()}
                                 </motion.div>
                             ))}
                     </AnimatePresence>
-                </Box>
+                </div>
 
-                : avatarComponent()
+                : <ProfilePic isActive={turn?.moveMade?.toString() === "ON_MOVE"} left={-80}
+                              image={account?.activeAvatar?.image} top={7}/>
+
             }
             <Box sx={{marginTop: '10px'}}>
                 <Card sx={{

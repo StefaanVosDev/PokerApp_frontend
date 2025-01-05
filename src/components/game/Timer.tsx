@@ -4,6 +4,7 @@ import {FaRegClock} from 'react-icons/fa';
 import {useTurn} from '../../hooks/useTurn.ts'
 import Loader from "../loader/Loader.tsx";
 import {Alert, Box} from "@mui/material";
+import { toZonedTime } from 'date-fns-tz';
 
 interface TimerProps {
     duration: number;
@@ -21,8 +22,14 @@ function Timer({duration, onExpire, turnId}: TimerProps) {
     useEffect(() => {
         if (isLoadingTurn || !turn) return;
 
+        const now = Date.now();
+        console.log(now);
+        const timeZone = "Europe/Brussels";
+
+        const zonedDate = toZonedTime(now, timeZone);
+
         const startTime = new Date(turn.startTime).getTime();
-        const elapsedTime = (Date.now() - startTime) / 1000
+        const elapsedTime = (zonedDate.getTime() - startTime) / 1000
 
         setTimeLeft((Math.floor(Math.max(duration - elapsedTime, 0))))
 
