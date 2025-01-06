@@ -1,10 +1,9 @@
 import {useEffect, useState} from "react";
 import "./Timer.scss"
 import {FaRegClock} from 'react-icons/fa';
-import {useTurn} from '../../hooks/useTurn.ts'
+import {useTimeRemaining} from '../../hooks/useTurn.ts'
 import Loader from "../loader/Loader.tsx";
 import {Alert, Box} from "@mui/material";
-import { toZonedTime } from 'date-fns-tz';
 
 interface TimerProps {
     duration: number;
@@ -13,25 +12,16 @@ interface TimerProps {
 }
 
 function Timer({duration, onExpire, turnId}: TimerProps) {
-    const {isLoadingTurn, isErrorLoadingTurn, turn} = useTurn(turnId);
+    const {isLoadingTimer, isErrorLoadingTimer, timeRemaining} = useTimeRemaining(turnId)
 
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
     const isUrgent = timeLeft && timeLeft <= 5;
 
     useEffect(() => {
-        if (isLoadingTurn || !turn) return;
+        if (isLoadingTimer || isErrorLoadingTimer || !timeRemaining) return;
 
-        const now = Date.now();
-        console.log(now);
-        const timeZone = "Europe/Brussels";
-
-        const zonedDate = toZonedTime(now, timeZone);
-
-        const startTime = new Date(turn.startTime).getTime();
-        const elapsedTime = (zonedDate.getTime() - startTime) / 1000
-
-        setTimeLeft((Math.floor(Math.max(duration - elapsedTime, 0))))
+        setTimeLeft(timeRemaining)
 
         const interval = setInterval(() => {
             setTimeLeft((prev) => {
@@ -45,10 +35,10 @@ function Timer({duration, onExpire, turnId}: TimerProps) {
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [duration, isLoadingTurn, onExpire, timeLeft, turn])
+    }, [duration, isLoadingTimer, isErrorLoadingTimer, onExpire, timeLeft, timeRemaining])
 
-    if (isLoadingTurn) return <Loader>Loading current turn...</Loader>
-    if (isErrorLoadingTurn || !turn) return <Alert severity="error" variant="filled">Error loading turn!</Alert>
+    if (isLoadingTimer) return <Loader>Loading timer...</Loader>
+    if (isErrorLoadingTimer || !timeRemaining) return <Alert severity="error" variant="filled">Error loading timer!</Alert>
 
     return (
         <Box sx={{

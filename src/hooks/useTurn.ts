@@ -7,20 +7,20 @@ import {
     getCurrentTurnId,
     getTurns,
     raiseAndMove,
-    getTurn
+    getTimeRemaining
 } from "../services/turnService/turnService.ts";
 
-export function useTurn(turnId: string) {
-    const {isLoading: isLoadingTurn, isError: isErrorLoadingTurn, data: turn} = useQuery({
-        queryKey: ['turn', turnId],
-        queryFn: () => getTurn(turnId),
-        refetchInterval: 900
+export function useTimeRemaining(turnId: string) {
+    const {isLoading: isLoadingTimer, isError: isErrorLoadingTimer, data: timeRemaining} = useQuery({
+        queryKey: ['timer', turnId],
+        queryFn: () => getTimeRemaining(turnId),
+        refetchInterval: 500
     })
 
     return {
-        isLoadingTurn,
-        isErrorLoadingTurn,
-        turn,
+        isLoadingTimer,
+        isErrorLoadingTimer,
+        timeRemaining,
     }
 }
 

@@ -99,7 +99,7 @@ export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet
     };
 }
 
-export async function getTurn(turnId: string) {
-    const {data} = await axios.get<CurrentTurnDto>("/api/turns/" + turnId);
+export async function getTimeRemaining(turnId: string) {
+    const {data} = await axios.get<number>(`/api/turns/${turnId}/timeRemaining`);
     return data;
 }
