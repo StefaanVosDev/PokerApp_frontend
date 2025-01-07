@@ -35,7 +35,7 @@ export default function GameList() {
         setSelectedGameId(gameId);
     };
 
-    const totalPages = calculateTotalPages(games, gamesPerPage);
+    const totalPages = calculateTotalPages(filteredGames, gamesPerPage);
 
     const handleNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages - 1));
@@ -45,7 +45,7 @@ export default function GameList() {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
     };
 
-    const displayedGames = filterDisplayedGames(games, gamesPerPage, currentPage)
+    const displayedGames = filterDisplayedGames(filteredGames, gamesPerPage, currentPage);
 
     const handleCreateGame = () => {
         navigate('/create-game');
