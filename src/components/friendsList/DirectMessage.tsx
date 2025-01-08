@@ -1,4 +1,3 @@
-import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {Alert, Box, CircularProgress, Drawer, IconButton, ListItem, TextField, Typography,} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
@@ -20,13 +19,13 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
 
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-
     const handleSendMessage = () => {
         if (newMessage.trim()) {
             triggerSendMessage({
                 sender,
                 receiver,
                 message: newMessage.trim(),
+                isRead: false
             });
             setNewMessage("");
         }
@@ -107,8 +106,8 @@ export default function DirectMessage({open, onClose, sender, receiver,}: ChatCo
                     flexDirection: "column",
                 }}
             >
-                {isLoading && <CircularProgress sx={{color: "white", margin: "auto"}}/>}
-                {isError && (
+                {(isLoading) && <CircularProgress sx={{color: "white", margin: "auto"}}/>}
+                {(isError) && (
                     <Alert
                         severity="error"
                         sx={{backgroundColor: "rgba(255, 0, 0, 0.1)", color: "white"}}

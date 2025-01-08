@@ -40,3 +40,9 @@ export async function getAchievementNotifications(username: string | undefined) 
     const {data} = await axios.get<AchievementNotificationDto[]>(`/api/notifications/achievement/${username}`);
     return data;
 }
+
+export async function getFriendRequestsNotifications(username: string | undefined) {
+    if (!username) return null;
+    const {data} = await axios.get<FriendRequestDto[]>(`/api/notifications/friendRequests/${username}`);
+    return data;
+}

@@ -4,4 +4,5 @@ export default interface DirectMessageDto {
     message: string
     timestamp?: Date
     gameId?: string
+    isRead: boolean
 }

@@ -4,6 +4,7 @@ import {
     declineRequest,
     getAchievementNotifications,
     getFriendRequests,
+    getFriendRequestsNotifications,
     getGameNotifications,
     getInviteNotifications
 } from "../services/notificationService.ts"
@@ -102,5 +103,23 @@ export function useAchievementNotifications(username : string | undefined) {
         isLoadingAchievementNotifications,
         isErrorLoadingAchievementNotifications,
         achievementNotifications
+    }
+}
+
+export function useFriendRequestsNotifications(username: string | undefined) {
+    const {
+        isLoading: isLoadingFriendRequestsNotifications,
+        isError: isErrorLoadingFriendRequestsNotifications,
+        data: friendRequestsNotifications,
+    } = useQuery({
+        queryKey: ['friendRequestsNotifications', username],
+        queryFn: () => getFriendRequestsNotifications(username),
+        refetchInterval: 5000
+    })
+
+    return {
+        isLoadingFriendRequestsNotifications,
+        isErrorLoadingFriendRequestsNotifications,
+        friendRequestsNotifications
     }
 }

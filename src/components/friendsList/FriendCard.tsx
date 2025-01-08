@@ -20,7 +20,7 @@ import {useNavigate} from "react-router-dom";
 import {useDeleteFriend} from "../../hooks/useAccount.ts";
 import SecurityContext from "../../context/SecurityContext.ts";
 import DirectMessage from "./DirectMessage"; // Import the updated DM component
-import {useGetMessages} from "../../hooks/useDirectMessages.ts";
+import {useGetMessages, useMarkMessages} from "../../hooks/useDirectMessages.ts";
 
 interface FriendCardProps {
     friend: {
@@ -34,17 +34,15 @@ function FriendCard({ friend }: FriendCardProps) {
     const { triggerDeleteFriend, isPending } = useDeleteFriend();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDMOpen, setIsDMOpen] = useState(false);
-    const [lastOpened, setLastOpened] = useState<Date | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
+    const {markAsRead} = useMarkMessages(username ?? "", friend.username);
     const { messages } = useGetMessages(friend.username, username ?? "");
 
     useEffect(() => {
         if (!isDMOpen && messages && messages.length > 0) {
             let unreadMessages = messages.filter((msg) => {
-                const messageTimestamp = new Date(msg.timestamp || 0).getTime();
-                const lastOpenedTimestamp = lastOpened ? lastOpened.getTime() : 0;
-                return messageTimestamp > lastOpenedTimestamp;
+                return !msg.isRead
             });
             unreadMessages = unreadMessages.filter((msg) => {
                 return msg.sender === friend.username;
@@ -53,14 +51,7 @@ function FriendCard({ friend }: FriendCardProps) {
         } else {
             setUnreadCount(0);
         }
-    }, [messages, isDMOpen, lastOpened]);
-
-    useEffect(() => {
-        const savedLastOpened = localStorage.getItem(`lastOpened_${friend.username}`);
-        if (savedLastOpened) {
-            setLastOpened(new Date(savedLastOpened));
-        }
-    }, [friend.username]);
+    }, [messages, isDMOpen]);
 
 
     const handleOpenDialog = () => {
@@ -79,12 +70,10 @@ function FriendCard({ friend }: FriendCardProps) {
     };
 
     const toggleDM = () => {
-        setIsDMOpen((prev) => !prev);
-        if (!isDMOpen) {
-            const now = new Date();
-            setLastOpened(now);
-            localStorage.setItem(`lastOpened_${friend.username}`, now.toISOString()); // Save to local storage
+        if (isDMOpen) {
+            markAsRead();
         }
+        setIsDMOpen((prev) => !prev);
     };
 
     const navigateToProfile = () => {
