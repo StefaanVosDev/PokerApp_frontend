@@ -72,7 +72,12 @@ export async function getTurns(roundId: string | undefined) {
 
 export function calculateLastBet(turns: Turn[], round: Round | undefined | null) {
     const currentPhaseTurns = turns.filter(turn => turn.madeInPhase === round?.phase);
-    return currentPhaseTurns.reduce((max, turn) => Math.max(max, turn.moneyGambled), 0);
+    const lastBetTurn = currentPhaseTurns.reduce((maxTurn, turn) => turn.moneyGambled > maxTurn.moneyGambled ? turn : maxTurn, currentPhaseTurns[0]);
+    if (lastBetTurn) {
+        const lastBetPlayer = lastBetTurn.player;
+        return currentPhaseTurns.reduce((moneyGambled, turn) => moneyGambled + (turn.player.id === lastBetPlayer.id ? turn.moneyGambled : 0), 0);
+    }
+    return 0;
 }
 
 export function getMinimumRaise(lastBet: number, currentPlayerMoney: number, bigBlind: number): number {
@@ -93,6 +98,7 @@ export function calculateCurrentTurnDetails(turns: Turn[], round: Round, lastBet
         .filter(turn => turn.player.id === currentTurn.player.id)
         .reduce((sum, turn) => sum + turn.moneyGambled, 0);
 
+    console.log("Lastbet:" + lastBet + " TotalGambled:" + totalGambled);
     return {
         shouldShowCheckButton: totalGambled === lastBet,
         amountToCall: lastBet - totalGambled

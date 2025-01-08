@@ -5,9 +5,9 @@ import {
     checkAndMove,
     foldAndMove,
     getCurrentTurnId,
+    getTimeRemaining,
     getTurns,
-    raiseAndMove,
-    getTimeRemaining
+    raiseAndMove
 } from "../services/turnService/turnService.ts";
 
 export function useTimeRemaining(turnId: string) {

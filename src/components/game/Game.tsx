@@ -1,7 +1,7 @@
 import PokerTable from "../pokertable/PokerTable.tsx";
 import {Alert, Box, Button, Tooltip, Typography} from "@mui/material";
 import {useNavigate, useParams} from "react-router-dom";
-import {useContext, useEffect, useState, useRef} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import Loader from "../loader/Loader.tsx";
 import {mapPlayersWithCards} from "../../services/mapToCardService/mapToCardService.ts";
 import ActionButtons from "../actionButtons/ActionButtons.tsx";
@@ -94,7 +94,7 @@ function Game() {
                 lastCalledRef.current = now; //double check but better safe than sorry
                 setTimeout(() => {
                     triggerDividePot();
-                }, 1000);
+                }, 4000);
             } else {
                 console.warn("Trigger blocked: Please wait 10 seconds before retrying.");
             }
@@ -102,9 +102,11 @@ function Game() {
     }, [round?.phase, triggerDividePot]);
 
     useEffect(() => {
-        if (game && game.players.length === 1 && game.status === "IN_PROGRESS") {
+        if (game && game.players.length === 1 && (game.status === "IN_PROGRESS" || game.status === "FINISHED")) {
             const winner = game.players[0]
-            navigate(`/end-game/${winner.id}`)
+            setTimeout(() => {
+                navigate(`/end-game/${winner.id}`);
+            }, 4000);
         }
     }, [game]);
 
@@ -113,7 +115,7 @@ function Game() {
             hasTriggeredDividePot.current = false;
             setTimeout(() => {
                 triggerNewRound()
-            }, 10000)
+            }, 6000)
         }
     }, [isSuccessDividingPot]);
 

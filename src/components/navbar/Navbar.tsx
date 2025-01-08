@@ -10,6 +10,7 @@ import ProfilePic from "../profilePic/ProfilePic.tsx";
 
 import {
     useAchievementNotifications,
+    useFriendRequestsNotifications,
     useGameNotifications,
     useInviteNotifications
 } from "../../hooks/useNotification.ts";
@@ -19,6 +20,8 @@ import InviteNotificationDto from "../../model/dto/InviteNotificationDto.ts";
 import InviteNotification from "../notification/InviteNotification.tsx";
 import AchievementNotificationDto from "../../model/dto/AchievementNotificationDto";
 import AchievementNotification from "../notification/AchievementNotification";
+import FriendRequestNotification from "../notification/FriendRequestNotification.tsx";
+import FriendRequestDto from "../../model/dto/FriendRequestDto.ts";
 
 export default function Navbar() {
     const {login, logout, isAuthenticated, username} = useContext(SecurityContext)
@@ -41,49 +44,46 @@ export default function Navbar() {
     } = useAchievementNotifications(username);
     const [newAchievementNotification, setNewAchievementNotification] = useState<AchievementNotificationDto | null>(null);
 
+    const {
+        isLoadingFriendRequestsNotifications,
+        isErrorLoadingFriendRequestsNotifications,
+        friendRequestsNotifications
+    } = useFriendRequestsNotifications(username);
+    const [newFriendRequestNotification, setNewFriendRequestNotification] = useState<FriendRequestDto | null>(null);
+
+
 
     useEffect(() => {
         if (gameNotifications && gameNotifications.length > 0) {
-            const tenSecondsAgo = new Date();
-            tenSecondsAgo.setSeconds(tenSecondsAgo.getSeconds() - 10);
-
-            const lastGameNotification = gameNotifications.filter((notification) => new Date(notification.timestamp) > tenSecondsAgo);
-            if (lastGameNotification && lastGameNotification.length > 0) {
-                const notification = lastGameNotification[0];
-                if (window.location.pathname !== '/game/' + notification.game.id) {
-                    setNewGameNotification(notification);
-                }
+            const notification = gameNotifications[0];
+            if (window.location.pathname !== '/game/' + notification.game.id) {
+                setNewGameNotification(notification);
             }
         }
     }, [gameNotifications]);
 
     useEffect(() => {
         if (inviteNotifications && inviteNotifications.length > 0) {
-            const tenSecondsAgo = new Date();
-            tenSecondsAgo.setSeconds(tenSecondsAgo.getSeconds() - 10);
-
-            const lastInviteNotification = inviteNotifications.filter((notification) => new Date(notification.timestamp) > tenSecondsAgo);
-            if (lastInviteNotification && lastInviteNotification.length > 0) {
-                const notification = lastInviteNotification[0];
-                if (window.location.pathname !== '/game/' + notification.game.id) {
-                    setNewInviteNotification(notification);
-                }
+            const notification = inviteNotifications[0];
+            if (window.location.pathname !== '/game/' + notification.game.id) {
+                setNewInviteNotification(notification);
             }
         }
     }, [inviteNotifications]);
 
     useEffect(() => {
         if (achievementNotifications && achievementNotifications.length > 0) {
-            const tenSecondsAgo = new Date();
-            tenSecondsAgo.setSeconds(tenSecondsAgo.getSeconds() - 10);
-
-            const lastAchievementNotification = achievementNotifications.filter((notification) => new Date(notification.timestamp) > tenSecondsAgo);
-            if (lastAchievementNotification && lastAchievementNotification.length > 0) {
-                const notification = lastAchievementNotification[0];
-                    setNewAchievementNotification(notification);
-            }
+            const notification = achievementNotifications[0];
+            setNewAchievementNotification(notification);
         }
     }, [achievementNotifications]);
+
+    useEffect(() => {
+        if (friendRequestsNotifications && friendRequestsNotifications.length > 0) {
+            const notification = friendRequestsNotifications[0];
+            setNewFriendRequestNotification(notification);
+        }
+    }, [friendRequestsNotifications]);
 
 
     if (isLoadingAvatar) return <Loader>loading profile pic...</Loader>
@@ -97,6 +97,9 @@ export default function Navbar() {
     if (isLoadingAchievementNotifications) return <Loader>loading achievement notifications...</Loader>
     if (isErrorLoadingAchievementNotifications)
         return <Alert severity="error" variant="filled">error loading achievement notifications</Alert>
+    if (isLoadingFriendRequestsNotifications) return <Loader>loading friend requests...</Loader>
+    if (isErrorLoadingFriendRequestsNotifications)
+        return <Alert severity="error" variant="filled">error loading friend requests</Alert>
 
     function handleCloseGameNotification() {
         setNewGameNotification(null);
@@ -108,6 +111,10 @@ export default function Navbar() {
 
     function handleCloseInviteNotification() {
         setNewInviteNotification(null);
+    }
+
+    function handleCloseFriendRequestNotification() {
+        setNewFriendRequestNotification(null);
     }
 
     return (
@@ -171,6 +178,12 @@ export default function Navbar() {
                     game={newInviteNotification.game}
                     onClose={handleCloseInviteNotification}
                     sender={newInviteNotification.friendUsername}
+                />
+            )}
+            {newFriendRequestNotification && (
+                <FriendRequestNotification
+                    friendRequest={newFriendRequestNotification}
+                    onClose={handleCloseFriendRequestNotification}
                 />
             )}
         </>

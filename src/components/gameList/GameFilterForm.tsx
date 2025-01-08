@@ -1,23 +1,25 @@
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useState, useEffect, useContext } from "react";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {useContext, useEffect, useState} from "react";
 import {
-    Typography,
-    TextField,
+    Alert,
+    Box,
     Button,
+    Chip,
+    Collapse,
+    FormControl,
+    FormControlLabel,
+    IconButton,
+    InputLabel,
     MenuItem,
     Select,
-    FormControl,
-    InputLabel,
-    Box,
-    Collapse,
-    IconButton,
-    Chip,
-    Switch, FormControlLabel, Alert
+    Switch,
+    TextField,
+    Typography
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { Game } from "../../model/Game.ts";
-import { GameFilterFormInputs } from "./forminput/GameFilterFormInputs";
+import {Game} from "../../model/Game.ts";
+import {GameFilterFormInputs} from "./forminput/GameFilterFormInputs";
 import {usePlayersOnMove} from "../../hooks/usePlayer";
 import SecurityContext from "../../context/SecurityContext";
 import Loader from "../loader/Loader";
@@ -380,14 +382,25 @@ export default function GameFilterForm({ games, onFilteredGames, resetPage }: Fi
 
                     {filterType === "status" && (
                         <FormControl fullWidth style={{ marginBottom: "15px" }}>
-                            <InputLabel id="status-label">Game Status</InputLabel>
+                            <InputLabel
+                                id="status-label"
+                                sx={{
+                                    color: "white",
+                                    "&.Mui-focused": {
+                                        color: "white",
+                                    },
+                                }}
+                            >
+                                Game Status
+                            </InputLabel>
                             <Select
                                 labelId="status-label"
                                 {...register("status")}
                                 value={status || getValues("status") || ""}
                                 onChange={(e) => {
                                     setStatus(e.target.value);
-                                    setValue("status", e.target.value);}}
+                                    setValue("status", e.target.value);
+                                }}
                                 style={fieldStyle}
                                 MenuProps={{
                                     PaperProps: {
@@ -398,6 +411,9 @@ export default function GameFilterForm({ games, onFilteredGames, resetPage }: Fi
                                     },
                                 }}
                             >
+                                <MenuItem value="" disabled style={{ color: "gray" }}>
+                                    Select a Status
+                                </MenuItem>
                                 <MenuItem value="WAITING">Waiting</MenuItem>
                                 <MenuItem value="IN_PROGRESS">In progress</MenuItem>
                                 <MenuItem value="FINISHED">Finished</MenuItem>

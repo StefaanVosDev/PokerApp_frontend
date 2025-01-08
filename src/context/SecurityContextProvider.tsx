@@ -1,7 +1,7 @@
 import {ReactNode, useEffect, useState} from 'react';
 import SecurityContext from './SecurityContext';
 import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../services/auth';
-import {isExpired, decodeToken} from 'react-jwt';
+import {decodeToken, isExpired} from 'react-jwt';
 import Cookies from 'js-cookie';
 import Keycloak from 'keycloak-js';
 import {useCreateAccount} from "../hooks/useAccount.ts";

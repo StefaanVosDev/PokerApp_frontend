@@ -17,8 +17,6 @@ import GroupIcon from "@mui/icons-material/Group";
 import AddIcon from "@mui/icons-material/Add";
 import SecurityContext from "../../context/SecurityContext.ts";
 import {useAddFriend} from "../../hooks/useAccount.ts";
-import FriendRequestNotification from "../notification/FriendRequestNotification.tsx";
-import FriendRequestDto from "../../model/dto/FriendRequestDto.ts";
 import {AxiosError} from "axios";
 import AddFriendDialog from "./AddFriendDialog.tsx";
 import FriendListOverview from "./FriendListOverview.tsx";
@@ -31,7 +29,6 @@ export default function FriendsList() {
     const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState(0); // 0 for Overview, 1 for Requests
-    const [newFriendRequest, setNewFriendRequest] = useState<FriendRequestDto | null>(null);
 
     const { triggerAddFriend, isPending } = useAddFriend();
 
@@ -85,10 +82,6 @@ export default function FriendsList() {
     function handleTabChange() {
         if (activeTab === 0) setActiveTab(1);
         else if (activeTab === 1) setActiveTab(0);
-    }
-
-    function handleCloseNotification() {
-        setNewFriendRequest(null);
     }
 
     return (
@@ -150,7 +143,7 @@ export default function FriendsList() {
                 </Tabs>
 
                 {activeTab === 0 && (
-                    <FriendListOverview username={username} setNewFriendRequest={setNewFriendRequest} />
+                    <FriendListOverview username={username} />
                 )}
 
                 {activeTab === 1 && (
@@ -230,12 +223,6 @@ export default function FriendsList() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {newFriendRequest && (
-                <FriendRequestNotification
-                    friendRequest={newFriendRequest}
-                    onClose={handleCloseNotification}
-                />
-            )}
         </>
     );
 }
